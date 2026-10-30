@@ -429,6 +429,7 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 <link rel="stylesheet" href="{FONTS}">
 <link rel="stylesheet" href="{base}static/style.css">
 {head_extra}
+<script>document.documentElement.classList.add("js");setTimeout(function(){{if(!window.__motionReady)document.documentElement.classList.remove("js")}},3000);</script>
 <script>try{{var l=localStorage.getItem("lang");if(l==="ar"||l==="en"){{var d=document.documentElement;d.dataset.lang=l;d.lang=l;d.dir=l==="ar"?"rtl":"ltr";}}}}catch(e){{}}</script>
 </head>
 <body>
@@ -441,6 +442,25 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 <footer class="site-footer"><div class="wrap">© {date.today().year} {bi(profile["name"])} · {ui("rights")}</div></footer>
 <script src="{base}static/app.js" defer></script>
 </body></html>'''
+
+
+def hero_art():
+    """Line drawing of a building elevation that 'draws itself' behind the hero (see .hero-art in style.css)."""
+    paths = [
+        "M10 280H390",                                   # ground
+        "M60 280V110H220V280", "M220 280V60H320V280",    # two volumes
+        "M50 110L140 70L230 110",                        # roof
+        "M130 280V245H150V280",                          # door
+        "M60 296H320", "M60 290V302", "M320 290V302",    # dimension line
+        "M345 60V280", "M339 60H351", "M339 280H351",
+        "M368 34a14 14 0 1 0 0.1 0", "M368 12v6M368 50v6M346 34h6M384 34h6",  # sun
+    ]
+    for y in (140, 180, 220):
+        paths += [f"M{x} {y}h20v24h-20z" for x in (80, 120, 170)]
+    for y in range(86, 250, 34):
+        paths += [f"M{x} {y}h22v18h-22z" for x in (240, 280)]
+    body = "".join(f'<path pathLength="1" style="--d:{i}" d="{d}"/>' for i, d in enumerate(paths))
+    return f'<svg class="hero-art" viewBox="0 0 400 310" aria-hidden="true">{body}</svg>'
 
 
 def build_home(profile, papers, cards):
@@ -485,7 +505,7 @@ def build_home(profile, papers, cards):
 
     body = f'''
 <main>
-<section id="about" class="hero"><div class="wrap hero-grid">
+<section id="about" class="hero">{hero_art()}<div class="wrap hero-grid">
   {photo}
   <div>
     <h1>{bi(name)}</h1>

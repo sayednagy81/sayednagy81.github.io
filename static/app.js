@@ -89,6 +89,63 @@
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
   });
 
+  // ---- motion: header shadow, scroll reveal, counting numbers ----
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var header = document.querySelector(".site-header");
+  function onScroll() { if (header) header.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // "9,153" -> counts 0..9153 keeping commas; "30.4%" keeps decimals and suffix; text without digits is left alone
+  function countUp(el) {
+    var m = el.textContent.match(/^([^\d]*)(\d[\d,]*(?:\.\d+)?)(.*)$/);
+    if (!m || still) return;
+    var target = parseFloat(m[2].replace(/,/g, ""));
+    var decimals = (m[2].split(".")[1] || "").length;
+    var commas = m[2].indexOf(",") > -1;
+    var start = null, dur = 1400;
+    function fmt(v) {
+      var s = v.toFixed(decimals);
+      return commas ? Number(s).toLocaleString("en-US", { minimumFractionDigits: decimals }) : s;
+    }
+    function step(t) {
+      if (start === null) start = t;
+      var p = Math.min((t - start) / dur, 1);
+      el.textContent = m[1] + fmt(target * (1 - Math.pow(1 - p, 3))) + m[3];
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var targets = document.querySelectorAll(
+    ".metric, .paper, .pcard, section.wrap > h2, .tags, .filters, .va-full, .paper-page > h2, .paper-page > p, .paper-page pre");
+  Array.prototype.forEach.call(document.querySelectorAll(".va"), function (va) {
+    Array.prototype.forEach.call(va.querySelectorAll(".va-step"), function (s, i) { s.style.setProperty("--i", i); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".metrics .metric, .grid .paper, .pgrid .pcard"), function (el) {
+    var i = Array.prototype.indexOf.call(el.parentNode.children, el);
+    el.style.setProperty("--delay", (i % 4) * 0.08 + "s");
+  });
+
+  function reveal(el) {
+    el.classList.add("in");
+    Array.prototype.forEach.call(el.querySelectorAll(".va"), function (va) { va.classList.add("in"); });
+    if (el.classList.contains("va")) el.classList.add("in");
+    Array.prototype.forEach.call(el.querySelectorAll(".metric b, .stat b"), countUp);
+  }
+
+  if ("IntersectionObserver" in window && !still) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    Array.prototype.forEach.call(targets, function (el) { el.classList.add("reveal"); io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(targets, reveal);
+  }
+  window.__motionReady = true;
+
   applyLang(lang());
   filter();
 })();
