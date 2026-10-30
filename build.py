@@ -637,6 +637,9 @@ def main():
     for extra in ("images", "files"):
         if (ROOT / extra).exists():
             shutil.copytree(ROOT / extra, OUT / extra)
+    # root/ holds files that must sit at the site root, e.g. Google Search Console verification
+    if (ROOT / "root").exists():
+        shutil.copytree(ROOT / "root", OUT, dirs_exist_ok=True)
 
     cards = set() if "--no-cards" in sys.argv else build_cards(profile, papers)
     build_home(profile, papers, cards)
