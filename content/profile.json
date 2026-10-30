@@ -1,0 +1,43 @@
+{
+  "site_url": "https://sayednagy81.github.io",
+  "default_lang": "en",
+
+  "name":        { "en": "Dr. Sayed Marey Nagy", "ar": "د. سيد مرعي" },
+  "title":       { "en": "PhD, Lecturer of Architectural Engineering", "ar": "دكتوراه، مدرس الهندسة المعمارية" },
+  "affiliation": { "en": "Faculty of Engineering – Mataria, Helwan University, Cairo, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة حلوان، القاهرة، مصر" },
+  "bio": {
+    "en": "PhD in Architectural Engineering and lecturer at the Faculty of Engineering – Mataria, Helwan University. My research focuses on building materials, nanomaterials, building technology, energy consumption reduction, building performance, and post-occupancy studies. I am driven by a commitment to advancing sustainable design practices and enhancing the environmental and functional performance of the built environment.",
+    "ar": "دكتوراه في الهندسة المعمارية ومحاضر بكلية الهندسة بالمطرية، جامعة حلوان. تركز أبحاثي على مواد البناء والمواد النانوية وتكنولوجيا البناء وخفض استهلاك الطاقة وأداء المباني ودراسات ما بعد التشغيل. يحركني الالتزام بتطوير ممارسات التصميم المستدام وتحسين الأداء البيئي والوظيفي للبيئة المبنية."
+  },
+
+  "email": "sayed_nagy@m-eng.capu.edu.eg",
+  "photo": "images/profile.jpg",
+
+  "interests": [
+    { "en": "Sustainable Architecture",        "ar": "العمارة المستدامة" },
+    { "en": "Energy Efficiency in Buildings",  "ar": "كفاءة الطاقة في المباني" },
+    { "en": "Building Materials & Nanomaterials", "ar": "مواد البناء والمواد النانوية" },
+    { "en": "Building Technology",             "ar": "تكنولوجيا البناء" },
+    { "en": "Green Building",                  "ar": "المباني الخضراء" },
+    { "en": "Post-Occupancy Evaluation",       "ar": "تقييم ما بعد التشغيل" },
+    { "en": "Biomimicry in Architecture",      "ar": "المحاكاة الحيوية في العمارة" }
+  ],
+
+  "metrics": [
+    { "value": "27",    "label": { "en": "Citations (Google Scholar)", "ar": "الاستشهادات (Google Scholar)" } },
+    { "value": "2",     "label": { "en": "h-index (Google Scholar)",  "ar": "معامل h (Google Scholar)" } },
+    { "value": "30",    "label": { "en": "Citations (ResearchGate)", "ar": "الاستشهادات (ResearchGate)" } },
+    { "value": "9,153", "label": { "en": "Reads (ResearchGate)",     "ar": "القراءات (ResearchGate)" } }
+  ],
+
+  "links": [
+    { "platform": "googlescholar", "url": "https://scholar.google.com/citations?user=WKmP7igAAAAJ" },
+    { "platform": "orcid",        "url": "https://orcid.org/0000-0001-8084-5887" },
+    { "platform": "researchgate", "url": "https://www.researchgate.net/profile/Sayed-Nagy-3" },
+    { "platform": "academia",     "url": "https://helwan.academia.edu/SayedMarey" },
+    { "platform": "scopus",       "url": "https://www.scopus.com/authid/detail.uri?authorId=58213322400" },
+    { "platform": "linkedin",     "url": "https://www.linkedin.com/in/sayed-m-n-a1940757/" },
+    { "platform": "youtube",      "url": "https://www.youtube.com/@Build2Wise" },
+    { "platform": "wos",        "url": "https://www.webofscience.com/wos/author/record/G-5335-2014" }
+  ]
+}

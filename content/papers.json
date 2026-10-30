@@ -1,0 +1,585 @@
+[
+  {
+    "id": "adaptive-envelopes-administrative-2026",
+    "type": "journal",
+    "featured": true,
+    "title": "Adaptive Building Envelopes in Administrative Buildings under Hot-Arid Climate: A Comparative Analytical Study",
+    "authors": [
+      "Sayed Marey Nagy"
+    ],
+    "journal": "Journal of Engineering Research",
+    "year": 2026,
+    "volume": "",
+    "issue": "",
+    "pages": "",
+    "doi": "10.21608/jer.2026.508405.1153",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "A comparative analysis of adaptive building envelope strategies for administrative buildings in hot-arid climates.",
+      "ar": "دراسة تحليلية مقارنة لاستراتيجيات الأغلفة المعمارية التكيفية للمباني الإدارية في المناخ الحار الجاف."
+    },
+    "keywords": {
+      "en": [
+        "adaptive building envelopes",
+        "administrative buildings",
+        "hot-arid climate",
+        "energy efficiency"
+      ],
+      "ar": [
+        "الأغلفة التكيفية",
+        "المباني الإدارية",
+        "المناخ الحار الجاف",
+        "كفاءة الطاقة"
+      ]
+    }
+  },
+  {
+    "id": "wind-turbines-urban-design-2026",
+    "type": "journal",
+    "featured": true,
+    "title": "Integrating Wind Turbines into Urban and Building Design in New Cities Toward Sustainable Energy",
+    "authors": [
+      "Sayed Marey Nagy",
+      "Mahmoud Taha Abulkasem"
+    ],
+    "journal": "Journal of Engineering Research",
+    "year": 2026,
+    "volume": "10",
+    "issue": "1",
+    "pages": "",
+    "doi": "10.21608/jer.2026.459977.1035",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "How wind turbines can be integrated into urban and building design in Egypt's new cities to support sustainable energy.",
+      "ar": "كيفية دمج توربينات الرياح في التصميم العمراني والمعماري بالمدن الجديدة لدعم الطاقة المستدامة."
+    },
+    "keywords": {
+      "en": [
+        "wind turbines",
+        "urban design",
+        "new cities",
+        "renewable energy",
+        "sustainable energy"
+      ],
+      "ar": [
+        "توربينات الرياح",
+        "التصميم العمراني",
+        "المدن الجديدة",
+        "الطاقة المتجددة",
+        "الطاقة المستدامة"
+      ]
+    }
+  },
+  {
+    "id": "design-for-deconstruction-green-offices-2025",
+    "type": "journal",
+    "featured": false,
+    "title": {
+      "en": "Applying the Reuse Techniques to Achieve Green Administration Building",
+      "ar": "تطبيق تقنيات إعادة الاستخدام لتحقيق مباني إدارية خضراء"
+    },
+    "authors": [
+      "Sohaila Mohamed Elbadway",
+      "Sayed Marey Nagy",
+      "Randa Reda Kamel"
+    ],
+    "journal": "Engineering Research Journal",
+    "year": 2025,
+    "volume": "184",
+    "issue": "3",
+    "pages": "309-324",
+    "doi": "10.21608/erj.2025.340818.1149",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "Integrates Design for Deconstruction (DfD) principles into administrative buildings, among the most energy- and resource-intensive types, to create demountable, reusable building systems.",
+      "ar": "يدمج مبادئ التصميم من أجل التفكيك في المباني الإدارية، وهي من أكثر المباني استهلاكًا للطاقة والموارد، لتحقيق أنظمة بناء قابلة للتفكيك وإعادة الاستخدام."
+    },
+    "keywords": {
+      "en": [
+        "design for deconstruction",
+        "design for environment",
+        "reuse",
+        "green buildings",
+        "administrative buildings"
+      ],
+      "ar": [
+        "التصميم من أجل التفكيك",
+        "التصميم من أجل البيئة",
+        "إعادة الاستخدام",
+        "المباني الخضراء",
+        "المباني الإدارية"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Rising environmental challenges and resource-hungry office buildings.",
+        "ar": "تحديات بيئية متزايدة ومباني إدارية كثيفة الاستهلاك للموارد."
+      },
+      "method": {
+        "en": "Integrating Design for Deconstruction principles into office design.",
+        "ar": "دمج مبادئ التصميم من أجل التفكيك في تصميم المباني الإدارية."
+      },
+      "conclusion": {
+        "en": "Demountable, reusable systems support sustainable construction.",
+        "ar": "الأنظمة القابلة للتفكيك وإعادة الاستخدام تدعم البناء المستدام."
+      }
+    }
+  },
+  {
+    "id": "container-buildings-post-occupancy-2025",
+    "type": "journal",
+    "featured": false,
+    "title": {
+      "en": "Post-operation Performance Evaluation of Shipping Container Buildings in Commercial Shops",
+      "ar": "تقييم أداء مباني الحاويات في المحال التجارية لمرحلة ما بعد التشغيل"
+    },
+    "authors": [
+      "Sayed Marey Nagy",
+      "Mahmoud Taha Abulekasem"
+    ],
+    "journal": "Engineering Research Journal",
+    "year": 2025,
+    "volume": "",
+    "issue": "",
+    "pages": "",
+    "doi": "10.21608/erj.2025.339298.1220",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "Evaluates how shipping-container retail buildings perform after occupancy, as a construction approach that combines economic efficiency with reduced demand for new materials, resources and energy.",
+      "ar": "تقييم أداء مباني الحاويات التجارية بعد التشغيل، كأسلوب إنشائي يجمع بين الكفاءة الاقتصادية وتقليل الطلب على المواد والموارد والطاقة."
+    },
+    "keywords": {
+      "en": [
+        "shipping container buildings",
+        "post-occupancy evaluation",
+        "retail",
+        "recycling",
+        "sustainability"
+      ],
+      "ar": [
+        "مباني الحاويات",
+        "تقييم ما بعد التشغيل",
+        "المحال التجارية",
+        "إعادة التدوير",
+        "الاستدامة"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Global shift toward sustainability and recycling in construction.",
+        "ar": "توجه عالمي نحو الاستدامة وإعادة التدوير في البناء."
+      },
+      "method": {
+        "en": "Post-occupancy evaluation of container-based retail buildings.",
+        "ar": "تقييم ما بعد التشغيل لمباني تجارية من الحاويات."
+      },
+      "conclusion": {
+        "en": "Containers cut new-material demand while keeping economic efficiency.",
+        "ar": "الحاويات تقلل الطلب على مواد جديدة مع الحفاظ على الكفاءة الاقتصادية."
+      }
+    }
+  },
+  {
+    "id": "mcdm-renewable-energy-egypt-2024",
+    "type": "journal",
+    "topic": "energy",
+    "featured": true,
+    "title": "Integrating Multi-Criteria Decision-Making Techniques in Assessing Renewable Energy Potential: A Case Study of Egypt",
+    "authors": [
+      "Awatef Balobaid",
+      "Walaa M. Abd-Elhafiez",
+      "Sayed Marey Nagy",
+      "Doaa Trabay"
+    ],
+    "journal": "IEEE Access",
+    "year": 2024,
+    "volume": "12",
+    "issue": "",
+    "pages": "103594-103605",
+    "doi": "10.1109/ACCESS.2024.3434604",
+    "pdf": "",
+    "url": "",
+    "abstract": "Egypt’s geographic location and natural resources make it an ideal candidate for Renewable Energy (RE) projects. The government has implemented initiatives and policies to promote RE development, resulting in notable projects such as the Benban Solar Park and wind farms in the Gulf of Suez. These endeavors aim to combat climate change, reduce greenhouse gas emissions, and foster sustainable development. Multicriteria decision making techniques are increasingly favored due to their ability to accommodate diverse criteria for selecting RE sources. This paper evaluates numerous RE options in Egypt, including solar, wind, hydropower, and biomass energy, and proposes a hybrid strategy for classifying RE sources for power generation based on criteria such as finance, environment, technology, and community. The study utilizes four multicriteria decision making methods: the analytical hierarchy process, the Technique for Order Preference by Similarity to an Ideal Solution (TOPSIS), Fuzzy Technique for Order Preference by Similarity to an Ideal Solution (FTOPSIS), and fuzzy analytical hierarchy process. The key findings indicate that solar and wind energy are the most viable options for Egypt’s renewable energy strategy, with the fuzzy technique for order preference by similarity to an ideal solution method proving to be the most effective for ranking these sources by providing a comprehensive evaluation framework that aligns well with related studies. These findings have significant implications for policy and investment, as they provide a robust decision-making framework that ensures balanced consideration of financial, environmental, technological, and social factors. The study underscores the value of using advanced multicriteria decision making techniques to guide RE development in Egypt, contributing to the global effort to combat climate change.",
+    "summary": {
+      "en": "Uses multi-criteria decision-making to assess Egypt's renewable energy potential, building on its location and natural resources and projects such as the Benban Solar Park and Gulf of Suez wind farms.",
+      "ar": "يستخدم أساليب اتخاذ القرار متعدد المعايير لتقييم إمكانات الطاقة المتجددة في مصر، استنادًا إلى موقعها ومواردها الطبيعية ومشروعات مثل مجمع بنبان للطاقة الشمسية ومزارع الرياح بخليج السويس."
+    },
+    "keywords": {
+      "en": [
+        "renewable energy",
+        "multi-criteria decision-making",
+        "Egypt",
+        "solar energy",
+        "wind energy"
+      ],
+      "ar": [
+        "الطاقة المتجددة",
+        "اتخاذ القرار متعدد المعايير",
+        "مصر",
+        "الطاقة الشمسية",
+        "طاقة الرياح"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Choosing the most viable renewable energy sources for Egypt.",
+        "ar": "اختيار أنسب مصادر الطاقة المتجددة لمصر."
+      },
+      "method": {
+        "en": "Four multi-criteria methods (AHP, TOPSIS, FTOPSIS, fuzzy AHP) over finance, environment, technology and community criteria.",
+        "ar": "أربع طرق متعددة المعايير (AHP وTOPSIS وFTOPSIS وfuzzy AHP) وفق معايير مالية وبيئية وتقنية ومجتمعية."
+      },
+      "findings": [
+        {
+          "value": "4",
+          "label": {
+            "en": "decision methods compared",
+            "ar": "طرق قرار تمت مقارنتها"
+          }
+        },
+        {
+          "value": "Solar + Wind",
+          "label": {
+            "en": "most viable sources",
+            "ar": "أنسب المصادر"
+          }
+        }
+      ],
+      "conclusion": {
+        "en": "FTOPSIS ranked sources most effectively; a robust framework for policy and investment.",
+        "ar": "طريقة FTOPSIS كانت الأفضل في الترتيب، وهي إطار متين للسياسات والاستثمار."
+      }
+    }
+  },
+  {
+    "id": "nanomaterials-thermal-efficiency-envelopes-2023",
+    "type": "journal",
+    "featured": false,
+    "title": {
+      "en": "An Analytical Study of the Role of Nanomaterials in Achieving the Thermal Efficiency of Building Envelopes",
+      "ar": "دراسة تحليلية لدور مواد النانو في تحقيق الكفاءة الحرارية لأغلفة المباني"
+    },
+    "authors": [
+      "Manar Hussain",
+      "Enas Abdel Sabour",
+      "Sayed Marey Nagy"
+    ],
+    "journal": "Journal of Engineering Research",
+    "year": 2023,
+    "volume": "7",
+    "issue": "4",
+    "pages": "146-159",
+    "doi": "10.21608/erjeng.2023.325878",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "Examines how nanotechnology turns finishing materials from a mere cladding into a tool for improving the thermal efficiency of building envelopes.",
+      "ar": "يبحث كيف تحول تكنولوجيا النانو مواد التشطيب من مجرد كسوة خارجية إلى أداة لتحسين الكفاءة الحرارية لأغلفة المباني."
+    },
+    "keywords": {
+      "en": [
+        "nanomaterials",
+        "nano-architecture",
+        "thermal efficiency",
+        "building envelopes",
+        "finishing materials"
+      ],
+      "ar": [
+        "مواد النانو",
+        "العمارة النانونية",
+        "الكفاءة الحرارية",
+        "أغلفة المباني",
+        "مواد التشطيب"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Nano properties of finishing materials remain under-exploited.",
+        "ar": "خصائص النانو في مواد التشطيب لم تُستغل بعد."
+      },
+      "method": {
+        "en": "Analytical study of nanomaterials for building envelopes.",
+        "ar": "دراسة تحليلية لمواد النانو في أغلفة المباني."
+      },
+      "conclusion": {
+        "en": "Nanomaterials can raise the thermal efficiency of envelopes.",
+        "ar": "مواد النانو ترفع الكفاءة الحرارية للأغلفة."
+      }
+    }
+  },
+  {
+    "id": "nanomaterials-facades-egypt-2022",
+    "type": "conference",
+    "featured": false,
+    "title": "Nanomaterials in Facades: A Tool Towards Environmental Sustainability in Egypt",
+    "authors": [
+      "Manar Hussain",
+      "Enas Abdel Sabour",
+      "Sayed Marey Nagy"
+    ],
+    "journal": "IOP Conference Series: Earth and Environmental Science",
+    "year": 2022,
+    "volume": "1113",
+    "issue": "1",
+    "pages": "012019",
+    "doi": "10.1088/1755-1315/1113/1/012019",
+    "pdf": "",
+    "url": "",
+    "abstract": "The world is witnessing a comprehensive change for all lifestyles as a result of nanotechnology, which caused revolution in the field of finishing materials it has become one of the important tools for the architect in his buildings to achieve his ideas and strive to improve the efficiency of the energy system. To reach an integrated system for a sustainable Nano-building, Nanotechnology has provided many applications that helped the development of architecture by providing solutions for many materials, Non-structural (insulation materials - coatings - glass…) and others. The quest to improve the efficiency of the energy system in terms of rationalizing the energy consumed to cool interior spaces, in addition to improving and removing environmental pollution. Nano-thermal insulation is helping to improve the lives of millions of people in developing countries by providing them with materials with distinctive properties that help in thermal insulation of the building. Nano materials can be used in the cladding of buildings to contribute to achieve thermal comfort for users as one of the principles for sustainability “achieving economic specially in countries suffering from. The research paper sheds light on the applications of nanotechnology in the field of energy efficiency of through an analytical study for different projects cases.",
+    "summary": {
+      "en": "Shows how nanotechnology is changing finishing materials and giving architects a new tool to improve the energy efficiency of facades.",
+      "ar": "يوضح كيف تغير تكنولوجيا النانو مواد التشطيب وتمنح المعماري أداة جديدة لتحسين كفاءة الطاقة في الواجهات."
+    },
+    "keywords": {
+      "en": [
+        "nanomaterials",
+        "facades",
+        "environmental sustainability",
+        "energy efficiency",
+        "Egypt"
+      ],
+      "ar": [
+        "مواد النانو",
+        "الواجهات",
+        "الاستدامة البيئية",
+        "كفاءة الطاقة",
+        "مصر"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Nanotechnology is revolutionising finishing materials.",
+        "ar": "تكنولوجيا النانو تحدث ثورة في مواد التشطيب."
+      },
+      "method": {
+        "en": "Review of nanomaterial applications in facades.",
+        "ar": "استعراض تطبيقات مواد النانو في الواجهات."
+      },
+      "conclusion": {
+        "en": "A tool for architects to improve energy performance.",
+        "ar": "أداة للمعماري لتحسين أداء الطاقة."
+      }
+    }
+  },
+  {
+    "id": "biomimicry-innovative-criteria-2022",
+    "type": "journal",
+    "featured": false,
+    "title": "Applying Innovative Criteria to Achieve Biomimicry in Architecture",
+    "authors": [
+      "Nada Ali Hussein Mohamed",
+      "Alaa Mandour",
+      "Sayed Marey Nagy"
+    ],
+    "journal": "Engineering Research Journal",
+    "year": 2022,
+    "volume": "176",
+    "issue": "",
+    "pages": "90-109",
+    "doi": "10.21608/erj.2022.272649",
+    "pdf": "",
+    "url": "",
+    "abstract": "Since creation began, human beings was surrounded by nature and it’s the main teacher and guide for us in many parts of life, including the field of architecture, as simulating nature that means (Biomimicry) is using innovative methods to reach sustainable buildings, it’s a new science that investigates nature's greatest idea. The main objective of this paper is to abstract a set of the best standards for simulating nature to have a specific model that can be followed to reach an innovative, sustainable building that adapts to different conditions and evolve to survive and knowing the impact of these criteria to the building efficiency through presenting an international and local case-studies and applying biomimicry criteria on them then making a questionnaire to a group of specialists. and applying them to create creative and sustainable solutions for industry and research.",
+    "summary": {
+      "en": "Explores biomimicry, simulating nature's ideas, as an innovative route to sustainable buildings.",
+      "ar": "يستكشف المحاكاة الحيوية، أي محاكاة أفكار الطبيعة، كمدخل مبتكر لتحقيق مبانٍ مستدامة."
+    },
+    "keywords": {
+      "en": [
+        "biomimicry",
+        "architecture",
+        "sustainable buildings",
+        "nature-inspired design"
+      ],
+      "ar": [
+        "المحاكاة الحيوية",
+        "العمارة",
+        "المباني المستدامة",
+        "التصميم المستوحى من الطبيعة"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "How can architecture follow nature's best ideas?",
+        "ar": "كيف تتبع العمارة أفضل أفكار الطبيعة؟"
+      },
+      "method": {
+        "en": "Extract biomimicry criteria, apply them to international and local case studies, then survey specialists.",
+        "ar": "استخلاص معايير المحاكاة الحيوية وتطبيقها على حالات دراسية عالمية ومحلية ثم استطلاع آراء المتخصصين."
+      },
+      "conclusion": {
+        "en": "A model of criteria for innovative, adaptive, sustainable buildings.",
+        "ar": "نموذج معايير لمبانٍ مبتكرة ومتكيفة ومستدامة."
+      }
+    }
+  },
+  {
+    "id": "water-drainage-supply-residential-egypt-2021",
+    "type": "journal",
+    "featured": false,
+    "title": "Development of Drainage and Water Supply Systems to Reduce Water Consumption in Residential Buildings in Egypt",
+    "authors": [
+      "Sayed Marey Nagy",
+      "Mahmoud Taha Abulkasem"
+    ],
+    "journal": "Engineering Research Journal",
+    "year": 2021,
+    "volume": "170",
+    "issue": "",
+    "pages": "47-62",
+    "doi": "10.21608/erj.2021.176035",
+    "pdf": "",
+    "url": "",
+    "abstract": "The issue of water is gaining Egypt's attention in recent times, especially after the start of the Ethiopian Dam and Egypt's entry into the era of water poverty, where water is considered one of the most important natural and environmental resources. Moreover, the constant pursuit of increasing development rates, Wherever the residential building sector acquires a large proportion of water consumption between different activities. The research aims to rationalize water consumption in residential buildings by developing water supply and drainage systems responsible for distributing water within various units and spaces. Consequently, the research focuses on water treatment and the integration of water reuse techniques within residential buildings. The research studies a repeated porotype of economy housing in new cities in Egypt. The study surveyed number of users of the same levels to get the water consumption rates per unit. The research finds that water consumption can be reduced by 30.4% in residential units by modifying water supply and drainage systems design Which is reflected in the cost savings. In addition, the cost of proposed system can be returned within 2.5 years comparing to the savings cost.",
+    "summary": {
+      "en": "Addresses Egypt's growing water scarcity by developing drainage and water supply systems that cut water use in residential buildings.",
+      "ar": "يعالج تزايد ندرة المياه في مصر بتطوير نظم الصرف والإمداد المائي لخفض استهلاك المياه في المباني السكنية."
+    },
+    "keywords": {
+      "en": [
+        "water consumption",
+        "drainage systems",
+        "water supply",
+        "residential buildings",
+        "Egypt"
+      ],
+      "ar": [
+        "استهلاك المياه",
+        "نظم الصرف",
+        "الإمداد المائي",
+        "المباني السكنية",
+        "مصر"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Egypt is entering an era of water poverty; housing uses a large share of water.",
+        "ar": "مصر تدخل عصر الفقر المائي والمباني السكنية تستهلك حصة كبيرة من المياه."
+      },
+      "method": {
+        "en": "User survey on an economy-housing prototype in new cities, then redesign of water supply and drainage with treatment and reuse.",
+        "ar": "استطلاع المستخدمين في نموذج إسكان اقتصادي بالمدن الجديدة ثم إعادة تصميم الإمداد والصرف مع المعالجة وإعادة الاستخدام."
+      },
+      "findings": [
+        {
+          "value": "30.4%",
+          "label": {
+            "en": "less water use per unit",
+            "ar": "انخفاض استهلاك المياه لكل وحدة"
+          }
+        },
+        {
+          "value": "2.5 yrs",
+          "label": {
+            "en": "payback period",
+            "ar": "فترة استرداد التكلفة"
+          }
+        }
+      ],
+      "conclusion": {
+        "en": "Redesigning water systems cuts consumption and pays for itself quickly.",
+        "ar": "إعادة تصميم شبكات المياه تخفض الاستهلاك وتسترد تكلفتها سريعًا."
+      }
+    }
+  },
+  {
+    "id": "energy-rationalization-techniques-erj-2019",
+    "type": "journal",
+    "featured": false,
+    "title": "A Methodological Application of New Techniques for Rationalization of Energy Consumption in Buildings",
+    "authors": [
+      "Randa Reda Kamel",
+      "Inas Abdelsabour",
+      "Sayed Marey Nagy"
+    ],
+    "journal": "Engineering Research Journal",
+    "year": 2019,
+    "volume": "162",
+    "issue": "",
+    "pages": "138-161",
+    "doi": "10.21608/erj.2019.139810",
+    "pdf": "",
+    "url": "",
+    "abstract": "Sources of energy are the most important challenges facing the world in this century. The global interest in energy and its relation to the construction sector that consider the most energy consuming sectors, which led to a search for methods of energy conservation. Research assumes a methodology to apply the modern technology in buildings and gaining advantages of developed building materials, outer envelopes, and conserve energy systems to reduce energy waste and increase its efficiency by integrating natural and renewable energy applications. This methodology could be applied to buildings during the design phase to achieve energy rationalization.",
+    "summary": {
+      "en": "Proposes a methodology for applying modern technology in buildings to conserve energy in the construction sector, one of the most energy-consuming sectors.",
+      "ar": "يقترح منهجية لتطبيق التكنولوجيا الحديثة في المباني لترشيد الطاقة في قطاع التشييد، وهو من أكثر القطاعات استهلاكًا للطاقة."
+    },
+    "keywords": {
+      "en": [
+        "energy consumption",
+        "energy conservation",
+        "building technology",
+        "construction sector"
+      ],
+      "ar": [
+        "استهلاك الطاقة",
+        "ترشيد الطاقة",
+        "تكنولوجيا البناء",
+        "قطاع التشييد"
+      ]
+    },
+    "visual": {
+      "problem": {
+        "en": "Construction is among the most energy-consuming sectors.",
+        "ar": "التشييد من أكثر القطاعات استهلاكًا للطاقة."
+      },
+      "method": {
+        "en": "A methodology applying modern technology in buildings.",
+        "ar": "منهجية لتطبيق التكنولوجيا الحديثة في المباني."
+      },
+      "conclusion": {
+        "en": "New techniques help rationalise building energy use.",
+        "ar": "التقنيات الحديثة تساعد في ترشيد استهلاك الطاقة بالمباني."
+      }
+    }
+  },
+  {
+    "id": "sustainable-architecture-building-materials-book-2016",
+    "type": "book",
+    "featured": false,
+    "title": {
+      "en": "Towards an Integrated System for Developing the Use of Building Materials to Achieve Sustainable Architecture",
+      "ar": "نحو منظومة متكاملة لتطوير استخدام مواد البناء لتحقيق العمارة المستدامة"
+    },
+    "authors": [
+      "Sayed Marey Nagy"
+    ],
+    "journal": "",
+    "year": 2016,
+    "volume": "",
+    "issue": "",
+    "pages": "",
+    "doi": "",
+    "pdf": "",
+    "url": "",
+    "abstract": "",
+    "summary": {
+      "en": "A five-part book on developing building-material use for sustainable architecture in Egypt: sustainability concepts and global rating systems, sustainable materials and their properties, and selected international projects.",
+      "ar": "كتاب من خمسة أبواب عن تطوير استخدام مواد البناء لتحقيق العمارة المستدامة في مصر: مفاهيم الاستدامة وأنظمة التقييم العالمية، ثم المواد المستدامة وخصائصها، ثم مشروعات عالمية مختارة."
+    },
+    "keywords": {
+      "en": [
+        "sustainable architecture",
+        "building materials",
+        "sustainable materials",
+        "green rating systems"
+      ],
+      "ar": [
+        "العمارة المستدامة",
+        "مواد البناء",
+        "المواد المستدامة",
+        "أنظمة التقييم"
+      ]
+    }
+  }
+]
