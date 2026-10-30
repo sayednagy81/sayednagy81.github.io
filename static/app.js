@@ -117,8 +117,36 @@
     requestAnimationFrame(step);
   }
 
+  // ---- paper detail pop-up: a click on a title opens its abstract card; ctrl/cmd-click still opens the full page ----
+  var modal = document.getElementById("paper-modal");
+  var modalBody = modal && modal.querySelector(".modal-body");
+  function openPaper(card) {
+    var tpl = card.querySelector("template.paper-detail");
+    if (!modal || !tpl || typeof modal.showModal !== "function") return false;
+    modalBody.innerHTML = "";
+    modalBody.appendChild(tpl.content.cloneNode(true));
+    Array.prototype.forEach.call(modalBody.querySelectorAll(".va-step"), function (s, i) { s.style.setProperty("--i", i); });
+    modal.showModal();
+    modalBody.scrollTop = 0;
+    requestAnimationFrame(function () {
+      Array.prototype.forEach.call(modalBody.querySelectorAll(".va"), function (va) { va.classList.add("in"); });
+      Array.prototype.forEach.call(modalBody.querySelectorAll(".stat b"), countUp);
+    });
+    return true;
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a.open-paper");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    var card = a.closest(".paper");
+    if (card && openPaper(card)) e.preventDefault();
+  });
+  if (modal) {
+    modal.querySelector(".modal-close").addEventListener("click", function () { modal.close(); });
+    modal.addEventListener("click", function (e) { if (e.target === modal) modal.close(); });
+  }
+
   var targets = document.querySelectorAll(
-    ".metric, .paper, .pcard, section.wrap > h2, .tags, .filters, .va-full, .paper-page > h2, .paper-page > p, .paper-page pre");
+    ".metric, .paper, .pcard, section.wrap > h2, .tags, .filters, .va-full, .paper-page > h2, .paper-page > p, .paper-page pre, .timeline li, .about-grid, .lead");
   Array.prototype.forEach.call(document.querySelectorAll(".va"), function (va) {
     Array.prototype.forEach.call(va.querySelectorAll(".va-step"), function (s, i) { s.style.setProperty("--i", i); });
   });

@@ -178,6 +178,40 @@ pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;pa
 }
 @media print{.site-header,.filters,.chips-filter,.btn{display:none}}
 
+/* ---------- multi-page layout ---------- */
+.bar nav a.on{color:var(--primary);font-weight:600;box-shadow:inset 0 -2px 0 var(--brass)}
+.page-hero{background-color:var(--hero);color:#fff;padding:40px 0 34px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.page-hero h1{margin:0;font-size:2rem;padding-bottom:10px;position:relative}
+.page-hero h1::after{content:"";position:absolute;inset-inline-start:0;bottom:0;width:56px;height:3px;background:#d2b06a;border-radius:2px;animation:grow .9s .2s ease both}
+.center-row{text-align:center;margin-top:26px}
+.about-grid{display:grid;grid-template-columns:180px 1fr;gap:32px;align-items:start}
+.about-grid .photo{width:180px;height:180px;border:3px solid var(--brass)}
+.about-name{margin:0 0 4px;font-size:1.6rem}
+.about-grid .role{color:var(--muted)}
+.timeline{list-style:none;margin:0;padding:0;border-inline-start:2px solid var(--line)}
+.timeline li{position:relative;display:grid;grid-template-columns:150px 1fr;gap:16px;padding:10px 0 14px;padding-inline-start:22px}
+.timeline li::before{content:"";position:absolute;inset-inline-start:-7px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid var(--brass)}
+.tl-when{font-family:var(--serif);font-weight:700;color:var(--primary)}
+.tl-where{display:block;color:var(--muted);font-size:.9rem}
+
+/* paper detail pop-up */
+#paper-modal{border:0;padding:0;border-radius:18px;width:min(940px,calc(100vw - 24px));max-height:calc(100vh - 40px);
+  background:var(--bg);color:var(--text);box-shadow:0 24px 70px rgba(10,20,40,.35);overflow:hidden}
+#paper-modal[open]{display:flex;flex-direction:column;animation:modal-in .32s cubic-bezier(.2,.8,.2,1)}
+#paper-modal::backdrop{background:rgba(10,20,40,.55);backdrop-filter:blur(3px)}
+@keyframes modal-in{from{opacity:0;transform:translateY(18px) scale(.98)}}
+.modal-close{position:absolute;top:10px;inset-inline-end:12px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:var(--surface);color:var(--text);font-size:1.4rem;line-height:1;cursor:pointer}
+.modal-close:hover{border-color:var(--brass)}
+.modal-body{overflow:auto;padding:24px 26px 26px}
+.modal-title{font-size:1.45rem;margin:6px 48px 6px 0}
+html[dir="rtl"] .modal-title{margin:6px 0 6px 48px}
+.modal-body h3{font-size:1.05rem;margin:20px 0 6px}
+.modal-body .va-full{margin:16px 0 4px}
+.modal-abstract,.modal-title{unicode-bidi:plaintext;text-align:start}
+.modal-actions{margin-top:20px}
+
 /* ---------- motion ---------- */
 .site-header{transition:box-shadow .25s ease}
 .site-header.scrolled{box-shadow:0 4px 18px rgba(19,41,75,.1)}
@@ -216,7 +250,14 @@ pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;pa
 html[dir="rtl"] .va-full .va-step:not(:last-child)::after{animation-name:nudge-rtl}
 @keyframes nudge-rtl{50%{transform:translate(-3px,-50%)}}
 
-@media (max-width:760px){.hero-art{opacity:.13;max-width:92%;inset-inline-end:-10%}}
+@media (max-width:760px){
+  .hero-art{opacity:.13;max-width:92%;inset-inline-end:-10%}
+  .about-grid{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .about-grid .photo{width:140px;height:140px}
+  .timeline li{grid-template-columns:1fr;gap:2px}
+  .modal-body{padding:18px 16px 20px}
+  .page-hero h1{font-size:1.6rem}
+}
 
 /* visitors who ask their device for less motion get a still page */
 @media (prefers-reduced-motion:reduce){

@@ -44,7 +44,18 @@ UI = {
     "read": ("Read paper", "اقرأ البحث"),
     "pdf": ("PDF", "PDF"),
     "card": ("Download visual abstract", "تحميل الملخص المصور"),
-    "back": ("← All publications", "← كل الأبحاث"),
+    "back": ("← All publications", "→ كل الأبحاث"),
+    "home": ("Home", "الرئيسية"),
+    "publications": ("Publications", "المنشورات"),
+    "full_page": ("Full paper page", "صفحة البحث الكاملة"),
+    "all_pubs": ("All publications →", "كل المنشورات ←"),
+    "more_about": ("More about me →", "المزيد عني ←"),
+    "selected": ("Selected publications", "أبحاث مختارة"),
+    "positions": ("Academic positions", "المسار الأكاديمي"),
+    "education": ("Education", "التعليم"),
+    "find_me": ("Find my work on", "تجد أعمالي على"),
+    "contact_lead": ("For research collaboration, supervision or speaking invitations, I would be glad to hear from you.",
+                     "للتعاون البحثي أو الإشراف أو دعوات المحاضرات، يسعدني تواصلكم."),
     "featured": ("Featured", "مميز"),
     "pubs": ("Publications", "المنشورات"),
     "email": ("Email", "البريد الإلكتروني"),
@@ -367,19 +378,39 @@ def kw_chips(p, tag="button"):
     return "".join(out)
 
 
-def paper_card(p):
+def paper_detail(p, base, has_card):
+    """Content of the pop-up card shown when a paper title is clicked (copied into #paper-modal by app.js)."""
+    link = f'{base}papers/{esc(p["id"])}/'
+    card_btn = (f'<a class="btn btn-sm" href="{base}cards/{esc(p["id"])}.png" download>{ui("card")}</a>' if has_card else "")
+    # without "visual" or "image" the visual abstract already shows the summary, so don't repeat it
+    shows_summary = not (p.get("visual") or p.get("image"))
+    summary = (f'<h3>{ui("summary")}</h3><p class="lead">{bi(p["summary"])}</p>'
+               if p.get("summary") and not shows_summary else "")
+    abstract = f'<h3>{ui("abstract")}</h3><p class="modal-abstract">{bi(p["abstract"])}</p>' if p.get("abstract") else ""
+    return f'''<div class="meta"><span>{venue_line(p)}</span></div>
+<h2 class="modal-title">{bi(p["title"])}</h2>
+<p class="authors">{esc(", ".join(p.get("authors", [])))}</p>
+{visual_abstract(p, base, False)}
+{summary}{abstract}
+<h3>{ui("keywords")}</h3><div class="chips">{kw_chips(p, "span")}</div>
+<div class="actions modal-actions"><a class="btn btn-sm btn-primary" href="{link}">{ui("full_page")}</a>{link_buttons(p, base)}{card_btn}</div>'''
+
+
+def paper_card(p, base, has_card, filterable=True):
     kws = keywords(p, "en") + keywords(p, "ar")
     feat = f'<span class="badge">{ui("featured")}</span>' if p.get("featured") else ""
+    link = f'{base}papers/{esc(p["id"])}/'
     return f'''
 <article class="card paper" data-year="{esc(p.get("year", ""))}" data-search="{esc(search_blob(p))}" data-kws="{esc("|".join(normalize(k) for k in kws))}">
-  {visual_abstract(p, "", True)}
+  {visual_abstract(p, base, True)}
   <div class="card-body">
     <div class="meta">{feat}<span>{venue_line(p)}</span></div>
-    <h3><a href="papers/{esc(p["id"])}/">{bi(p["title"])}</a></h3>
+    <h3><a class="open-paper" href="{link}">{bi(p["title"])}</a></h3>
     <p class="authors">{esc(", ".join(p.get("authors", [])))}</p>
-    <div class="chips">{kw_chips(p)}</div>
-    <div class="actions"><a class="btn btn-sm btn-primary" href="papers/{esc(p["id"])}/">{ui("details")}</a>{link_buttons(p, "")}</div>
+    <div class="chips">{kw_chips(p, "button" if filterable else "span")}</div>
+    <div class="actions"><a class="btn btn-sm btn-primary open-paper" href="{link}">{ui("abstract")}</a>{link_buttons(p, base)}</div>
   </div>
+  <template class="paper-detail">{paper_detail(p, base, has_card)}</template>
 </article>'''
 
 
@@ -400,13 +431,14 @@ def bibtex(p):
 
 
 # ---------- page shell ----------
-def layout(profile, title, desc, body, base, canonical="", head_extra="", image=""):
+PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), ("contact", "contact/")]
+
+
+def layout(profile, title, desc, body, base, canonical="", head_extra="", image="", active=""):
     default_lang = profile.get("default_lang", "en")
     name_en = pick(profile["name"], "en")
-    nav = (f'<a href="{base}#about">{ui("about")}</a><a href="{base}#research">{ui("research")}</a>'
-           f'<a href="{base}#profiles">{ui("profiles")}</a>')
-    if profile.get("email"):
-        nav += f'<a href="{base}#contact">{ui("contact")}</a>'
+    nav = "".join(f'<a href="{base}{path}"{" class=on aria-current=page" if key == active else ""}>{ui(key)}</a>'
+                  for key, path in PAGES)
     can = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ""
     img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
            f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
@@ -439,6 +471,7 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
   <button id="lang-btn" class="btn btn-sm" type="button" aria-label="Language / اللغة"><span class="l-en">{esc(UI["other_lang"][0])}</span><span class="l-ar">{esc(UI["other_lang"][1])}</span></button>
 </div></header>
 {body}
+<dialog id="paper-modal" aria-label="Paper details / تفاصيل البحث"><button class="modal-close" type="button" aria-label="Close / إغلاق">×</button><div class="modal-body"></div></dialog>
 <footer class="site-footer"><div class="wrap">© {date.today().year} {bi(profile["name"])} · {ui("rights")}</div></footer>
 <script src="{base}static/app.js" defer></script>
 </body></html>'''
@@ -463,28 +496,126 @@ def hero_art():
     return f'<svg class="hero-art" viewBox="0 0 400 310" aria-hidden="true">{body}</svg>'
 
 
-def build_home(profile, papers, cards):
-    name = profile["name"]
-    initials = "".join(w[0] for w in pick(name, "en").replace("Dr.", "").split()[:2]).upper() or "?"
-    photo = (f'<img class="photo" src="{esc(profile["photo"])}" alt="{esc(pick(name, "en"))}">'
-             if profile.get("photo") else f'<div class="photo photo-initials" aria-hidden="true">{esc(initials)}</div>')
+def photo_html(profile, base):
+    name_en = pick(profile["name"], "en")
+    if profile.get("photo"):
+        return f'<img class="photo" src="{esc(ext_url(profile["photo"], base))}" alt="{esc(name_en)}">'
+    initials = "".join(w[0] for w in name_en.replace("Dr.", "").split()[:2]).upper() or "?"
+    return f'<div class="photo photo-initials" aria-hidden="true">{esc(initials)}</div>'
 
-    top_btns = ""
-    profile_cards = ""
-    same_as = []
+
+def link_html(profile):
+    """Returns (hero buttons, profile cards, sameAs urls) for the profile links."""
+    btns, cards, same_as = "", "", []
     for link in profile.get("links", []):
         label, abbr, color = PLATFORMS.get(link["platform"].lower(), (link["platform"], link["platform"][:2].title(), "#555"))
         same_as.append(link["url"])
         shown = re.sub(r"^https?://(www\.)?", "", link["url"])[:48]
         badge = f'<span class="pbadge" style="background:{color}">{esc(abbr)}</span>'
-        top_btns += f'<a class="btn" href="{esc(link["url"])}" target="_blank" rel="noopener me">{badge}{esc(label)}</a>'
-        profile_cards += (f'<a class="card pcard" href="{esc(link["url"])}" target="_blank" rel="noopener me">{badge}'
-                          f'<span><b>{esc(label)}</b><small>{esc(shown)}</small></span></a>')
+        btns += f'<a class="btn" href="{esc(link["url"])}" target="_blank" rel="noopener me">{badge}{esc(label)}</a>'
+        cards += (f'<a class="card pcard" href="{esc(link["url"])}" target="_blank" rel="noopener me">{badge}'
+                  f'<span><b>{esc(label)}</b><small>{esc(shown)}</small></span></a>')
+    return btns, cards, same_as
 
+
+def metrics_html(profile, papers):
+    extra = "".join(f'<div class="metric"><b>{esc(m["value"])}</b><span>{bi(m["label"])}</span></div>'
+                    for m in profile.get("metrics", []))
+    return f'<div class="metrics"><div class="metric"><b>{len(papers)}</b><span>{ui("pubs")}</span></div>{extra}</div>'
+
+
+def timeline(items):
+    rows = "".join(f'<li><span class="tl-when">{bi(it.get("years", ""))}</span>'
+                   f'<div><b>{bi(it.get("title", ""))}</b><span class="tl-where">{bi(it.get("place", ""))}</span></div></li>'
+                   for it in items)
+    return f'<ol class="timeline">{rows}</ol>'
+
+
+def page_hero(key):
+    return f'<section class="page-hero"><div class="wrap"><h1>{ui(key)}</h1></div></section>'
+
+
+def person_ld(profile, same_as):
+    site = profile.get("site_url", "").rstrip("/")
+    ld = {"@context": "https://schema.org", "@type": "Person", "name": pick(profile["name"], "en"),
+          "jobTitle": pick(profile.get("title", ""), "en"),
+          "affiliation": {"@type": "Organization", "name": pick(profile.get("affiliation", ""), "en")},
+          "url": site + "/", "sameAs": same_as,
+          "knowsAbout": [pick(i, "en") for i in profile.get("interests", [])]}
+    if profile.get("email"):
+        ld["email"] = profile["email"]
+    return f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+
+
+def write_page(rel, html_text):
+    d = OUT / rel
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "index.html").write_text(html_text, encoding="utf-8")
+
+
+def build_pages(profile, papers, cards):
+    """Home, About, Publications and Contact. Returns their absolute URLs for the sitemap."""
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    title_en = pick(profile.get("title", ""), "en")
+    btns, profile_cards, same_as = link_html(profile)
+    ld = person_ld(profile, same_as)
+    featured_card = next((p for p in papers if p.get("featured") and p["id"] in cards), None)
+    image = f'{site}/cards/{featured_card["id"]}.png' if featured_card else ""
+    desc = (f'{name_en}, {title_en}, {pick(profile.get("affiliation", ""), "en")}. '
+            f'{pick(profile.get("bio", ""), "en")}')[:300]
     interests = "".join(f'<li>{bi(i)}</li>' for i in profile.get("interests", []))
-    metrics = "".join(f'<div class="metric"><b>{esc(m["value"])}</b><span>{bi(m["label"])}</span></div>'
-                      for m in profile.get("metrics", []))
 
+    # Home
+    selected = [p for p in papers if p.get("featured")][:4] or papers[:4]
+    home = f'''
+<main>
+<section class="hero">{hero_art()}<div class="wrap hero-grid">
+  {photo_html(profile, "")}
+  <div>
+    <h1>{bi(profile["name"])}</h1>
+    <p class="role">{bi(profile.get("title", ""))}<br>{bi(profile.get("affiliation", ""))}</p>
+    <p class="bio">{bi(profile.get("bio", ""))}</p>
+    <div class="btn-row">{btns}</div>
+  </div>
+</div></section>
+<section class="wrap strip">
+  {metrics_html(profile, papers)}
+  <div><h2 class="h-sm">{ui("interests")}</h2><ul class="tags">{interests}</ul></div>
+  <p><a class="btn" href="about/">{ui("more_about")}</a></p>
+</section>
+<section class="wrap">
+  <h2>{ui("selected")}</h2>
+  <div class="grid">{"".join(paper_card(p, "", p["id"] in cards, False) for p in selected)}</div>
+  <p class="center-row"><a class="btn btn-primary" href="publications/">{ui("all_pubs")}</a></p>
+</section>
+</main>'''
+    write_page("", layout(profile, f"{name_en} | {title_en}", desc, home, "", site + "/", ld, image, "home"))
+
+    # About
+    career = ""
+    if profile.get("positions"):
+        career += f'<section class="wrap"><h2>{ui("positions")}</h2>{timeline(profile["positions"])}</section>'
+    if profile.get("education"):
+        career += f'<section class="wrap"><h2>{ui("education")}</h2>{timeline(profile["education"])}</section>'
+    about = f'''
+<main>
+{page_hero("about")}
+<section class="wrap about-grid">
+  {photo_html(profile, "../")}
+  <div>
+    <h2 class="about-name">{bi(profile["name"])}</h2>
+    <p class="role">{bi(profile.get("title", ""))}<br>{bi(profile.get("affiliation", ""))}</p>
+    <p class="lead">{bi(profile.get("bio", ""))}</p>
+  </div>
+</section>
+<section class="wrap">{metrics_html(profile, papers)}</section>
+{career}
+<section class="wrap"><h2>{ui("interests")}</h2><ul class="tags">{interests}</ul></section>
+</main>'''
+    write_page("about", layout(profile, f'{ui_en("about")} | {name_en}', desc, about, "../", site + "/about/", ld, image, "about"))
+
+    # Publications
     years = sorted({str(p.get("year", "")) for p in papers}, reverse=True)
     freq, label_of = {}, {}
     for p in papers:
@@ -496,32 +627,12 @@ def build_home(profile, papers, cards):
     top_kws = sorted(freq, key=lambda k: (-freq[k], k))[:20]
     kw_filter = "".join(f'<button type="button" class="chip" data-kw="{esc(k)}">{bi(label_of[k])}</button>' for k in top_kws)
     year_opts = "".join(f'<option value="{esc(y)}">{esc(y)}</option>' for y in years)
-    cards_html = "".join(paper_card(p) for p in papers)
+    cards_html = "".join(paper_card(p, "../", p["id"] in cards) for p in papers)
 
-    contact = ""
-    if profile.get("email"):
-        contact = (f'<section id="contact" class="wrap"><h2>{ui("contact")}</h2>'
-                   f'<p><a class="btn btn-primary" href="mailto:{esc(profile["email"])}">{ui("email")}: {esc(profile["email"])}</a></p></section>')
-
-    body = f'''
+    pubs = f'''
 <main>
-<section id="about" class="hero">{hero_art()}<div class="wrap hero-grid">
-  {photo}
-  <div>
-    <h1>{bi(name)}</h1>
-    <p class="role">{bi(profile.get("title", ""))}<br>{bi(profile.get("affiliation", ""))}</p>
-    <p class="bio">{bi(profile.get("bio", ""))}</p>
-    <div class="btn-row">{top_btns}</div>
-  </div>
-</div></section>
-
-<section class="wrap strip">
-  <div class="metrics"><div class="metric"><b>{len(papers)}</b><span>{ui("pubs")}</span></div>{metrics}</div>
-  <div><h2 class="h-sm">{ui("interests")}</h2><ul class="tags">{interests}</ul></div>
-</section>
-
+{page_hero("publications")}
 <section id="research" class="wrap">
-  <h2>{ui("pubs")}</h2>
   <div class="filters">
     <input id="q" type="search" class="input" placeholder="{esc(UI["search"][0])}" data-ph-en="{esc(UI["search"][0])}" data-ph-ar="{esc(UI["search"][1])}">
     <select id="year" class="input"><option value="" data-en="{esc(UI["all_years"][0])}" data-ar="{esc(UI["all_years"][1])}">{esc(UI["all_years"][0])}</option>{year_opts}</select>
@@ -531,29 +642,33 @@ def build_home(profile, papers, cards):
   <div class="grid" id="papers">{cards_html}</div>
   <p id="empty" class="muted" hidden>{ui("no_results")}</p>
 </section>
+</main>'''
+    pubs_desc = f'Publications of {name_en}: ' + "; ".join(pick(p["title"], "en") for p in papers[:6])
+    write_page("publications", layout(profile, f'{ui_en("publications")} | {name_en}', pubs_desc[:300], pubs, "../",
+                                      site + "/publications/", ld, image, "publications"))
 
-<section id="profiles" class="wrap">
-  <h2>{ui("profiles")}</h2>
+    # Contact
+    email = (f'<p><a class="btn btn-primary" href="mailto:{esc(profile["email"])}">{ui("email")}: {esc(profile["email"])}</a></p>'
+             if profile.get("email") else "")
+    contact = f'''
+<main>
+{page_hero("contact")}
+<section class="wrap">
+  <p class="lead">{ui("contact_lead")}</p>
+  {email}
+</section>
+<section class="wrap">
+  <h2>{ui("find_me")}</h2>
   <div class="pgrid">{profile_cards}</div>
 </section>
-{contact}
 </main>'''
+    write_page("contact", layout(profile, f'{ui_en("contact")} | {name_en}', desc, contact, "../", site + "/contact/", ld, image, "contact"))
 
-    site = profile.get("site_url", "").rstrip("/")
-    ld = {"@context": "https://schema.org", "@type": "Person", "name": pick(name, "en"),
-          "jobTitle": pick(profile.get("title", ""), "en"),
-          "affiliation": {"@type": "Organization", "name": pick(profile.get("affiliation", ""), "en")},
-          "url": site + "/", "sameAs": same_as,
-          "knowsAbout": [pick(i, "en") for i in profile.get("interests", [])]}
-    if profile.get("email"):
-        ld["email"] = profile["email"]
-    head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-    desc = (f'{pick(name, "en")}, {pick(profile.get("title", ""), "en")}, {pick(profile.get("affiliation", ""), "en")}. '
-            f'{pick(profile.get("bio", ""), "en")}')[:300]
-    title = f'{pick(name, "en")} | {pick(profile.get("title", ""), "en")}'
-    featured = next((p for p in papers if p.get("featured") and p["id"] in cards), None)
-    image = f'{site}/cards/{featured["id"]}.png' if featured else ""
-    (OUT / "index.html").write_text(layout(profile, title, desc, body, "", site + "/", head, image), encoding="utf-8")
+    return [site + "/" + path for _, path in PAGES]
+
+
+def ui_en(key):
+    return UI[key][0]
 
 
 def build_paper(profile, p, has_card):
@@ -606,10 +721,11 @@ def build_paper(profile, p, has_card):
 
     card_btn = (f'<a class="btn btn-sm" href="{base}cards/{esc(p["id"])}.png" download>{ui("card")}</a>' if has_card else "")
     abstract_block = f'<h2>{ui("abstract")}</h2><p>{bi(p["abstract"])}</p>' if p.get("abstract") else ""
-    summary_block = f'<h2>{ui("summary")}</h2><p class="lead">{bi(p["summary"])}</p>' if p.get("summary") else ""
+    summary_block = (f'<h2>{ui("summary")}</h2><p class="lead">{bi(p["summary"])}</p>'
+                     if p.get("summary") and (p.get("visual") or p.get("image")) else "")
     body = f'''
 <main class="wrap paper-page">
-  <p><a href="{base}#research">{ui("back")}</a></p>
+  <p><a href="{base}publications/">{ui("back")}</a></p>
   <div class="meta"><span>{venue_line(p)}</span></div>
   <h1>{bi(p["title"])}</h1>
   <p class="authors">{esc(", ".join(authors))}</p>
@@ -624,7 +740,7 @@ def build_paper(profile, p, has_card):
 </main>'''
     image = f'{site}/cards/{p["id"]}.png' if has_card else ""
     page = layout(profile, f'{title_en} | {pick(profile["name"], "en")}',
-                  (pick(p.get("summary", ""), "en") or abstract_en)[:300], body, base, url, head, image)
+                  (pick(p.get("summary", ""), "en") or abstract_en)[:300], body, base, url, head, image, "publications")
     d = OUT / "papers" / p["id"]
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(page, encoding="utf-8")
@@ -662,12 +778,12 @@ def main():
         shutil.copytree(ROOT / "root", OUT, dirs_exist_ok=True)
 
     cards = set() if "--no-cards" in sys.argv else build_cards(profile, papers)
-    build_home(profile, papers, cards)
-    urls = [build_paper(profile, p, p["id"] in cards) for p in papers]
+    urls = build_pages(profile, papers, cards)
+    urls += [build_paper(profile, p, p["id"] in cards) for p in papers]
 
     site = profile.get("site_url", "").rstrip("/")
     today = date.today().isoformat()
-    sm = "".join(f"<url><loc>{esc(u)}</loc><lastmod>{today}</lastmod></url>" for u in [site + "/"] + urls)
+    sm = "".join(f"<url><loc>{esc(u)}</loc><lastmod>{today}</lastmod></url>" for u in urls)
     (OUT / "sitemap.xml").write_text(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>',
         encoding="utf-8")

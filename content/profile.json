@@ -23,6 +23,18 @@
     { "en": "Biomimicry in Architecture",      "ar": "المحاكاة الحيوية في العمارة" }
   ],
 
+  "positions": [
+    { "years": { "en": "2017 – present", "ar": "2017 – حتى الآن" }, "title": { "en": "Lecturer of Architectural Engineering", "ar": "مدرس الهندسة المعمارية" },
+      "place": { "en": "Faculty of Engineering – Mataria, Helwan University, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة حلوان، مصر" } },
+    { "years": "2012 – 2019", "title": { "en": "Lecturer", "ar": "محاضر" },
+      "place": { "en": "Department of Architecture Engineering, Jazan University, Saudi Arabia", "ar": "قسم الهندسة المعمارية، جامعة جازان، المملكة العربية السعودية" } }
+  ],
+
+  "education": [
+    { "years": "2016", "title": { "en": "PhD in Architectural Engineering", "ar": "دكتوراه في الهندسة المعمارية" },
+      "place": { "en": "Capital University (Helwan University), Egypt", "ar": "جامعة العاصمة (جامعة حلوان)، مصر" } }
+  ],
+
   "metrics": [
     { "value": "27",    "label": { "en": "Citations (Google Scholar)", "ar": "الاستشهادات (Google Scholar)" } },
     { "value": "2",     "label": { "en": "h-index (Google Scholar)",  "ar": "معامل h (Google Scholar)" } },
