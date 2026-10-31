@@ -47,6 +47,10 @@ UI = {
     "search_ph": ("Search papers, videos, articles…", "ابحث في الأبحاث والفيديوهات والمقالات…"),
     "search_hint": ("↑↓ to move · Enter to open · Esc to close", "↑↓ للتنقل · Enter للفتح · Esc للإغلاق"),
     "tools": ("Tools", "أدوات"),
+    "quiz": ("Test yourself", "اختبر نفسك"),
+    "questions": ("questions", "أسئلة"),
+    "quiz_lead": ("Lessons with a quiz button have a short test built from the video, with the answer explained after each question.",
+                  "الدروس التي عليها زر «اختبر نفسك» لها اختبار قصير مأخوذ من الفيديو، مع شرح الإجابة بعد كل سؤال."),
     "copy": ("Copy", "نسخ"),
     "copied": ("Copied", "تم النسخ"),
     "read": ("Read paper", "اقرأ البحث"),
@@ -599,6 +603,7 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 </div></header>
 {body}
 <dialog id="paper-modal" aria-label="Paper details / تفاصيل البحث"><button class="modal-close" type="button" aria-label="Close / إغلاق">×</button><div class="modal-body"></div></dialog>
+<dialog id="quiz-modal" aria-label="Quiz / اختبار"><button class="modal-close" type="button" aria-label="Close / إغلاق">×</button><div class="quiz-body"></div></dialog>
 <dialog id="site-search" aria-label="Search / بحث"><div class="ss-box">
   <input id="ss-q" class="input" type="search" autocomplete="off" placeholder="{esc(UI["search_ph"][0])}" data-ph-en="{esc(UI["search_ph"][0])}" data-ph-ar="{esc(UI["search_ph"][1])}" aria-controls="ss-list">
   <ul id="ss-list" role="listbox"></ul>
@@ -806,6 +811,23 @@ def ui_en(key):
 
 # ---------- videos & articles ----------
 VIDEOS, ARTICLES = [], []  # filled by main() from the YouTube and blog feeds
+QUIZZES = {}  # video id -> questions, from content/quizzes.json
+
+
+def load_quizzes():
+    """content/quizzes.json: {"<video id>": [{"q", "options", "answer", "explain"}, ...]}, checked so a typo fails clearly."""
+    path = ROOT / "content" / "quizzes.json"
+    data = load_json(path) if path.exists() else {}
+    for vid, qs in data.items():
+        for i, q in enumerate(qs, 1):
+            where = f'quizzes.json, video {vid}, question {i} / السؤال {i}'
+            opts = q.get("options", [])
+            if not q.get("q") or len(opts) < 2:
+                fail(f'{where}: needs "q" and at least 2 "options" / يلزم نص السؤال وخياران على الأقل')
+            if not isinstance(q.get("answer"), int) or not 0 <= q["answer"] < len(opts):
+                fail(f'{where}: "answer" must be the number of the right option, counting from 0 / '
+                     f'"answer" رقم الخيار الصحيح بدءًا من 0')
+    return data
 
 
 def channel_url(profile):
@@ -842,6 +864,9 @@ def video_card(v):
         tags = (f'<div class="chips vtags"><span class="l-en">{" ".join(f"<span class=chip>{esc(k)}</span>" for k in en)}</span>'
                 f'<span class="l-ar">{" ".join(f"<span class=chip>{esc(k)}</span>" for k in ar)}</span></div>')
     views = f'<span>{v["views"]:,} {ui("views")}</span>' if v.get("views") else ""
+    n = len(QUIZZES.get(v["id"], []))
+    quiz = (f'<div class="actions"><button type="button" class="btn btn-sm btn-primary quiz-open" data-quiz="{vid}">'
+            f'{ui("quiz")} · {n} {ui("questions")}<span class="quiz-best" hidden></span></button></div>' if n else "")
     return f'''
 <article class="card vcard">
   <button type="button" class="vthumb" data-yt="{vid}" aria-label="Play: {esc(title_en)}">
@@ -852,6 +877,7 @@ def video_card(v):
     <h3><a href="https://www.youtube.com/watch?v={vid}" target="_blank" rel="noopener">{bi(v["title_bi"])}</a></h3>
     <p class="vdesc">{bi(v["summary"])}</p>
     {tags}
+    {quiz}
   </div>
 </article>'''
 
@@ -905,7 +931,7 @@ def build_media_pages(profile):
         body = f'''
 <main>
 {page_hero("videos")}
-<section class="wrap"><p class="lead">{ui("videos_lead")}</p><p>{sub}</p><div class="vgrid">{grid}</div></section>
+<section class="wrap"><p class="lead">{ui("videos_lead")}</p>{f'<p class="muted">{ui("quiz_lead")}</p>' if QUIZZES else ""}<p>{sub}</p><div class="vgrid">{grid}</div></section>
 </main>'''
         head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
         write_page("videos", layout(profile, f'{ui_en("videos")} | {name_en}', UI["videos_lead"][0], body, "../",
@@ -1156,8 +1182,12 @@ def main():
         shutil.copytree(ROOT / "root", OUT, dirs_exist_ok=True)
 
     cards = set() if "--no-cards" in sys.argv else build_cards(profile, papers)
-    global VIDEOS, ARTICLES
+    global VIDEOS, ARTICLES, QUIZZES
+    QUIZZES = load_quizzes()
     VIDEOS = load_videos(profile)
+    shown = {v["id"] for v in VIDEOS}
+    (OUT / "quizzes.json").write_text(json.dumps({k: q for k, q in QUIZZES.items() if k in shown},
+                                                 ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     ARTICLES = feeds.blog_articles(profile.get("blog_feed", ""))
     NAV[:] = [(k, p) for k, p in PAGES
               if not (k == "videos" and not profile.get("youtube_channel_id"))

@@ -359,3 +359,31 @@ html[dir="rtl"] #ss-list li[aria-selected="true"] a,html[dir="rtl"] #ss-list li 
 .calc-checks .warn{border-color:color-mix(in srgb,#c0392b 45%,var(--line))}
 .calc-note{margin-top:14px;max-width:90ch}
 @media (max-width:760px){.calc{grid-template-columns:1fr}.st-lbl{font-size:21px}}
+
+/* ---------- video quizzes ---------- */
+.quiz-best{direction:ltr;unicode-bidi:isolate;margin-inline-start:6px;padding:0 6px;border-radius:6px;background:rgba(255,255,255,.22);font-size:.75rem}
+#quiz-modal{border:0;padding:0;border-radius:18px;width:min(680px,calc(100vw - 24px));max-height:calc(100vh - 40px);
+  background:var(--bg);color:var(--text);box-shadow:0 24px 70px rgba(10,20,40,.35)}
+#quiz-modal[open]{display:flex;flex-direction:column;animation:modal-in .3s cubic-bezier(.2,.8,.2,1)}
+#quiz-modal::backdrop{background:rgba(10,20,40,.55);backdrop-filter:blur(3px)}
+.quiz-body{overflow:auto;padding:22px 24px 24px}
+.quiz-title{margin:0 44px 10px 0;font-weight:600;color:var(--muted);font-size:.9rem;unicode-bidi:plaintext;text-align:start}
+html[dir="rtl"] .quiz-title{margin:0 0 10px 44px}
+.quiz-progress{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.quiz-progress span{display:block;height:100%;background:var(--brass);transition:width .4s ease}
+.quiz-q{font-size:1.2rem;margin:6px 0 14px}
+.quiz-opts{display:grid;gap:8px}
+.quiz-opt{font:inherit;text-align:start;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;
+  transition:border-color .15s ease,background-color .15s ease,transform .15s ease}
+.quiz-opt:hover:not(:disabled){border-color:var(--brass);transform:translateY(-1px)}
+.quiz-opt:disabled{cursor:default}
+.quiz-opt.right{border-color:#2d7a46;background:color-mix(in srgb,#2d7a46 14%,var(--surface))}
+.quiz-opt.wrong{border-color:#c0392b;background:color-mix(in srgb,#c0392b 12%,var(--surface))}
+.quiz-opt.right::after{content:" ✓";color:#2d7a46;font-weight:700}
+.quiz-feedback{margin-top:14px;padding:12px 14px;border-radius:12px;border-inline-start:4px solid #2d7a46;background:var(--surface)}
+.quiz-feedback.no{border-inline-start-color:#c0392b}
+.quiz-feedback p{margin:6px 0 10px;font-size:.93rem}
+.quiz-result{text-align:center;padding:18px 0 6px}
+.quiz-result b{direction:ltr;display:block;font-family:var(--serif);font-size:2.6rem;color:var(--primary)}
+.quiz-result p{margin:4px 0 0}
+@media (max-width:760px){.quiz-body{padding:18px 16px 20px}}

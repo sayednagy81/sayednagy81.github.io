@@ -251,6 +251,114 @@
     t.replaceWith(f);
   });
 
+  // ---- video quizzes: questions from quizzes.json, options shuffled each try, best score kept on this device ----
+  var qm = document.getElementById("quiz-modal");
+  var qBody = qm && qm.querySelector(".quiz-body");
+  var quizzes = null, quiz = null;
+  function bil(v) {
+    if (typeof v === "string") return esc(v);
+    return '<span class="l-en" lang="en">' + esc(v.en || v.ar) + '</span><span class="l-ar" lang="ar">' + esc(v.ar || v.en) + "</span>";
+  }
+  function words(en, ar) { return bil({ en: en, ar: ar }); }
+  function bestKey(id) { return "quiz-best:" + id; }
+  function showBest() {
+    Array.prototype.forEach.call(document.querySelectorAll(".quiz-open"), function (b) {
+      var best = null;
+      try { best = localStorage.getItem(bestKey(b.getAttribute("data-quiz"))); } catch (e) {}
+      var tag = b.querySelector(".quiz-best");
+      if (best && tag) { tag.hidden = false; tag.textContent = "✓ " + best; }
+    });
+  }
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function askQuestion() {
+    var q = quiz.items[quiz.i], n = quiz.items.length;
+    var order = shuffle(q.options.map(function (_, k) { return k; }));
+    qBody.innerHTML =
+      '<p class="quiz-title" dir="auto">' + bil(quiz.title) + "</p>" +
+      '<div class="quiz-progress" aria-hidden="true"><span style="width:' + (quiz.i / n * 100) + '%"></span></div>' +
+      '<p class="muted">' + words("Question ", "السؤال ") + '<bdi dir="ltr">' + (quiz.i + 1) + " / " + n + "</bdi></p>" +
+      '<h3 class="quiz-q">' + bil(q.q) + "</h3>" +
+      '<div class="quiz-opts">' + order.map(function (k) {
+        return '<button type="button" class="quiz-opt" data-k="' + k + '">' + bil(q.options[k]) + "</button>";
+      }).join("") + "</div>" +
+      '<div class="quiz-feedback" hidden></div>';
+    var first = qBody.querySelector(".quiz-opt");
+    if (first) first.focus();
+  }
+  function answer(btn) {
+    var q = quiz.items[quiz.i], k = parseInt(btn.getAttribute("data-k"), 10), right = k === q.answer;
+    if (right) quiz.score++;
+    Array.prototype.forEach.call(qBody.querySelectorAll(".quiz-opt"), function (b) {
+      b.disabled = true;
+      var bk = parseInt(b.getAttribute("data-k"), 10);
+      if (bk === q.answer) b.classList.add("right");
+      else if (b === btn) b.classList.add("wrong");
+    });
+    var last = quiz.i === quiz.items.length - 1;
+    var fb = qBody.querySelector(".quiz-feedback");
+    fb.hidden = false;
+    fb.className = "quiz-feedback " + (right ? "ok" : "no");
+    fb.innerHTML = "<b>" + (right ? words("Correct ✓", "إجابة صحيحة ✓") : words("Not quite", "إجابة غير صحيحة")) + "</b>" +
+      (q.explain ? "<p>" + bil(q.explain) + "</p>" : "") +
+      '<button type="button" class="btn btn-primary quiz-next">' + (last ? words("See my result", "اعرض نتيجتي") : words("Next question", "السؤال التالي")) + "</button>";
+    fb.querySelector(".quiz-next").focus();
+  }
+  function finish() {
+    var n = quiz.items.length, s = quiz.score, pct = s / n;
+    try {
+      var old = localStorage.getItem(bestKey(quiz.id));
+      if (!old || parseInt(old, 10) < s) localStorage.setItem(bestKey(quiz.id), s + "/" + n);
+    } catch (e) {}
+    showBest();
+    var msg = pct === 1 ? words("Excellent, full marks!", "ممتاز، الدرجة النهائية!") :
+      pct >= 0.6 ? words("Good work. Rewatch the parts you missed.", "أحسنت. راجع في الفيديو الأجزاء التي أخطأت فيها.") :
+      words("Watch the lesson again, then retry.", "شاهد الدرس مرة أخرى ثم أعد المحاولة.");
+    qBody.innerHTML =
+      '<p class="quiz-title" dir="auto">' + bil(quiz.title) + "</p>" +
+      '<div class="quiz-progress" aria-hidden="true"><span style="width:100%"></span></div>' +
+      '<div class="quiz-result"><b>' + s + " / " + n + "</b><p>" + msg + "</p></div>" +
+      '<div class="actions"><button type="button" class="btn btn-primary quiz-again">' + words("Try again", "أعد المحاولة") + "</button>" +
+      '<a class="btn" href="https://www.youtube.com/watch?v=' + encodeURIComponent(quiz.id) + '" target="_blank" rel="noopener">' + words("Watch on YouTube", "شاهد على يوتيوب") + "</a></div>";
+  }
+  function startQuiz(id, title) {
+    quiz = { id: id, title: title, items: quizzes[id] || [], i: 0, score: 0 };
+    if (!quiz.items.length) return;
+    askQuestion();
+    if (!qm.open) qm.showModal();
+  }
+  if (qm) {
+    document.addEventListener("click", function (e) {
+      var open = e.target.closest && e.target.closest(".quiz-open");
+      if (open) {
+        if (typeof qm.showModal !== "function") return;
+        var card = open.closest(".vcard"), h = card && card.querySelector("h3 a");
+        var title = { en: "", ar: "" };
+        if (h) {
+          var en = h.querySelector(".l-en"), ar = h.querySelector(".l-ar");
+          title = en ? { en: en.textContent, ar: ar.textContent } : h.textContent;
+        }
+        var id = open.getAttribute("data-quiz");
+        if (quizzes) { startQuiz(id, title); return; }
+        fetch(base + "quizzes.json").then(function (r) { return r.json(); })
+          .then(function (d) { quizzes = d; startQuiz(id, title); }, function () {});
+        return;
+      }
+      if (!qm.open) return;
+      var opt = e.target.closest(".quiz-opt");
+      if (opt && !opt.disabled) { answer(opt); return; }
+      if (e.target.closest(".quiz-next")) {
+        if (quiz.i < quiz.items.length - 1) { quiz.i++; askQuestion(); } else finish();
+        return;
+      }
+      if (e.target.closest(".quiz-again")) { quiz.i = 0; quiz.score = 0; askQuestion(); return; }
+      if (e.target === qm || e.target.closest(".modal-close")) qm.close();
+    });
+    showBest();
+  }
+
   // ---- paper detail pop-up: a click on a title opens its abstract card; ctrl/cmd-click still opens the full page ----
   var modal = document.getElementById("paper-modal");
   var modalBody = modal && modal.querySelector(".modal-body");

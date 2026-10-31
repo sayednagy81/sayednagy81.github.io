@@ -1,0 +1,200 @@
+{
+  "hEQV4EySjM4": [
+    {
+      "q": {"en": "By roughly how much can a Passive House cut the energy used for heating and cooling?", "ar": "بنسبة تقريبية كم يمكن أن يخفّض البيت الموفر للطاقة (Passive House) استهلاك التدفئة والتبريد؟"},
+      "options": [{"en": "About 30%", "ar": "حوالي 30%"}, {"en": "About 50%", "ar": "حوالي 50%"}, {"en": "Up to 90%", "ar": "حتى 90%"}, {"en": "100%, it needs no energy", "ar": "100%، فلا يحتاج طاقة إطلاقًا"}],
+      "answer": 2,
+      "explain": {"en": "The video centres on savings of up to 90% in heating and cooling energy, the two largest loads in a home.", "ar": "يدور الفيديو حول توفير يصل إلى 90% في طاقة التدفئة والتبريد، وهما أكبر استهلاك في أي بيت."}
+    },
+    {
+      "q": {"en": "Where and when did the Passive House standard begin?", "ar": "أين ومتى بدأ معيار البيت الموفر للطاقة (Passive House)؟"},
+      "options": [{"en": "Germany, 1996", "ar": "ألمانيا، 1996"}, {"en": "Britain, 2006", "ar": "بريطانيا، 2006"}, {"en": "USA, 1986", "ar": "الولايات المتحدة، 1986"}, {"en": "Sweden, 2010", "ar": "السويد، 2010"}],
+      "answer": 0,
+      "explain": {"en": "The term is German and the approach started in Germany in 1996.", "ar": "المصطلح ألماني، وبدأ هذا الأسلوب في ألمانيا سنة 1996."}
+    },
+    {
+      "q": {"en": "The video compares a thermal bridge to an open metal zip on a fur jacket. Which is an example of a thermal bridge?", "ar": "شبّه الفيديو الجسر الحراري بسوستة معدنية مفتوحة في جاكيت فرو. أيٌّ مما يلي مثال على الجسر الحراري؟"},
+      "options": [{"en": "A thick continuous insulation layer", "ar": "طبقة عزل سميكة ومتصلة"}, {"en": "A concrete column or building corner that lets heat escape", "ar": "عمود خرساني أو ركن في المبنى يُسرّب الحرارة للخارج"}, {"en": "A triple-glazed window", "ar": "شباك ثلاثي الألواح"}, {"en": "Sheep's wool insulation", "ar": "عزل من صوف الخراف"}],
+      "answer": 1,
+      "explain": {"en": "Concrete columns and corners conduct heat out easily; the design closes every such 'zip'.", "ar": "الأعمدة الخرسانية والأركان توصل الحرارة للخارج بسهولة، والتصميم يغلق كل هذه «السوست»."}
+    },
+    {
+      "q": {"en": "Which façade gets the windows that let the most solar heat in?", "ar": "في أي واجهة توضع الشبابيك التي تسمح بدخول أكبر قدر من حرارة الشمس؟"},
+      "options": [{"en": "North", "ar": "الشمالية"}, {"en": "East", "ar": "الشرقية"}, {"en": "South", "ar": "الجنوبية"}, {"en": "West", "ar": "الغربية"}],
+      "answer": 2,
+      "explain": {"en": "South-facing windows capture the warm winter sun; east and west get windows that block excess summer heat.", "ar": "الشبابيك الجنوبية تستفيد من شمس الشتاء الدافئة، أما الشرقية والغربية فتوضع فيها شبابيك تمنع حرارة الصيف الزائدة."}
+    },
+    {
+      "q": {"en": "If the house is airtight, how does it get fresh air without wasting energy?", "ar": "إذا كان البيت محكم الغلق، فكيف يتجدد هواؤه دون إهدار الطاقة؟"},
+      "options": [{"en": "By opening windows every hour", "ar": "بفتح الشبابيك كل ساعة"}, {"en": "Mechanical ventilation that passes the heat of outgoing air to the incoming air", "ar": "تهوية ميكانيكية تنقل حرارة الهواء الخارج إلى الهواء الداخل"}, {"en": "Leaving small gaps around doors", "ar": "ترك فتحات صغيرة حول الأبواب"}, {"en": "Ceiling fans only", "ar": "مراوح السقف فقط"}],
+      "answer": 1,
+      "explain": {"en": "The ventilation system is the 'lungs' of the house: it recovers heat (or coolness) from the stale air before expelling it.", "ar": "نظام التهوية هو «رئة البيت»: يأخذ الحرارة أو البرودة من الهواء القديم قبل طرده ويعطيها للهواء الجديد."}
+    },
+    {
+      "q": {"en": "In the video's chart of yearly heating energy, an old leaky house needs about 300 units and a good modern house about 150. How much does a Passive House need?", "ar": "في رسم الفيديو لطاقة التدفئة السنوية، يحتاج البيت القديم حوالي 300 وحدة والبيت الحديث الجيد حوالي 150. كم يحتاج البيت الموفر للطاقة؟"},
+      "options": [{"en": "100", "ar": "100"}, {"en": "75", "ar": "75"}, {"en": "50", "ar": "50"}, {"en": "15", "ar": "15"}],
+      "answer": 3,
+      "explain": {"en": "Only 15 units: a drop from 300 to 15.", "ar": "15 وحدة فقط، أي من 300 إلى 15."}
+    }
+  ],
+  "rTz714PAkSM": [
+    {
+      "q": {"en": "A 10 W lamp gives 1000 lumens. What is its efficacy?", "ar": "لمبة قدرتها 10 وات وتعطي 1000 لومن. كم كفاءتها؟"},
+      "options": [{"en": "10 lm/W", "ar": "10 لومن/وات"}, {"en": "100 lm/W", "ar": "100 لومن/وات"}, {"en": "1000 lm/W", "ar": "1000 لومن/وات"}, {"en": "0.01 lm/W", "ar": "0.01 لومن/وات"}],
+      "answer": 1,
+      "explain": {"en": "Efficacy = lumens ÷ watts = 1000 ÷ 10 = 100 lumens per watt.", "ar": "الكفاءة = اللومن ÷ الوات = 1000 ÷ 10 = 100 لومن لكل وات."}
+    },
+    {
+      "q": {"en": "Which lamp type is the most efficient in the lecture's chart?", "ar": "أي نوع من اللمبات هو الأعلى كفاءة في رسم المحاضرة؟"},
+      "options": [{"en": "Incandescent", "ar": "المتوهجة"}, {"en": "Mercury", "ar": "الزئبق"}, {"en": "LED, about 95–120 lm/W", "ar": "الليد، حوالي 95–120 لومن/وات"}, {"en": "Compact fluorescent", "ar": "الفلورسنت المدمجة"}],
+      "answer": 2,
+      "explain": {"en": "LED gives about 95–120 lumens per watt, which is why it dominates today.", "ar": "الليد يعطي حوالي 95–120 لومن لكل وات، ولذلك يغلب استخدامه حاليًا."}
+    },
+    {
+      "q": {"en": "What is the standard size of a gypsum board sheet?", "ar": "ما المقاس القياسي للوح الجبس بورد؟"},
+      "options": [{"en": "60 × 60 cm", "ar": "60 × 60 سم"}, {"en": "60 × 120 cm", "ar": "60 × 120 سم"}, {"en": "122 × 244 cm", "ar": "122 × 244 سم"}, {"en": "100 × 300 cm", "ar": "100 × 300 سم"}],
+      "answer": 2,
+      "explain": {"en": "The board is 122 × 244 cm (about 120 × 240): its length is twice its width, and the framing follows this module. 60 × 60 and 60 × 120 are ceiling-tile sizes.", "ar": "اللوح 122 × 244 سم (حوالي 120 × 240)، طوله ضعف عرضه، والشاسيه يُصمَّم على هذا الموديول. أما 60 × 60 و60 × 120 فمقاسات البلاطات."}
+    },
+    {
+      "q": {"en": "What is a gypsum board made of?", "ar": "مِمَّ يتكون لوح الجبس بورد؟"},
+      "options": [{"en": "A gypsum core between two layers of cardboard", "ar": "جبس في المنتصف بين طبقتين من الكرتون"}, {"en": "Solid aluminium", "ar": "ألومنيوم مصمت"}, {"en": "Pressed wood fibres", "ar": "ألياف خشب مضغوطة"}, {"en": "Polycarbonate", "ar": "بولي كربونيت"}],
+      "answer": 0,
+      "explain": {"en": "Gypsum in the middle, cardboard on both faces, sometimes with a vinyl finish.", "ar": "جبس في المنتصف وكرتون على الوجهين، وأحيانًا طبقة فينيل من الخارج."}
+    },
+    {
+      "q": {"en": "In the gypsum board ceiling frame shown, what are the spacings?", "ar": "في شاسيه سقف الجبس بورد الذي شُرح، ما المسافات بين القطاعات؟"},
+      "options": [{"en": "C channels every 120 cm, omega profiles every 60 cm", "ar": "قطاعات C كل 120 سم، وقطاعات أوميجا كل 60 سم"}, {"en": "All profiles every 30 cm", "ar": "كل القطاعات كل 30 سم"}, {"en": "C channels every 60 cm, omega every 240 cm", "ar": "قطاعات C كل 60 سم، والأوميجا كل 240 سم"}, {"en": "Hangers only, no profiles", "ar": "تعليقات فقط بلا قطاعات"}],
+      "answer": 0,
+      "explain": {"en": "The C channels sit at 120 cm and the omega profiles, to which the boards are fixed, at 60 cm, joined by clips and hung from the slab.", "ar": "قطاعات C كل 120 سم، والأوميجا التي تُثبت فيها الألواح كل 60 سم، وبينهما كليبس، والكل معلق في السقف."}
+    },
+    {
+      "q": {"en": "Why must ceiling tiles in public buildings resist fire spread?", "ar": "لماذا يجب أن تقاوم بلاطات الأسقف في المباني العامة انتشار الحريق؟"},
+      "options": [{"en": "Because they are cheaper", "ar": "لأنها أرخص"}, {"en": "Many tiles contain polymers that give off toxic gases and can spread fire", "ar": "لأن كثيرًا منها يحتوي بوليمرات تُطلق غازات سامة وقد تساعد على انتشار الحريق"}, {"en": "To improve lighting", "ar": "لتحسين الإضاءة"}, {"en": "Only for appearance", "ar": "للشكل فقط"}],
+      "answer": 1,
+      "explain": {"en": "Plastic or polymer materials burn into toxic gases that harm users first, and can help fire spread.", "ar": "المواد البلاستيكية أو البوليمرات تحترق وتنتج غازات سامة تضر المستخدمين أولًا، وقد تساعد على انتشار الحريق."}
+    },
+    {
+      "q": {"en": "What does the perforation percentage of a ceiling tile (for example 21% or 11%) mainly affect, besides appearance?", "ar": "إلى جانب الشكل، علامَ تؤثر أساسًا نسبة تخريم بلاطة السقف (مثل 21% أو 11%)؟"},
+      "options": [{"en": "Sound absorption", "ar": "امتصاص الصوت"}, {"en": "Tile weight only", "ar": "وزن البلاطة فقط"}, {"en": "Electrical safety", "ar": "الأمان الكهربائي"}, {"en": "Fixing speed", "ar": "سرعة التركيب"}],
+      "answer": 0,
+      "explain": {"en": "The amount of perforation is linked to the tile's sound absorption factor.", "ar": "كمية التخريم مرتبطة بمعامل امتصاص البلاطة للصوت."}
+    }
+  ],
+  "yxMIyeGLmlI": [
+    {
+      "q": {"en": "On the lighting plan, a switch symbol drawn with two strokes means…", "ar": "في لوحة الإضاءة، رمز المفتاح المرسوم بشرطتين يعني…"},
+      "options": [{"en": "A one-circuit switch", "ar": "مفتاح خط واحد"}, {"en": "A two-circuit switch", "ar": "مفتاح خطين"}, {"en": "A socket outlet", "ar": "بريزة"}, {"en": "A distribution board", "ar": "لوحة توزيع"}],
+      "answer": 1,
+      "explain": {"en": "One stroke is a one-circuit switch; two strokes is a two-circuit switch, e.g. to light a chandelier in two groups.", "ar": "شرطة واحدة مفتاح خط واحد، وشرطتان مفتاح خطين، مثلًا لإنارة نجفة على مجموعتين."}
+    },
+    {
+      "q": {"en": "What is a two-way (deviator) switch used for?", "ar": "فيمَ يُستخدم المفتاح الدفياتير؟"},
+      "options": [{"en": "Controlling the same light from two places, e.g. corridors and large spaces", "ar": "التحكم في نفس الإضاءة من مكانين، مثل الطرقات والفراغات الكبيرة"}, {"en": "Powering the washing machine", "ar": "تشغيل الغسالة"}, {"en": "Dimming the light", "ar": "تخفيت الإضاءة"}, {"en": "Connecting the phone line", "ar": "توصيل خط التليفون"}],
+      "answer": 0,
+      "explain": {"en": "You can switch the light on entering and off from the other end without walking back.", "ar": "تنير الإضاءة عند دخولك وتطفئها من الطرف الآخر دون أن تعود."}
+    },
+    {
+      "q": {"en": "In a reflected (looking-up) ceiling plan, a dashed line around a ceiling feature usually shows…", "ar": "في مسقط السقف المنعكس (Looking-up plan)، الخط المتقطع حول تشكيل في السقف يدل غالبًا على…"},
+      "options": [{"en": "Furniture below", "ar": "فرش أسفله"}, {"en": "A hidden cove for indirect lighting", "ar": "بيت نور مخفي لإضاءة غير مباشرة"}, {"en": "A structural beam", "ar": "كمرة إنشائية"}, {"en": "The cutting plane", "ar": "خط القطع"}],
+      "answer": 1,
+      "explain": {"en": "A dashed line is a hidden line inside the ceiling, so it marks a light cove with indirect lighting.", "ar": "الخط المتقطع خط مخفي داخل السقف، فيدل على بيت نور بإضاءة غير مباشرة."}
+    },
+    {
+      "q": {"en": "In the ceiling plan, a level of +25 means…", "ar": "في لوحة السقف، المنسوب ‎+25 يعني…"},
+      "options": [{"en": "25 cm above the floor", "ar": "25 سم فوق الأرضية"}, {"en": "25 cm below the concrete slab (level 0)", "ar": "25 سم أسفل بلاطة الخرسانة (المنسوب صفر)"}, {"en": "25 cm above the slab", "ar": "25 سم فوق البلاطة"}, {"en": "The room is 25 m long", "ar": "طول الغرفة 25 م"}],
+      "answer": 1,
+      "explain": {"en": "In a looking-up plan, 0 is the slab and going down from it is positive: +25 is a gypsum ceiling dropped 25 cm.", "ar": "في مسقط السقف المنعكس الصفر هو بلاطة الخرسانة، والنزول منها موجب، فـ‎+25 سقف جبس نازل 25 سم."}
+    },
+    {
+      "q": {"en": "What must be given to set out a curved ceiling edge?", "ar": "ما المطلوب لتوقيع حافة سقف منحنية؟"},
+      "options": [{"en": "Only its length", "ar": "طولها فقط"}, {"en": "A centre dimensioned from fixed points in both directions, the radius and the start and end angle", "ar": "مركز منسوب لنقاط ثابتة في الاتجاهين، ونصف القطر، وزاوية البداية والنهاية"}, {"en": "Only the radius", "ar": "نصف القطر فقط"}, {"en": "The tile size", "ar": "مقاس البلاطة"}],
+      "answer": 1,
+      "explain": {"en": "Dimension the centre from the nearest fixed wall or column in x and y, then give the radius and the angle where the curve starts and ends.", "ar": "يُنسب المركز لأقرب حائط أو عمود ثابت في الاتجاهين، ثم يُكتب نصف القطر وزاوية بداية المنحنى ونهايته."}
+    },
+    {
+      "q": {"en": "When wiring several spotlights to one switch on the drawing, the chain of connections must…", "ar": "عند توصيل عدة سبوتات على مفتاح واحد في اللوحة، يجب أن تكون سلسلة التوصيل…"},
+      "options": [{"en": "Form a closed loop", "ar": "حلقة مغلقة"}, {"en": "Stay open, with only one spot linked to the switch", "ar": "مفتوحة، وواحد فقط منها يذهب إلى المفتاح"}, {"en": "Run along the walls only", "ar": "بجوار الحوائط فقط"}, {"en": "Be drawn as solid lines", "ar": "مرسومة بخطوط متصلة"}],
+      "answer": 1,
+      "explain": {"en": "Each spot links to the next and one of them goes to the switch; closing the loop would short the circuit.", "ar": "كل سبوت يوصَّل بالذي يليه وواحد منها يذهب إلى المفتاح؛ أما إغلاق الحلقة فيُحدث قفلة في الكهرباء."}
+    },
+    {
+      "q": {"en": "With a 60 × 60 tile grid, where should the cut (partial) tiles go?", "ar": "مع شبكة بلاطات 60 × 60، أين توضع البلاطات المقصوصة (الكسور)؟"},
+      "options": [{"en": "At the room entrance", "ar": "عند مدخل الفراغ"}, {"en": "In the hidden sides and back of the room, keeping full tiles at entrances", "ar": "في الأجزاء الجانبية والخلفية غير الظاهرة، وتبقى البلاطات الكاملة عند المداخل"}, {"en": "In the centre of the room", "ar": "في منتصف الفراغ"}, {"en": "Anywhere, it does not matter", "ar": "في أي مكان، لا فرق"}],
+      "answer": 1,
+      "explain": {"en": "Keep the grid true and put cuts where they are not seen, or absorb them in a gypsum board border.", "ar": "حافظ على انتظام الشبكة وضع الكسور حيث لا تُرى، أو استوعبها في إطار من الجبس بورد حول الشبكة."}
+    }
+  ],
+  "v_Bv76X4nWk": [
+    {
+      "q": {"en": "A stair serves a building of many repeated floors. How many plans of the stair are needed?", "ar": "سلم في مبنى من أدوار متكررة كثيرة. كم مسقطًا أفقيًا للسلم نحتاج؟"},
+      "options": [{"en": "One", "ar": "مسقط واحد"}, {"en": "Three: ground, typical and top floor", "ar": "ثلاثة: الأرضي والمتكرر والأخير"}, {"en": "One per floor", "ar": "مسقط لكل دور"}, {"en": "Two: ground and top floor", "ar": "اثنان: الأرضي والأخير"}],
+      "answer": 1,
+      "explain": {"en": "One floor needs two plans; two floors or more need three, however many floors repeat.", "ar": "الدور الواحد يحتاج مسقطين، ودوران فأكثر تحتاج ثلاثة مساقط مهما تكررت الأدوار."}
+    },
+    {
+      "q": {"en": "Which riser and tread values does the lecture use as its standard?", "ar": "ما قيم القائمة والنائمة التي تعتمدها المحاضرة؟"},
+      "options": [{"en": "Riser 15–18 cm; tread 30 cm, down to 27 cm", "ar": "القائمة 15–18 سم، والنائمة 30 سم ويمكن أن تقل حتى 27 سم"}, {"en": "Riser 20–25 cm; tread 20 cm", "ar": "القائمة 20–25 سم، والنائمة 20 سم"}, {"en": "Riser 10 cm; tread 40 cm", "ar": "القائمة 10 سم، والنائمة 40 سم"}, {"en": "Riser 18–22 cm; tread 25 cm", "ar": "القائمة 18–22 سم، والنائمة 25 سم"}],
+      "answer": 0,
+      "explain": {"en": "The riser ranges from 15 to 18 cm and the standard tread is 30 cm, reducible to 27; the usual aim is 15 and 30.", "ar": "القائمة من 15 إلى 18 سم، والنائمة القياسية 30 سم ويمكن تقليلها حتى 27، والمعتاد أن نحاول 15 و30."}
+    },
+    {
+      "q": {"en": "For a dog-leg stair with two equal flights, the number of risers per floor should be…", "ar": "في سلم من قلبتين متساويتين، يجب أن يكون عدد الدرجات في الدور…"},
+      "options": [{"en": "Odd", "ar": "فرديًا"}, {"en": "Even", "ar": "زوجيًا"}, {"en": "A multiple of 5", "ar": "من مضاعفات 5"}, {"en": "Any number", "ar": "أي عدد"}],
+      "answer": 1,
+      "explain": {"en": "Two flights split the risers equally: 9 + 9 = 18, 10 + 10 = 20, 11 + 11 = 22.", "ar": "القلبتان تقسمان الدرجات بالتساوي: 9 + 9 = 18، و10 + 10 = 20، و11 + 11 = 22."}
+    },
+    {
+      "q": {"en": "In the stair plan, which line runs continuously through both flights?", "ar": "في مسقط السلم، أي خط يكون مستمرًا في القلبتين؟"},
+      "options": [{"en": "The finishing (marble) line", "ar": "خط التشطيب (الرخام)"}, {"en": "The dashed concrete line", "ar": "الخط المتقطع للخرسانة"}, {"en": "The handrail line", "ar": "خط الدرابزين"}, {"en": "The cutting line", "ar": "خط القطع"}],
+      "answer": 1,
+      "explain": {"en": "Concrete is built first and the stair is designed on it, so its dashed line is the continuous one; the finish is added on top. Drawing it the other way round is a common mistake.", "ar": "الخرسانة تُنفذ أولًا والسلم مصمم عليها، فخطها المتقطع هو المستمر، والتشطيب يأتي فوقها. ورسمها بالعكس من الأخطاء الشائعة."}
+    },
+    {
+      "q": {"en": "Which numbering method for stair steps does the lecture adopt?", "ar": "ما طريقة ترقيم الدرج التي تعتمدها المحاضرة؟"},
+      "options": [{"en": "Restart at 1 on every floor", "ar": "البدء من 1 في كل دور"}, {"en": "Continuous, from the first step up to the roof", "ar": "ترقيم مستمر من أول درجة حتى السطح"}, {"en": "Number only the landings", "ar": "ترقيم البسطات فقط"}, {"en": "No numbering", "ar": "بدون ترقيم"}],
+      "answer": 1,
+      "explain": {"en": "With continuous numbering, step 20 ends at the first floor and step 40 at the second, which shows clearly on each cut plan.", "ar": "في الترقيم المستمر تنتهي الدرجة 20 عند الدور الأول والدرجة 40 عند الثاني، فيتضح ذلك في كل مسقط."}
+    },
+    {
+      "q": {"en": "A landing starts at level ±0.00 and is reached after 10 risers of 15 cm. What is its level?", "ar": "بسطة تبدأ من منسوب ±0.00 ونصل إليها بعد 10 قوائم كل منها 15 سم. كم منسوبها؟"},
+      "options": [{"en": "+1.00", "ar": "‎+1.00"}, {"en": "+1.50", "ar": "‎+1.50"}, {"en": "+3.00", "ar": "‎+3.00"}, {"en": "+0.15", "ar": "‎+0.15"}],
+      "answer": 1,
+      "explain": {"en": "10 × 15 cm = 150 cm, so the landing is at +1.50.", "ar": "10 × 15 سم = 150 سم، فمنسوب البسطة ‎+1.50."}
+    },
+    {
+      "q": {"en": "Why must levels be written on the detailed stair section?", "ar": "لماذا يجب كتابة المناسيب على القطاع التفصيلي للسلم؟"},
+      "options": [{"en": "Risers are often not a round 15 cm, and the levels reveal the real riser", "ar": "لأن القائمة كثيرًا ما تكون بكسور لا تظهر في الرسم، والمناسيب تكشف قيمتها الحقيقية"}, {"en": "Only for decoration", "ar": "للزخرفة فقط"}, {"en": "To show the furniture", "ar": "لإظهار الفرش"}, {"en": "Levels are not needed in sections", "ar": "المناسيب غير مطلوبة في القطاعات"}],
+      "answer": 0,
+      "explain": {"en": "If 10 risers span 170 cm between two levels, the riser is 17 cm, not 15; the drawing alone would not show this.", "ar": "إذا كانت 10 قوائم بين منسوبين فرقهما 170 سم فالقائمة 17 سم لا 15، والرسم وحده لا يوضح ذلك."}
+    }
+  ],
+  "_14V8Hdox4s": [
+    {
+      "q": {"en": "Which is NOT one of the functions of a suspended ceiling listed in the video?", "ar": "أيٌّ مما يلي ليس من وظائف السقف المعلق التي ذكرها الفيديو؟"},
+      "options": [{"en": "Hiding ventilation and lighting installations", "ar": "إخفاء تركيبات التهوية والإضاءة"}, {"en": "Sound insulation", "ar": "العزل الصوتي"}, {"en": "Carrying the floor loads above", "ar": "حمل أحمال الدور الذي فوقه"}, {"en": "Easier maintenance access", "ar": "تسهيل أعمال الصيانة"}],
+      "answer": 2,
+      "explain": {"en": "A suspended ceiling hangs from the structure; it does not carry the floor above.", "ar": "السقف المعلق معلق في الهيكل الإنشائي ولا يحمل الدور الذي فوقه."}
+    },
+    {
+      "q": {"en": "A suspended ceiling reduces the net internal height. When can this be an advantage?", "ar": "السقف المعلق يقلل الارتفاع الداخلي الصافي. متى يكون ذلك ميزة؟"},
+      "options": [{"en": "In a double-height space where a cosier sitting area is wanted", "ar": "في فراغ مزدوج الارتفاع نريد فيه ركن جلوس بارتفاع أقل"}, {"en": "Never", "ar": "أبدًا"}, {"en": "Only in basements", "ar": "في البدرومات فقط"}, {"en": "When the room is very small", "ar": "عندما تكون الغرفة صغيرة جدًا"}],
+      "answer": 0,
+      "explain": {"en": "Lowering the height can be a drawback or a benefit, for example to define a seating area in a double-height space.", "ar": "خفض الارتفاع قد يكون عيبًا أو ميزة، مثلًا لتحديد ركن جلوس في فراغ مزدوج الارتفاع."}
+    }
+  ],
+  "6UebWq82E0g": [
+    {
+      "q": {"en": "Which of these is a standard gypsum ceiling-tile module mentioned in the video?", "ar": "أيٌّ مما يلي من موديولات بلاطات الأسقف الجبسية القياسية التي ذكرها الفيديو؟"},
+      "options": [{"en": "50 × 50 cm", "ar": "50 × 50 سم"}, {"en": "62.5 × 125 cm", "ar": "62.5 × 125 سم"}, {"en": "80 × 80 cm", "ar": "80 × 80 سم"}, {"en": "100 × 100 cm", "ar": "100 × 100 سم"}],
+      "answer": 1,
+      "explain": {"en": "Modules mentioned include 60 × 60, 60 × 120 and 62.5 × 125; the hanging grid is set out to the chosen module.", "ar": "من الموديولات المذكورة 60 × 60 و60 × 120 و62.5 × 125، وتُضبط شبكة التعليق على الموديول المختار."}
+    },
+    {
+      "q": {"en": "Why check the tile's technical data sheet, including its weight, before designing the grid?", "ar": "لماذا نراجع المواصفات الفنية للبلاطة، ومنها وزنها، قبل تصميم الشبكة؟"},
+      "options": [{"en": "So the hanging grid is designed to carry the tiles' weight", "ar": "حتى تُصمَّم شبكة التعليق لتحمل وزن البلاطات"}, {"en": "To choose the paint colour", "ar": "لاختيار لون الدهان"}, {"en": "It is not needed", "ar": "غير مطلوب"}, {"en": "To know the room's floor finish", "ar": "لمعرفة تشطيب الأرضية"}],
+      "answer": 0,
+      "explain": {"en": "The data sheet gives moisture and fire resistance, sound absorption, light reflection, thermal conductivity and weight; the grid must suit them.", "ar": "المواصفات تشمل مقاومة الرطوبة والحريق وامتصاص الصوت وانعكاس الإنارة والتوصيل الحراري والوزن، والشبكة يجب أن تناسبها."}
+    }
+  ]
+}
