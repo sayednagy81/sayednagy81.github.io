@@ -702,6 +702,18 @@ def write_page(rel, html_text):
     (d / "index.html").write_text(html_text, encoding="utf-8")
 
 
+def home_tools():
+    if "tools" not in [k for k, _ in NAV]:
+        return ""
+    cards = [("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
+              {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
+             ("tools/#stairs", "≡", "#a8822f", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
+              {"en": "Risers, treads, flights and a scaled section", "ar": "القوائم والنوائم والقلبات وقطاع بمقياس رسم"})]
+    items = "".join(f'<a class="card pcard" href="{h}"><span class="pbadge" style="background:{c}">{s}</span>'
+                    f'<span><b>{bi(t)}</b><small>{bi(d)}</small></span></a>' for h, s, c, t, d in cards)
+    return f'<section class="wrap"><h2>{bi({"en": "Free tools for students", "ar": "أدوات مجانية للطلاب"})}</h2><div class="pgrid">{items}</div></section>'
+
+
 def build_pages(profile, papers, cards):
     """Home, About, Publications and Contact. Returns their absolute URLs for the sitemap."""
     site = profile.get("site_url", "").rstrip("/")
@@ -733,6 +745,7 @@ def build_pages(profile, papers, cards):
   <div><h2 class="h-sm">{ui("interests")}</h2><ul class="tags">{interests}</ul></div>
   <p><a class="btn" href="about/">{ui("more_about")}</a></p>
 </section>
+{home_tools()}
 <section class="wrap">
   <h2>{ui("selected")}</h2>
   <div class="grid">{"".join(paper_card(p, "", p["id"] in cards, False) for p in selected)}</div>
@@ -1103,7 +1116,7 @@ def materials_table(data):
 </section>'''
 
 
-def uvalue_tool(data):
+def uvalue_tool(data, heading=True):
     """Wall U-value calculator markup; layers, arithmetic and drawing live in static/uvalue.js."""
     calc_mats = [{k: m[k] for k in ("id", "en", "ar", "k", "r", "color", "insulation") if k in m}
                  for m in data["materials"] if not m.get("table_only")]
@@ -1116,9 +1129,10 @@ def uvalue_tool(data):
                ("aac", {"en": "AAC block 20 cm", "ar": "طوب خفيف (AAC) 20 سم"}),
                ("concrete", {"en": "Concrete wall 20 cm", "ar": "حائط خرسانة 20 سم"})]
     preset_btns = "".join(f'<button type="button" class="chip" data-preset="{k}">{bi(lbl)}</button>' for k, lbl in presets)
+    h2 = f'<h2>{bi({"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"})}</h2>' if heading else ""
     return f'''
 <section class="wrap" id="uvalue">
-  <h2>{bi({"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"})}</h2>
+  {h2}
   <p class="lead">{bi({"en": "Build a wall layer by layer, from outside to inside, and see its thermal resistance, its U-value and how the temperature falls through it. Start from a ready wall or add your own layers.",
                        "ar": "كوّن الحائط طبقة بطبقة من الخارج إلى الداخل، فتظهر مقاومته الحرارية ومعامل الانتقال الحراري U وكيف تتغير درجة الحرارة داخله. ابدأ من حائط جاهز أو أضف طبقاتك."})}</p>
   <script type="application/json" id="uv-mats">{mats_json}</script>
@@ -1143,6 +1157,164 @@ def uvalue_tool(data):
 </section>'''
 
 
+UVALUE_FAQ = [
+    ({"en": "What is the U-value of a wall?", "ar": "ما معامل الانتقال الحراري U للحائط؟"},
+     {"en": "The U-value (thermal transmittance) is the heat that passes through one square metre of wall for each degree of temperature difference between inside and outside, in W/m²·K. The lower the U-value, the better the wall insulates.",
+      "ar": "معامل الانتقال الحراري U هو كمية الحرارة التي تنتقل خلال متر مربع واحد من الحائط لكل درجة فرق في الحرارة بين الداخل والخارج، ووحدته وات/م²·ك. كلما قل معامل U كان الحائط أفضل عزلًا."}),
+    ({"en": "What is the difference between λ, R and U?", "ar": "ما الفرق بين λ وR وU؟"},
+     {"en": "λ (thermal conductivity) is a property of the material. R = d/λ is the thermal resistance of one layer of thickness d. The wall's total resistance adds the layers and the two surface resistances, and U = 1 / total R.",
+      "ar": "λ (معامل التوصيل الحراري) خاصية للمادة نفسها. وR = d/λ هي المقاومة الحرارية لطبقة سمكها d. والمقاومة الكلية للحائط مجموع مقاومات الطبقات ومقاومتي السطحين، ثم U = 1 ÷ المقاومة الكلية."}),
+    ({"en": "How can I lower the U-value of a brick wall?", "ar": "كيف أقلل معامل U لحائط من الطوب؟"},
+     {"en": "Add a layer of insulation such as XPS, EPS, rock wool or polyurethane, or build with lighter blocks such as AAC. In this calculator, adding 5 cm of XPS to a double brick wall lowers U from about 1.9 to about 0.5 W/m²·K, roughly 74% less heat through the wall.",
+      "ar": "أضف طبقة عزل مثل XPS أو EPS أو الصوف الصخري أو البولي يوريثان، أو استخدم طوبًا أخف مثل الخرسانة الخلوية AAC. في هذه الحاسبة، إضافة 5 سم من XPS إلى حائط طوب مزدوج تخفض U من نحو 1.9 إلى نحو 0.5 وات/م²·ك، أي حرارة أقل بنحو 74%."}),
+    ({"en": "What U-value does the building code require?", "ar": "ما قيمة U التي يشترطها الكود؟"},
+     {"en": "It depends on the country, the climate zone and the building type. Check the code that applies: in Egypt the Energy Efficiency Code ECP 306, in Saudi Arabia the Saudi Building Code SBC 601/602, and the local green building regulations elsewhere in the region.",
+      "ar": "تختلف حسب الدولة والمنطقة المناخية ونوع المبنى. راجع الكود المعمول به: في مصر كود تحسين كفاءة الطاقة في المباني ECP 306، وفي السعودية كود البناء السعودي SBC 601/602، ولوائح المباني الخضراء المحلية في باقي دول المنطقة."}),
+    ({"en": "Does the calculator include thermal bridges?", "ar": "هل تحسب الحاسبة الجسور الحرارية؟"},
+     {"en": "No. Columns, beams and slab edges conduct more heat than the wall around them, so a real wall performs somewhat worse than the result shown.",
+      "ar": "لا. الأعمدة والكمرات وأطراف البلاطات توصل حرارة أكثر من الحائط حولها، فأداء الحائط الفعلي أقل قليلًا من النتيجة المعروضة."}),
+    ({"en": "Can I use it for roofs?", "ar": "هل تصلح لحساب الأسقف؟"},
+     {"en": "It is set up for walls (horizontal heat flow, Rsi = 0.13). For roofs ISO 6946 uses Rsi = 0.10 for upward and 0.17 for downward heat flow, so treat roof results as an approximation.",
+      "ar": "الحاسبة مضبوطة للحوائط (انتقال أفقي للحرارة، Rsi = 0.13). أما الأسقف فتستخدم ISO 6946 فيها Rsi = 0.10 للانتقال لأعلى و0.17 للانتقال لأسفل، فاعتبر نتيجة السقف تقريبية."}),
+]
+
+
+def uvalue_example(mats):
+    """Worked example computed from materials.json, so its numbers always match the calculator."""
+    by_id = {m["id"]: m for m in mats["materials"]}
+    layers = [("plaster", 2), ("brick", 12), ("xps", 5), ("brick", 12), ("plaster", 2)]
+    rows, total = "", 0.13 + 0.04
+    rows += f'<tr><th scope="row">{bi({"en": "Outside surface Rse", "ar": "السطح الخارجي Rse"})}</th><td>—</td><td>—</td><td>0.04</td></tr>'
+    for mid, d in layers:
+        m = by_id[mid]
+        r = d / 100 / m["k"]
+        total += r
+        rows += f'<tr><th scope="row">{bi(m)}</th><td>{d:g}</td><td>{m["k"]:g}</td><td>{d / 100:g} ÷ {m["k"]:g} = {r:.3f}</td></tr>'
+    rows += f'<tr><th scope="row">{bi({"en": "Inside surface Rsi", "ar": "السطح الداخلي Rsi"})}</th><td>—</td><td>—</td><td>0.13</td></tr>'
+    rows += (f'<tr class="mt-group"><th scope="row">{bi({"en": "Total R", "ar": "المقاومة الكلية R"})}</th><td></td><td></td>'
+             f'<td><b>{total:.2f}</b></td></tr>')
+    u = 1 / total
+    head = "".join(f'<th scope="col">{bi(h)}</th>' for h in (
+        {"en": "Layer (outside → inside)", "ar": "الطبقة (من الخارج للداخل)"}, {"en": "d (cm)", "ar": "السمك d (سم)"},
+        {"en": "λ (W/m·K)", "ar": "λ (وات/م·ك)"}, {"en": "R = d/λ (m²·K/W)", "ar": "R = d/λ (م²·ك/وات)"}))
+    return f'''
+<section class="wrap" id="example">
+  <h2>{bi({"en": "How to calculate the U-value of a wall: worked example", "ar": "طريقة حساب معامل U للحائط: مثال محلول"})}</h2>
+  <ol class="uv-steps">
+    <li>{bi({"en": "List the layers from outside to inside with the thickness d of each, in metres.", "ar": "اكتب طبقات الحائط من الخارج إلى الداخل وسمك كل طبقة d بالمتر."})}</li>
+    <li>{bi({"en": "Take the thermal conductivity λ of each material from the table below or the product data sheet.", "ar": "خذ معامل التوصيل الحراري λ لكل مادة من الجدول أدناه أو من النشرة الفنية للمنتج."})}</li>
+    <li>{bi({"en": "Work out each layer's resistance R = d / λ.", "ar": "احسب مقاومة كل طبقة R = d ÷ λ."})}</li>
+    <li>{bi({"en": "Add the layers and the surface resistances Rsi = 0.13 and Rse = 0.04 m²·K/W.", "ar": "اجمع مقاومات الطبقات مع مقاومتي السطحين Rsi = 0.13 وRse = 0.04 م²·ك/وات."})}</li>
+    <li>{bi({"en": "U = 1 / total R.", "ar": "معامل U = 1 ÷ المقاومة الكلية."})}</li>
+  </ol>
+  <p>{bi({"en": "Example: a double brick wall (12 + 12 cm) with 5 cm of XPS insulation and cement plaster on both faces.", "ar": "مثال: حائط طوب مزدوج (12 + 12 سم) بينهما 5 سم عزل XPS، مع بياض أسمنتي على الوجهين."})}</p>
+  <div class="mt-wrap"><table class="mt"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>
+  <p class="uv-answer">U = 1 ÷ {total:.2f} = <b>{u:.2f} W/m²·K</b></p>
+</section>'''
+
+
+def uvalue_faq():
+    items = "".join(f'<details class="faq"><summary>{bi(q)}</summary><p>{bi(a)}</p></details>' for q, a in UVALUE_FAQ)
+    return f'''
+<section class="wrap" id="faq">
+  <h2>{bi({"en": "Frequently asked questions about U-value and wall insulation", "ar": "أسئلة شائعة عن معامل U والعزل الحراري للحوائط"})}</h2>
+  {items}
+</section>'''
+
+
+def uvalue_share_card(profile):
+    """1200x630 link-preview image for /tools/u-value/ (rendered like the paper cards)."""
+    bars = "".join(f'<i style="background:{c};flex:{w}"></i>' for c, w in
+                   (("#cfc8bb", 2), ("#b5583a", 12), ("#9cc7e8", 5), ("#b5583a", 12), ("#cfc8bb", 2)))
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link href="{FONTS}" rel="stylesheet"><style>
+*{{box-sizing:border-box;margin:0}}html,body{{width:1200px;height:630px;overflow:hidden}}
+body{{font-family:"IBM Plex Sans Arabic","Segoe UI",Arial,sans-serif;background:#13294b;color:#fff;padding:56px 64px;display:flex;gap:56px;align-items:center;
+background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}}
+.txt{{flex:1}}h1{{font-family:"Source Serif 4",Georgia,serif;font-size:58px;line-height:1.1}}
+.ar{{font-family:"Noto Naskh Arabic",serif;font-size:46px;direction:rtl;margin-top:18px;color:#f3ecdb}}
+p{{font-size:24px;margin-top:22px;color:#dfe5ef}}.u{{color:#d2b06a;font-weight:700}}
+.wall{{width:300px;height:420px;display:flex;border:3px solid #d2b06a;border-radius:10px;overflow:hidden;position:relative}}
+.wall i{{display:block}}.foot{{margin-top:30px;font-size:20px;color:#d2b06a}}
+</style></head><body><div class="txt"><h1>Wall U-value Calculator</h1><div class="ar">حاسبة معامل U والعزل الحراري للحوائط</div>
+<p>Layers → R → <span class="u">U (W/m²·K)</span> · temperature profile · materials table</p>
+<div class="foot">{esc(profile.get("site_url", "").replace("https://", ""))}/tools/u-value/</div></div>
+<div class="wall">{bars}</div></body></html>'''
+
+
+def build_uvalue_page(profile, mats):
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    base = "../../"
+    url = site + "/tools/u-value/"
+    image = ""
+    browser = find_browser() if "--no-cards" not in sys.argv else None
+    if browser:
+        d = OUT / "cards"
+        d.mkdir(exist_ok=True)
+        page = d / "u-value.html"
+        page.write_text(uvalue_share_card(profile), encoding="utf-8")
+        if render_png(browser, page, d / "u-value.png", tempfile.mkdtemp(prefix="cards-")):
+            image = site + "/cards/u-value.png"
+    intro = {"en": "Calculate the U-value (thermal transmittance) and thermal resistance of any wall online, free. Choose materials used in Egypt and the Arab world, such as red brick, cement brick, AAC, concrete, XPS, EPS and rock wool, enter the thickness of each layer and see straight away how much heat the wall lets through, how the temperature falls inside it, and how much an insulation layer saves.",
+             "ar": "احسب معامل الانتقال الحراري U والمقاومة الحرارية لأي حائط أونلاين ومجانًا. اختر مواد البناء المستخدمة في مصر والوطن العربي، مثل الطوب الأحمر والطوب الأسمنتي والطوب الخفيف AAC والخرسانة وألواح العزل XPS وEPS والصوف الصخري، وأدخل سمك كل طبقة، فترى فورًا كم يمرر الحائط من حرارة، وكيف تتغير درجة الحرارة داخله، وكم توفر طبقة العزل."}
+    related = [
+        (f'{base}tools/#stairs', {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"}),
+        (f'{base}videos/', {"en": "Video: the science behind Passive Houses (with a quiz)", "ar": "فيديو: العلم وراء البيوت الموفرة للطاقة (مع اختبار)"}),
+        (f'{base}papers/nanomaterials-thermal-efficiency-envelopes-2023/', {"en": "Research: nanomaterials and the thermal efficiency of building envelopes", "ar": "بحث: مواد النانو والكفاءة الحرارية لأغلفة المباني"}),
+        (f'{base}papers/adaptive-envelopes-administrative-2026/', {"en": "Research: adaptive building envelopes in hot-arid climates", "ar": "بحث: الأغلفة المتكيفة للمباني الإدارية في المناخ الحار الجاف"}),
+    ]
+    rel = "".join(f'<li><a href="{h}">{bi(t)}</a></li>' for h, t in related)
+    body = f'''
+<main>
+<section class="page-hero"><div class="wrap">
+  <p class="crumbs"><a href="{base}">{ui("home")}</a> › <a href="{base}tools/">{ui("tools")}</a></p>
+  <h1>{bi({"en": "Wall U-value Calculator: Thermal Insulation Online", "ar": "حاسبة معامل U والعزل الحراري للحوائط أونلاين"})}</h1>
+</div></section>
+<section class="wrap"><p class="lead">{bi(intro)}</p>
+  <p class="btn-row"><a class="btn" href="#example">{bi({"en": "Worked example", "ar": "مثال محلول"})}</a>
+  <a class="btn" href="#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a>
+  <a class="btn" href="#faq">{bi({"en": "FAQ", "ar": "أسئلة شائعة"})}</a></p></section>
+{uvalue_tool(mats, heading=False)}
+{uvalue_example(mats)}
+{materials_table(mats)}
+{uvalue_faq()}
+<section class="wrap"><h2>{bi({"en": "Related", "ar": "روابط ذات صلة"})}</h2><ul class="uv-related">{rel}</ul></section>
+</main>'''
+    author = {"@type": "Person", "name": name_en, "url": site + "/", "jobTitle": pick(profile.get("title", ""), "en")}
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebApplication", "name": "Wall U-value calculator", "alternateName": "حاسبة معامل U والعزل الحراري للحوائط",
+         "url": url, "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
+         "inLanguage": ["en", "ar"], "description": intro["en"], "image": image or None,
+         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": author,
+         "featureList": ["Layer-by-layer wall builder", "Thermal resistance and U-value", "Temperature profile through the wall",
+                         "Comparison with and without insulation", "Thermal properties table of building materials"]},
+        {"@type": "Dataset", "name": "Thermal properties of common building materials in Egypt and the Arab world",
+         "alternateName": "الخصائص الحرارية لأهم مواد البناء في مصر والوطن العربي", "url": url + "#materials",
+         "description": pick(mats["note"], "en"), "creator": author, "isAccessibleForFree": True, "inLanguage": ["en", "ar"],
+         "variableMeasured": ["Density (kg/m3)", "Thermal conductivity λ (W/m·K)", "Thermal resistance R (m2·K/W)"]},
+        {"@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": pick(q, lang), "acceptedAnswer": {"@type": "Answer", "text": pick(a, lang)}}
+            for lang in ("en", "ar") for q, a in UVALUE_FAQ]},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": site + "/"},
+            {"@type": "ListItem", "position": 2, "name": "Tools", "item": site + "/tools/"},
+            {"@type": "ListItem", "position": 3, "name": "Wall U-value calculator", "item": url}]}]}
+    ld["@graph"][0] = {k: v for k, v in ld["@graph"][0].items() if v is not None}
+    head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+            f'<script src="{base}static/uvalue.js" defer></script>')
+    desc = ("Free wall U-value calculator: add layers, get thermal resistance, U-value and the temperature profile, with a table "
+            "of building-material conductivities. | حاسبة مجانية لمعامل U والعزل الحراري للحوائط وجدول خصائص مواد البناء.")
+    kws = ["U-value calculator", "wall U-value calculator", "thermal transmittance calculator", "thermal insulation calculator",
+           "R-value calculator", "how to calculate U-value", "thermal resistance of a wall", "thermal conductivity of building materials",
+           "insulation thickness", "brick wall U-value", "XPS insulation", "AAC block U-value", "building envelope", "energy efficient buildings",
+           "حاسبة معامل U", "حساب معامل الانتقال الحراري", "حساب العزل الحراري للحوائط", "حاسبة العزل الحراري", "حساب المقاومة الحرارية للجدار",
+           "معامل التوصيل الحراري لمواد البناء", "سمك العزل الحراري", "العزل الحراري للمباني", "العزل الحراري في مصر", "العزل الحراري في السعودية",
+           "كود العزل الحراري", "قيمة U للجدران", "العزل الحراري للطوب الأحمر", "عزل الفوم", "الصوف الصخري", "الطوب الخفيف"]
+    write_page("tools/u-value", layout(profile, "U-Value Calculator for Walls | حاسبة معامل U والعزل الحراري", desc, body, base,
+                                       url, head, image, "tools", kws))
+    return url
+
+
 def build_tools(profile):
     if "tools" not in [k for k, _ in NAV]:
         return []
@@ -1151,16 +1323,27 @@ def build_tools(profile):
     lead = {"en": "Interactive calculators for architecture and building construction students.",
             "ar": "حاسبات تفاعلية لطلاب العمارة والإنشاء المعماري."}
     mats = load_materials()
+    u_url = build_uvalue_page(profile, mats)
     jump = (f'<p class="btn-row"><a class="btn" href="#stairs">{bi({"en": "Stair design", "ar": "تصميم السلالم"})}</a>'
-            f'<a class="btn" href="#uvalue">{bi({"en": "Wall U-value", "ar": "معامل U للحائط"})}</a>'
-            f'<a class="btn" href="#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a></p>')
+            f'<a class="btn" href="u-value/">{bi({"en": "Wall U-value", "ar": "معامل U للحائط"})}</a>'
+            f'<a class="btn" href="u-value/#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a></p>')
+    teaser = f'''
+<section class="wrap" id="uvalue">
+  <h2>{bi({"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"})}</h2>
+  <a class="card tool-card" href="u-value/">
+    <span class="tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#b5583a;flex:12"></i><i style="background:#9cc7e8;flex:5"></i><i style="background:#b5583a;flex:12"></i><i style="background:#cfc8bb;flex:2"></i></span>
+    <span><b>{bi({"en": "Calculate the U-value and thermal insulation of any wall", "ar": "احسب معامل U والعزل الحراري لأي حائط"})}</b>
+    <small>{bi({"en": "Layer-by-layer builder, temperature profile, worked example and a table of the thermal properties of building materials in Egypt and the Arab world.",
+                "ar": "تكوين الحائط طبقة بطبقة، ورسم لتغير الحرارة، ومثال محلول، وجدول الخصائص الحرارية لمواد البناء في مصر والوطن العربي."})}</small>
+    <span class="btn btn-sm btn-primary">{bi({"en": "Open the calculator →", "ar": "افتح الحاسبة ←"})}</span></span>
+  </a>
+</section>'''
     body = f'''
 <main>
 {page_hero("tools")}
 <section class="wrap"><p class="lead">{bi(lead)}</p>{jump}</section>
+{teaser}
 {stairs_tool()}
-{uvalue_tool(mats)}
-{materials_table(mats)}
 </main>'''
     author = {"@type": "Person", "name": name_en, "url": site + "/"}
     app = lambda name, name_ar, anchor, about: {
@@ -1168,26 +1351,19 @@ def build_tools(profile):
         "operatingSystem": "Any", "isAccessibleForFree": True, "inLanguage": ["en", "ar"], "url": site + "/tools/#" + anchor,
         "about": about, "educationalLevel": "Undergraduate", "audience": {"@type": "EducationalAudience", "educationalRole": "student"},
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": author}
-    dataset = {"@type": "Dataset", "name": "Thermal properties of common building materials in Egypt and the Arab world",
-               "alternateName": "الخصائص الحرارية لأهم مواد البناء في مصر والوطن العربي", "url": site + "/tools/#materials",
-               "description": pick(mats["note"], "en"), "creator": author, "isAccessibleForFree": True, "inLanguage": ["en", "ar"],
-               "keywords": ["thermal conductivity", "density", "thermal resistance", "building materials", "Egypt"],
-               "variableMeasured": ["Density (kg/m3)", "Thermal conductivity λ (W/m·K)", "Thermal resistance R (m2·K/W)"]}
     ld = {"@context": "https://schema.org", "@graph": [
-        app("Stair design calculator", "حاسبة تصميم السلالم", "stairs", "Staircase design: risers, treads, 2R+T rule"),
-        app("Wall U-value calculator", "حاسبة العزل الحراري للحائط (معامل U)", "uvalue", "Thermal transmittance of walls"),
-        dataset]}
+        app("Stair design calculator", "حاسبة تصميم السلالم", "stairs", "Staircase design: risers, treads, 2R+T rule")]}
     head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-            f'<script src="../static/stairs.js" defer></script><script src="../static/uvalue.js" defer></script>')
+            f'<script src="../static/stairs.js" defer></script>')
     desc = ("Free stair design and wall U-value calculators for architecture students, with a table of the thermal "
             "properties of building materials. | حاسبة تصميم السلالم وحاسبة العزل الحراري ومعامل U للحوائط، وجدول خصائص مواد البناء.")
     kws = ["stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
            "thermal conductivity of building materials", "building materials Egypt", "architecture students",
            "حاسبة تصميم السلالم", "القائمة والنائمة", "حساب معامل U", "العزل الحراري للحوائط", "معامل التوصيل الحراري",
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
-    write_page("tools", layout(profile, f'Stair & U-value Calculators, Building Materials Table | {name_en}', desc,
+    write_page("tools", layout(profile, f'Free Tools for Architecture Students: Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/"]
+    return [site + "/tools/", u_url]
 
 
 def write_search_index(profile, papers):
@@ -1218,9 +1394,12 @@ def write_search_index(profile, papers):
     if "tools" in [k for k, _ in NAV]:
         add("tool", "tools/#stairs", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
             ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
-        add("tool", "tools/#uvalue", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},
+        add("tool", "tools/u-value/", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},
             ["u-value", "thermal insulation", "thermal resistance", "wall", "insulation", "عزل حراري", "معامل انتقال حراري",
              "مقاومة حرارية", "حائط", "جدار", "عزل"])
+        add("tool", "tools/u-value/#materials", {"en": "Thermal properties of building materials", "ar": "جدول الخصائص الحرارية لمواد البناء"},
+            ["density", "thermal conductivity", "lambda", "brick", "concrete", "كثافة", "معامل التوصيل الحراري", "طوب", "خرسانة",
+             "مواد البناء", "فوم", "صوف صخري"])
     data = {"kinds": {k: {"en": en, "ar": ar} for k, (en, ar) in kinds.items()}, "items": items}
     (OUT / "search.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
