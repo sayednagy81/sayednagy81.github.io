@@ -86,6 +86,7 @@
   },
 
   "LLMdvnr4DD8": {
+    "hidden": true,
     "title": { "en": "A Smart Bird Building Its Nest Like an Engineer", "ar": "طائر ذكي يبني عشه كأنه مهندس" },
     "summary": {
       "en": "Nature's first architects: watch a bird select materials, weave and reinforce its nest with remarkable precision. A short, fascinating look at the structural ideas behind nests and what designers can learn from them through biomimicry.",
@@ -98,6 +99,7 @@
   },
 
   "cGPtiacO6CQ": {
+    "hidden": true,
     "title": { "en": "Nest Building of the Engineer Bird", "ar": "الطائر المهندس يبني عشه" },
     "summary": {
       "en": "Grasses, twigs, mud, even wires and plastic: birds pick the right material for every job and build homes tailored to their needs, just like engineers. A captivating clip on structure, material choice and design in nature.",
@@ -110,6 +112,7 @@
   },
 
   "AWUSbwgn7e8": {
+    "hidden": true,
     "title": { "en": "Skyscraper Design", "ar": "تصميم ناطحات السحاب" },
     "summary": {
       "en": "How do architects shape buildings that touch the sky? A visual look at skyscraper design: form, structure and the ideas that make tall buildings both iconic and buildable.",
@@ -142,6 +145,45 @@
     "keywords": {
       "en": ["#WallBearing", "#Foundations", "#BuildingConstruction", "#FoundationPlan", "#ArchitectureStudents", "#CivilEngineering"],
       "ar": ["#الحوائط_الحاملة", "#الأساسات", "#إنشاء_المباني", "#مسقط_الأساسات", "#طلاب_العمارة", "#هندسة_مدنية"]
+    }
+  },
+
+  "OUYDQhrRlPA": {
+    "add": true, "date": "2020-04-14",
+    "title": { "en": "Building Construction: Stairs Design", "ar": "تشييد المباني: تصميم السلالم" },
+    "summary": {
+      "en": "The channel's most-watched lesson. A complete, step-by-step explanation of staircase design: rise and going, flights and landings, and how to turn the rules into a correct, buildable stair drawing. Essential viewing for every architecture and civil engineering student.",
+      "ar": "الدرس الأكثر مشاهدة على القناة. شرح متكامل خطوة بخطوة لتصميم السلالم: القائمة والنائمة والقلبات والبسطات، وكيف تحوّل القواعد إلى رسم سلّم صحيح وقابل للتنفيذ. درس لا غنى عنه لكل طالب عمارة ومدني."
+    },
+    "keywords": {
+      "en": ["#StairsDesign", "#BuildingConstruction", "#ConcreteStairs", "#ArchitectureStudents", "#CivilEngineering", "#ExamPrep"],
+      "ar": ["#تصميم_السلالم", "#تشييد_المباني", "#السلالم_الخرسانية", "#طلاب_العمارة", "#هندسة_مدنية", "#مراجعة_امتحانات"]
+    }
+  },
+
+  "6y_o60VH74w": {
+    "add": true, "date": "2020-03-21",
+    "title": { "en": "Brickworks: Types, Bonds and Construction", "ar": "أعمال البناء بالطوب: الأنواع والروابط والتنفيذ" },
+    "summary": {
+      "en": "Everything you need to start with brickwork: how bricks are made, the main brick types and their uses, how brick walls are built on site, and the classic bond patterns that keep walls strong and good-looking.",
+      "ar": "كل ما تحتاجه لتبدأ في أعمال الطوب: كيف يُصنَّع الطوب، وأنواعه الرئيسية واستخداماتها، وطريقة تنفيذ الحوائط في الموقع، وأشهر الروابط (المداميك) التي تمنح الحائط قوته وشكله المتقن."
+    },
+    "keywords": {
+      "en": ["#Brickwork", "#BrickBonds", "#BuildingMaterials", "#Masonry", "#BuildingConstruction", "#SiteWork"],
+      "ar": ["#أعمال_الطوب", "#روابط_الطوب", "#مواد_البناء", "#المباني", "#تشييد_المباني", "#التنفيذ"]
+    }
+  },
+
+  "sSYo4H3T7yk": {
+    "add": true, "date": "2021-04-24",
+    "title": { "en": "Isolated Foundation Exercise", "ar": "تمرين الأساسات بنظام القواعد المنفصلة" },
+    "summary": {
+      "en": "Draw isolated footings the right way. This exercise walks through setting out column footings and producing a clear, correct foundation plan, explained simply for students and young engineers getting ready for exams and site work.",
+      "ar": "ارسم القواعد المنفصلة بالطريقة الصحيحة. يشرح هذا التمرين توقيع قواعد الأعمدة وإخراج مسقط أساسات واضح وصحيح، بأسلوب مبسط للطلاب والمهندسين الجدد استعدادًا للامتحانات والعمل في الموقع."
+    },
+    "keywords": {
+      "en": ["#IsolatedFootings", "#Foundations", "#FoundationPlan", "#BuildingConstruction", "#EngineeringStudents", "#CivilEngineering"],
+      "ar": ["#القواعد_المنفصلة", "#الأساسات", "#مسقط_الأساسات", "#تشييد_المباني", "#طلاب_الهندسة", "#هندسة_مدنية"]
     }
   },
 

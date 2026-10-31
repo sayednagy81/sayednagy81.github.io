@@ -705,8 +705,13 @@ def channel_url(profile):
 def load_videos(profile):
     """Channel feed merged with content/videos.json (better titles, summaries, keywords, hidden flags)."""
     texts = load_json(ROOT / "content" / "videos.json") if (ROOT / "content" / "videos.json").exists() else {}
+    feed = feeds.youtube_videos(profile.get("youtube_channel_id", ""))
+    # the feed only lists the newest 15 uploads; entries marked "add" bring in older ones
+    seen = {v["id"] for v in feed}
+    feed += [{"id": vid, "title": pick(e.get("title", ""), "en"), "date": e.get("date", ""), "description": "", "views": 0}
+             for vid, e in texts.items() if isinstance(e, dict) and e.get("add") and vid not in seen]
     out = []
-    for v in feeds.youtube_videos(profile.get("youtube_channel_id", "")):
+    for v in feed:
         extra = texts.get(v["id"], {})
         if extra.get("hidden"):
             continue
@@ -714,7 +719,7 @@ def load_videos(profile):
         v["summary"] = extra.get("summary") or v["description"][:240]
         v["keywords"] = extra.get("keywords") or {}
         out.append(v)
-    return out
+    return sorted(out, key=lambda v: v["date"], reverse=True)
 
 
 def video_card(v):
