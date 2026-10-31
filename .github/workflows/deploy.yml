@@ -4,11 +4,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # rebuild every 3 hours so new YouTube videos and blog articles appear on their own
+  schedule:
+    - cron: "17 */3 * * *"
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
   group: pages
@@ -23,6 +27,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: python build.py
+      # GitHub pauses scheduled workflows after 60 days without commits; re-enabling keeps the schedule alive
+      - name: Keep schedule alive
+        if: github.event_name == 'schedule'
+        run: gh workflow enable deploy.yml --repo "$GITHUB_REPOSITORY" || true
+        env:
+          GH_TOKEN: ${{ github.token }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -117,6 +117,19 @@
     requestAnimationFrame(step);
   }
 
+  // ---- videos: thumbnails until clicked, then the (privacy-friendly) YouTube player ----
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest && e.target.closest(".vthumb[data-yt]");
+    if (!t) return;
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + t.getAttribute("data-yt") + "?autoplay=1&rel=0";
+    f.title = t.getAttribute("aria-label") || "YouTube video";
+    f.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen";
+    f.allowFullscreen = true;
+    f.className = "vframe";
+    t.replaceWith(f);
+  });
+
   // ---- paper detail pop-up: a click on a title opens its abstract card; ctrl/cmd-click still opens the full page ----
   var modal = document.getElementById("paper-modal");
   var modalBody = modal && modal.querySelector(".modal-body");

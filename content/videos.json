@@ -1,0 +1,151 @@
+{
+  "_help": "Texts shown on the Videos page for each YouTube video (key = video id from the YouTube link). New videos appear automatically with YouTube's own title; add an entry here to give them a better text. Set \"hidden\": true to keep a video off the site.",
+
+  "hEQV4EySjM4": {
+    "title": { "en": "Green Architecture: The Science Behind Passive Houses", "ar": "ثورة البيوت الخضراء: العلم وراء المنازل الموفرة للطاقة" },
+    "summary": {
+      "en": "What if your home needed almost no energy to stay comfortable? This video explains how Passive Houses can cut energy use by up to 90% through airtight envelopes, high-performance insulation, smart orientation and heat-recovery ventilation, while keeping indoor air fresh and temperatures stable all year. A clear, visual guide to the homes of the future.",
+      "ar": "ماذا لو احتاج بيتك إلى طاقة شبه معدومة ليبقى مريحًا طوال العام؟ يشرح الفيديو كيف تخفّض المنازل الموفرة للطاقة (Passive Houses) الاستهلاك بنسبة تصل إلى 90% بفضل الغلاف المحكم والعزل عالي الأداء والتوجيه الذكي والتهوية مع استرجاع الحرارة، مع هواء داخلي نقي وحرارة مستقرة. دليل بصري واضح لبيوت المستقبل."
+    },
+    "keywords": {
+      "en": ["#PassiveHouse", "#GreenArchitecture", "#EnergyEfficiency", "#SustainableDesign", "#NetZero", "#FutureHomes", "#ClimateAction"],
+      "ar": ["#البيوت_الخضراء", "#العمارة_المستدامة", "#توفير_الطاقة", "#بيوت_المستقبل", "#عمارة_خضراء", "#الاستدامة", "#تغير_المناخ"]
+    }
+  },
+
+  "rTz714PAkSM": {
+    "title": { "en": "Electrical Installations Lecture, Part 1: Lighting and Suspended Ceiling Design", "ar": "محاضرة التركيبات الكهربائية – الجزء الأول: تصميم الإضاءة والأسقف المعلقة" },
+    "summary": {
+      "en": "Learn how professionals plan lighting inside architectural spaces. Part 1 walks through the types of suspended ceilings, how to place light fixtures, and how to choose the right units, all explained on real construction drawings you can apply directly on site.",
+      "ar": "تعلّم كيف يخطط المحترفون للإضاءة داخل الفراغات المعمارية. يستعرض الجزء الأول أنواع الأسقف المعلقة وطريقة توزيع وحدات الإضاءة واختيار الأنسب منها، بشرح مباشر على رسومات تنفيذية حقيقية تطبّقها في الموقع فورًا."
+    },
+    "keywords": {
+      "en": ["#LightingDesign", "#FalseCeiling", "#ShopDrawings", "#ElectricalInstallations", "#InteriorDesign", "#ArchitectureStudents"],
+      "ar": ["#تصميم_الإضاءة", "#الأسقف_المعلقة", "#رسومات_تنفيذية", "#التركيبات_الكهربائية", "#تصميم_داخلي", "#طلاب_العمارة"]
+    }
+  },
+
+  "yxMIyeGLmlI": {
+    "title": { "en": "Electrical Installations Lecture, Part 2: Lighting and Suspended Ceiling Design", "ar": "محاضرة التركيبات الكهربائية – الجزء الثاني: تصميم الإضاءة والأسقف المعلقة" },
+    "summary": {
+      "en": "Part 2 takes you from concept to construction drawing: detailed lighting layouts, ceiling details and fixture selection, step by step. Ideal for architecture students and site engineers who want to read and produce professional shop drawings with confidence.",
+      "ar": "الجزء الثاني ينقلك من الفكرة إلى الرسم التنفيذي: توزيع تفصيلي للإضاءة وتفاصيل الأسقف واختيار الوحدات خطوة بخطوة. مثالي لطلاب العمارة ومهندسي المواقع الذين يريدون قراءة الرسومات التنفيذية وإعدادها باحتراف وثقة."
+    },
+    "keywords": {
+      "en": ["#LightingDesign", "#CeilingDetails", "#ConstructionDrawings", "#MEP", "#SiteEngineer", "#ArchitectureLecture"],
+      "ar": ["#تصميم_الإضاءة", "#تفاصيل_الأسقف", "#الرسم_التنفيذي", "#الأعمال_الكهربائية", "#مهندس_موقع", "#محاضرات_عمارة"]
+    }
+  },
+
+  "_14V8Hdox4s": {
+    "title": { "en": "Why Suspended Ceilings Matter in Public Buildings", "ar": "أهمية الأسقف المعلقة في المباني العامة" },
+    "summary": {
+      "en": "A suspended ceiling is far more than decoration. In under a minute, see how false ceilings and gypsum board hide services, improve acoustics and lighting, and give public buildings a clean, professional finish.",
+      "ar": "السقف المعلق أكثر بكثير من مجرد ديكور. في أقل من دقيقة، شاهد كيف تُخفي الأسقف المعلقة وألواح الجبس التمديدات وتحسّن الصوتيات والإضاءة وتمنح المباني العامة مظهرًا نظيفًا واحترافيًا."
+    },
+    "keywords": {
+      "en": ["#FalseCeiling", "#GypsumBoard", "#PublicBuildings", "#InteriorFinishing", "#ConstructionTips", "#Shorts"],
+      "ar": ["#الأسقف_المعلقة", "#الجبس_بورد", "#المباني_العامة", "#التشطيبات", "#نصائح_هندسية", "#اكسبلور"]
+    }
+  },
+
+  "6UebWq82E0g": {
+    "title": { "en": "How to Choose the Right Gypsum Ceiling Tile Sizes", "ar": "كيف تختار المقاسات الصحيحة للبلاطات الجبسية" },
+    "summary": {
+      "en": "Picking the wrong ceiling tile size means waste, extra cuts and a messy finish. This quick guide shows how to choose gypsum tile dimensions that fit the grid, the lighting and the room, saving time and money on site.",
+      "ar": "اختيار مقاس خاطئ للبلاطات يعني هدرًا وقصًّا زائدًا وتشطيبًا غير منتظم. يوضح هذا الدليل السريع كيف تختار مقاسات البلاطات الجبسية لتناسب الشبكة والإضاءة والفراغ، فتوفر الوقت والمال في الموقع."
+    },
+    "keywords": {
+      "en": ["#CeilingTiles", "#GypsumBoard", "#FalseCeiling", "#SiteTips", "#Construction", "#Shorts"],
+      "ar": ["#بلاطات_جبسية", "#الجبس_بورد", "#الأسقف_المعلقة", "#نصائح_التنفيذ", "#عمارة", "#ترند"]
+    }
+  },
+
+  "v_Bv76X4nWk": {
+    "title": { "en": "Engineering Review of Concrete Staircase Drawings: Concepts and Common Mistakes", "ar": "تعقيب هندسي على تصميم ورسم لوحات السلالم الخرسانية: مفاهيم وأخطاء" },
+    "summary": {
+      "en": "Staircases are where drawings most often go wrong. This review walks through real concrete stair sheets, explains the key design concepts, and highlights the common mistakes in drafting and detailing, so your next staircase is right the first time.",
+      "ar": "السلالم من أكثر الأماكن التي تقع فيها أخطاء الرسم. يراجع هذا التعقيب لوحات سلالم خرسانية حقيقية، ويشرح المفاهيم الأساسية للتصميم، ويكشف الأخطاء الشائعة في الرسم والتفاصيل، لتصمم سلّمك القادم صحيحًا من أول مرة."
+    },
+    "keywords": {
+      "en": ["#StaircaseDesign", "#ConcreteStairs", "#ConstructionDrawing", "#CommonMistakes", "#StructuralDetailing", "#EngineeringReview"],
+      "ar": ["#تصميم_السلالم", "#السلالم_الخرسانية", "#الرسم_الهندسي", "#أخطاء_شائعة", "#مراجعة_هندسية", "#طلاب_الهندسة"]
+    }
+  },
+
+  "LU8lD4KMf18": {
+    "title": { "en": "Technical Sanitary Drawing: Course Introduction", "ar": "الرسم الفني للأعمال الصحية: مقدمة المقرر" },
+    "summary": {
+      "en": "The starting point for the Technical Sanitary Drawing course: what the course covers, why plumbing and drainage drawings matter in every building, and how to get the most out of the lectures that follow.",
+      "ar": "نقطة البداية لمقرر الرسم الفني للأعمال الصحية: ماذا يغطي المقرر، ولماذا تهم رسومات التغذية والصرف في كل مبنى، وكيف تستفيد أقصى استفادة من المحاضرات التالية."
+    },
+    "keywords": {
+      "en": ["#SanitaryDrawing", "#Plumbing", "#Drainage", "#TechnicalDrawing", "#EngineeringCourse"],
+      "ar": ["#الرسم_الصحي", "#الأعمال_الصحية", "#الصرف_الصحي", "#الرسم_الفني", "#محاضرات_هندسية"]
+    }
+  },
+
+  "LLMdvnr4DD8": {
+    "title": { "en": "A Smart Bird Building Its Nest Like an Engineer", "ar": "طائر ذكي يبني عشه كأنه مهندس" },
+    "summary": {
+      "en": "Nature's first architects: watch a bird select materials, weave and reinforce its nest with remarkable precision. A short, fascinating look at the structural ideas behind nests and what designers can learn from them through biomimicry.",
+      "ar": "أول المعماريين في الطبيعة: شاهد طائرًا يختار مواده وينسج عشه ويقوّيه بدقة مذهلة. نظرة قصيرة وممتعة على الأفكار الإنشائية في الأعشاش وما يتعلمه المصممون منها عبر المحاكاة الحيوية."
+    },
+    "keywords": {
+      "en": ["#Biomimicry", "#NatureIsAnEngineer", "#BirdNest", "#AnimalArchitecture", "#NatureInspiredDesign", "#Shorts"],
+      "ar": ["#المحاكاة_الحيوية", "#الطبيعة_مهندس", "#عش_الطائر", "#عمارة_الطبيعة", "#تصميم_مستوحى_من_الطبيعة", "#اكسبلور"]
+    }
+  },
+
+  "cGPtiacO6CQ": {
+    "title": { "en": "Nest Building of the Engineer Bird", "ar": "الطائر المهندس يبني عشه" },
+    "summary": {
+      "en": "Grasses, twigs, mud, even wires and plastic: birds pick the right material for every job and build homes tailored to their needs, just like engineers. A captivating clip on structure, material choice and design in nature.",
+      "ar": "عشب وأغصان وطين، بل وأسلاك وبلاستيك: تختار الطيور المادة المناسبة لكل مهمة وتبني بيوتًا مصممة على مقاس احتياجاتها، تمامًا مثل المهندسين. مقطع آسر عن الإنشاء واختيار المواد والتصميم في الطبيعة."
+    },
+    "keywords": {
+      "en": ["#EngineerBird", "#Biomimicry", "#NatureArchitecture", "#BirdNest", "#SustainableMaterials", "#Shorts"],
+      "ar": ["#الطائر_المهندس", "#المحاكاة_الحيوية", "#عمارة_الطبيعة", "#عش_الطيور", "#مواد_مستدامة", "#ترند"]
+    }
+  },
+
+  "AWUSbwgn7e8": {
+    "title": { "en": "Skyscraper Design", "ar": "تصميم ناطحات السحاب" },
+    "summary": {
+      "en": "How do architects shape buildings that touch the sky? A visual look at skyscraper design: form, structure and the ideas that make tall buildings both iconic and buildable.",
+      "ar": "كيف يشكّل المعماريون مباني تلامس السماء؟ نظرة بصرية على تصميم ناطحات السحاب: الشكل والنظام الإنشائي والأفكار التي تجعل المباني العالية أيقونية وقابلة للتنفيذ."
+    },
+    "keywords": {
+      "en": ["#Skyscraper", "#TallBuildings", "#ArchitectureDesign", "#Structure", "#ModernArchitecture"],
+      "ar": ["#ناطحات_السحاب", "#المباني_العالية", "#التصميم_المعماري", "#الإنشاء", "#عمارة_حديثة"]
+    }
+  },
+
+  "_aU6VS34A_g": {
+    "title": { "en": "Concrete Slab Design Exercise: Simple Beam System", "ar": "تمرين تصميم الأسقف الخرسانية (الكمرة البسيطة)" },
+    "summary": {
+      "en": "Turn an architectural floor plan into slab construction drawings, step by step. This exercise explains the simple-beam system clearly, an essential skill for every architecture and civil engineering student preparing for exams and real projects.",
+      "ar": "حوّل المسقط الأفقي المعماري إلى رسومات تنفيذية للأسقف خطوة بخطوة. يشرح هذا التمرين نظام الكمرة البسيطة بوضوح، وهي مهارة أساسية لكل طالب عمارة ومدني يستعد للامتحانات والمشروعات الحقيقية."
+    },
+    "keywords": {
+      "en": ["#ConcreteSlabs", "#BeamSystem", "#BuildingConstruction", "#ShopDrawings", "#EngineeringStudents", "#ExamPrep"],
+      "ar": ["#الأسقف_الخرسانية", "#الكمرة_البسيطة", "#إنشاء_المباني", "#رسومات_تنفيذية", "#طلاب_الهندسة", "#مراجعة_امتحانات"]
+    }
+  },
+
+  "0l9eHwSsScU": {
+    "title": { "en": "Wall Bearing System Exercise: Foundation Drawing", "ar": "تمرين الأساسات بنظام الحوائط الحاملة" },
+    "summary": {
+      "en": "The most-watched lesson on the channel: a clear, step-by-step drawing of foundations for wall-bearing buildings. Watch how to set out wall footings and produce a correct foundation plan, explained simply for students and young engineers.",
+      "ar": "الدرس الأكثر مشاهدة على القناة: رسم واضح خطوة بخطوة لأساسات المباني بنظام الحوائط الحاملة. شاهد كيف توقّع أساسات الحوائط وتُخرج مسقط أساسات صحيحًا، بشرح مبسط للطلاب والمهندسين الجدد."
+    },
+    "keywords": {
+      "en": ["#WallBearing", "#Foundations", "#BuildingConstruction", "#FoundationPlan", "#ArchitectureStudents", "#CivilEngineering"],
+      "ar": ["#الحوائط_الحاملة", "#الأساسات", "#إنشاء_المباني", "#مسقط_الأساسات", "#طلاب_العمارة", "#هندسة_مدنية"]
+    }
+  },
+
+  "SuYw-SXrCHE": { "hidden": true },
+  "9rhzg6TeQmM": { "hidden": true },
+  "lxtxYjvC4Iw": { "hidden": true }
+}

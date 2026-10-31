@@ -14,6 +14,8 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
+import feeds
+
 ROOT = Path(__file__).parent
 OUT = ROOT / "dist"
 
@@ -54,6 +56,23 @@ UI = {
     "positions": ("Academic positions", "المسار الأكاديمي"),
     "education": ("Education", "التعليم"),
     "find_me": ("Find my work on", "تجد أعمالي على"),
+    "videos": ("Videos", "الفيديو"),
+    "articles": ("Articles", "المقالات"),
+    "latest_videos": ("Latest videos", "أحدث الفيديوهات"),
+    "latest_articles": ("Latest articles", "أحدث المقالات"),
+    "all_videos": ("All videos →", "كل الفيديوهات ←"),
+    "all_articles": ("All articles →", "كل المقالات ←"),
+    "subscribe": ("Subscribe on YouTube", "اشترك في القناة على يوتيوب"),
+    "views": ("views", "مشاهدة"),
+    "watch_yt": ("Watch on YouTube", "شاهد على يوتيوب"),
+    "read_more": ("Read article", "اقرأ المقال"),
+    "back_articles": ("← All articles", "→ كل المقالات"),
+    "on_blog": ("Also published on the blog", "منشور أيضًا على المدونة"),
+    "no_articles": ("New articles are on the way.", "مقالات جديدة قريبًا."),
+    "videos_lead": ("Lectures, construction exercises and short explainers on architecture and sustainable building.",
+                    "محاضرات وتمارين إنشاء وشروحات قصيرة في العمارة والبناء المستدام."),
+    "articles_lead": ("Short scientific articles on sustainable architecture, building materials and energy.",
+                      "مقالات علمية قصيرة في العمارة المستدامة ومواد البناء والطاقة."),
     "contact_lead": ("For research collaboration, supervision or speaking invitations, I would be glad to hear from you.",
                      "للتعاون البحثي أو الإشراف أو دعوات المحاضرات، يسعدني تواصلكم."),
     "featured": ("Featured", "مميز"),
@@ -431,14 +450,16 @@ def bibtex(p):
 
 
 # ---------- page shell ----------
-PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), ("contact", "contact/")]
+PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), ("videos", "videos/"),
+         ("articles", "articles/"), ("contact", "contact/")]
+NAV = list(PAGES)  # main() drops Videos/Articles when they are not configured
 
 
 def layout(profile, title, desc, body, base, canonical="", head_extra="", image="", active=""):
     default_lang = profile.get("default_lang", "en")
     name_en = pick(profile["name"], "en")
     nav = "".join(f'<a href="{base}{path}"{" class=on aria-current=page" if key == active else ""}>{ui(key)}</a>'
-                  for key, path in PAGES)
+                  for key, path in NAV)
     can = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ""
     img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
            f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
@@ -589,6 +610,7 @@ def build_pages(profile, papers, cards):
   <div class="grid">{"".join(paper_card(p, "", p["id"] in cards, False) for p in selected)}</div>
   <p class="center-row"><a class="btn btn-primary" href="publications/">{ui("all_pubs")}</a></p>
 </section>
+{home_media(profile)}
 </main>'''
     write_page("", layout(profile, f"{name_en} | {title_en}", desc, home, "", site + "/", ld, image, "home"))
 
@@ -664,11 +686,150 @@ def build_pages(profile, papers, cards):
 </main>'''
     write_page("contact", layout(profile, f'{ui_en("contact")} | {name_en}', desc, contact, "../", site + "/contact/", ld, image, "contact"))
 
-    return [site + "/" + path for _, path in PAGES]
+    return [site + "/" + path for key, path in NAV if key not in ("videos", "articles")]
 
 
 def ui_en(key):
     return UI[key][0]
+
+
+# ---------- videos & articles ----------
+VIDEOS, ARTICLES = [], []  # filled by main() from the YouTube and blog feeds
+
+
+def channel_url(profile):
+    return next((l["url"] for l in profile.get("links", []) if l["platform"].lower() == "youtube"), "")
+
+
+def load_videos(profile):
+    """Channel feed merged with content/videos.json (better titles, summaries, keywords, hidden flags)."""
+    texts = load_json(ROOT / "content" / "videos.json") if (ROOT / "content" / "videos.json").exists() else {}
+    out = []
+    for v in feeds.youtube_videos(profile.get("youtube_channel_id", "")):
+        extra = texts.get(v["id"], {})
+        if extra.get("hidden"):
+            continue
+        v["title_bi"] = extra.get("title") or v["title"]
+        v["summary"] = extra.get("summary") or v["description"][:240]
+        v["keywords"] = extra.get("keywords") or {}
+        out.append(v)
+    return out
+
+
+def video_card(v):
+    vid = esc(v["id"])
+    title_en = pick(v["title_bi"], "en")
+    kw = v["keywords"]
+    tags = ""
+    if kw:
+        en, ar = (kw.get("en", []), kw.get("ar", [])) if isinstance(kw, dict) else (kw, kw)
+        tags = (f'<div class="chips vtags"><span class="l-en">{" ".join(f"<span class=chip>{esc(k)}</span>" for k in en)}</span>'
+                f'<span class="l-ar">{" ".join(f"<span class=chip>{esc(k)}</span>" for k in ar)}</span></div>')
+    views = f'<span>{v["views"]:,} {ui("views")}</span>' if v.get("views") else ""
+    return f'''
+<article class="card vcard">
+  <button type="button" class="vthumb" data-yt="{vid}" aria-label="Play: {esc(title_en)}">
+    <img loading="lazy" src="https://i.ytimg.com/vi/{vid}/hqdefault.jpg" alt="{esc(title_en)}"><span class="vplay" aria-hidden="true"></span>
+  </button>
+  <div class="card-body">
+    <div class="meta"><span>{esc(v["date"])}</span>{views}</div>
+    <h3><a href="https://www.youtube.com/watch?v={vid}" target="_blank" rel="noopener">{bi(v["title_bi"])}</a></h3>
+    <p class="vdesc">{bi(v["summary"])}</p>
+    {tags}
+  </div>
+</article>'''
+
+
+def article_card(a, base):
+    link = f'{base}articles/{esc(a["slug"])}/'
+    cover = f'<a class="acover" href="{link}" tabindex="-1"><img loading="lazy" src="{esc(a["image"])}" alt=""></a>' if a["image"] else ""
+    excerpt = a["text"][:220] + ("…" if len(a["text"]) > 220 else "")
+    tags = "".join(f'<span class="chip chip-static">{esc(t)}</span>' for t in a["tags"][:5])
+    return f'''
+<article class="card acard">{cover}
+  <div class="card-body">
+    <div class="meta"><span>{esc(a["date"])}</span></div>
+    <h3 dir="auto"><a href="{link}">{esc(a["title"])}</a></h3>
+    <p class="aexcerpt" dir="auto">{esc(excerpt)}</p>
+    <div class="chips">{tags}</div>
+    <div class="actions"><a class="btn btn-sm btn-primary" href="{link}">{ui("read_more")}</a></div>
+  </div>
+</article>'''
+
+
+def home_media(profile):
+    out = ""
+    if VIDEOS:
+        out += (f'<section class="wrap"><h2>{ui("latest_videos")}</h2><div class="vgrid">{"".join(video_card(v) for v in VIDEOS[:3])}</div>'
+                f'<p class="center-row"><a class="btn btn-primary" href="videos/">{ui("all_videos")}</a></p></section>')
+    if ARTICLES:
+        out += (f'<section class="wrap"><h2>{ui("latest_articles")}</h2><div class="agrid">{"".join(article_card(a, "") for a in ARTICLES[:3])}</div>'
+                f'<p class="center-row"><a class="btn btn-primary" href="articles/">{ui("all_articles")}</a></p></section>')
+    return out
+
+
+def build_media_pages(profile):
+    """Videos page, Articles index and one page per article. Returns URLs for the sitemap."""
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    urls = []
+    nav_keys = [k for k, _ in NAV]
+
+    if "videos" in nav_keys:
+        chan = channel_url(profile)
+        sub = f'<a class="btn btn-primary" href="{esc(chan)}?sub_confirmation=1" target="_blank" rel="noopener">{ui("subscribe")}</a>' if chan else ""
+        grid = "".join(video_card(v) for v in VIDEOS) or f'<p><a class="btn" href="{esc(chan)}" target="_blank" rel="noopener">{ui("watch_yt")}</a></p>'
+        ld = {"@context": "https://schema.org", "@type": "ItemList", "itemListElement": [
+            {"@type": "ListItem", "position": i + 1, "item": {
+                "@type": "VideoObject", "name": pick(v["title_bi"], "en"), "description": pick(v["summary"], "en") or pick(v["title_bi"], "en"),
+                "thumbnailUrl": f'https://i.ytimg.com/vi/{v["id"]}/hqdefault.jpg', "uploadDate": v["date"],
+                "embedUrl": f'https://www.youtube.com/embed/{v["id"]}', "contentUrl": f'https://www.youtube.com/watch?v={v["id"]}',
+                "keywords": ", ".join(k.lstrip("#") for k in (v["keywords"].get("en", []) if isinstance(v["keywords"], dict) else v["keywords"]))}}
+            for i, v in enumerate(VIDEOS)]}
+        body = f'''
+<main>
+{page_hero("videos")}
+<section class="wrap"><p class="lead">{ui("videos_lead")}</p><p>{sub}</p><div class="vgrid">{grid}</div></section>
+</main>'''
+        head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+        write_page("videos", layout(profile, f'{ui_en("videos")} | {name_en}', UI["videos_lead"][0], body, "../",
+                                    site + "/videos/", head, "", "videos"))
+        urls.append(site + "/videos/")
+
+    if "articles" in nav_keys:
+        grid = "".join(article_card(a, "../") for a in ARTICLES) or f'<p class="muted">{ui("no_articles")}</p>'
+        body = f'''
+<main>
+{page_hero("articles")}
+<section class="wrap"><p class="lead">{ui("articles_lead")}</p><div class="agrid">{grid}</div></section>
+</main>'''
+        write_page("articles", layout(profile, f'{ui_en("articles")} | {name_en}', UI["articles_lead"][0], body, "../",
+                                      site + "/articles/", "", "", "articles"))
+        urls.append(site + "/articles/")
+        for a in ARTICLES:
+            base = "../../"
+            ld = {"@context": "https://schema.org", "@type": "BlogPosting", "headline": a["title"], "datePublished": a["date"],
+                  "dateModified": a["updated"] or a["date"], "author": {"@type": "Person", "name": name_en},
+                  "keywords": ", ".join(a["tags"]), "mainEntityOfPage": a["link"] or f'{site}/articles/{a["slug"]}/'}
+            if a["image"]:
+                ld["image"] = a["image"]
+            tags = "".join(f'<span class="chip chip-static">{esc(t)}</span>' for t in a["tags"])
+            orig = f'<p class="muted"><a href="{esc(a["link"])}" target="_blank" rel="noopener">{ui("on_blog")}</a></p>' if a["link"] else ""
+            body = f'''
+<main class="wrap article-page">
+  <p><a href="{base}articles/">{ui("back_articles")}</a></p>
+  <div class="meta"><span>{esc(a["date"])}</span></div>
+  <h1 dir="auto">{esc(a["title"])}</h1>
+  <div class="chips">{tags}</div>
+  <div class="prose" dir="auto">{a["html"]}</div>
+  {orig}
+</main>'''
+            # the blog keeps the original copy, so point search engines there to avoid duplicate content
+            write_page(f'articles/{a["slug"]}', layout(profile, f'{a["title"]} | {name_en}', a["text"][:300], body, base,
+                                                      a["link"] or f'{site}/articles/{a["slug"]}/',
+                                                      f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>',
+                                                      a["image"], "articles"))
+    return urls
 
 
 def build_paper(profile, p, has_card):
@@ -778,7 +939,16 @@ def main():
         shutil.copytree(ROOT / "root", OUT, dirs_exist_ok=True)
 
     cards = set() if "--no-cards" in sys.argv else build_cards(profile, papers)
+    global VIDEOS, ARTICLES
+    VIDEOS = load_videos(profile)
+    ARTICLES = feeds.blog_articles(profile.get("blog_feed", ""))
+    NAV[:] = [(k, p) for k, p in PAGES
+              if not (k == "videos" and not profile.get("youtube_channel_id"))
+              and not (k == "articles" and not profile.get("blog_feed"))]
+    print(f"feeds: {len(VIDEOS)} videos, {len(ARTICLES)} articles")
+
     urls = build_pages(profile, papers, cards)
+    urls += build_media_pages(profile)
     urls += [build_paper(profile, p, p["id"] in cards) for p in papers]
 
     site = profile.get("site_url", "").rstrip("/")
