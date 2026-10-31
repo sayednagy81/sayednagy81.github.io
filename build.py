@@ -707,7 +707,7 @@ def home_tools():
         return ""
     cards = [("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
               {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
-             ("tools/#stairs", "≡", "#a8822f", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
+             ("tools/stairs/", "≡", "#a8822f", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
               {"en": "Risers, treads, flights and a scaled section", "ar": "القوائم والنوائم والقلبات وقطاع بمقياس رسم"})]
     items = "".join(f'<a class="card pcard" href="{h}"><span class="pbadge" style="background:{c}">{s}</span>'
                     f'<span><b>{bi(t)}</b><small>{bi(d)}</small></span></a>' for h, s, c, t, d in cards)
@@ -1027,7 +1027,7 @@ def build_media_pages(profile):
 
 
 # ---------- tools (interactive calculators) ----------
-def stairs_tool():
+def stairs_tool(heading=True):
     """Stair calculator markup; the arithmetic and drawing live in static/stairs.js."""
     def field(fid, label, inner):
         return f'<label class="calc-field" for="{fid}"><span>{bi(label)}</span>{inner}</label>'
@@ -1046,9 +1046,10 @@ def stairs_tool():
     video_link = (f'<p class="muted">{bi({"en": "Explained step by step in the lesson:", "ar": "الشرح خطوة بخطوة في درس:"})} '
                   f'<a href="https://www.youtube.com/watch?v=OUYDQhrRlPA" target="_blank" rel="noopener">{bi(video["title_bi"])}</a></p>'
                   if video else "")
+    h2 = f'<h2>{bi({"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"})}</h2>' if heading else ""
     return f'''
 <section class="wrap" id="stairs">
-  <h2>{bi({"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"})}</h2>
+  {h2}
   <p class="lead">{bi({"en": "Enter the floor-to-floor height to get the number of risers, the riser and tread sizes, the plan length of the stair and a scaled section. Change the number of risers with − / + to compare options.",
                        "ar": "أدخل ارتفاع الدور (من منسوب أرضية إلى التي تليها) لتحصل على عدد القوائم ومقاس القائمة والنائمة وطول السلم في المسقط وقطاعًا بمقياس رسم. غيّر عدد القوائم بزر − / + لتقارن البدائل."})}</p>
   {video_link}
@@ -1213,15 +1214,6 @@ def uvalue_example(mats):
 </section>'''
 
 
-def uvalue_faq():
-    items = "".join(f'<details class="faq"><summary>{bi(q)}</summary><p>{bi(a)}</p></details>' for q, a in UVALUE_FAQ)
-    return f'''
-<section class="wrap" id="faq">
-  <h2>{bi({"en": "Frequently asked questions about U-value and wall insulation", "ar": "أسئلة شائعة عن معامل U والعزل الحراري للحوائط"})}</h2>
-  {items}
-</section>'''
-
-
 def uvalue_share_card(profile):
     """1200x630 link-preview image for /tools/u-value/ (rendered like the paper cards)."""
     bars = "".join(f'<i style="background:{c};flex:{w}"></i>' for c, w in
@@ -1246,19 +1238,11 @@ def build_uvalue_page(profile, mats):
     name_en = pick(profile["name"], "en")
     base = "../../"
     url = site + "/tools/u-value/"
-    image = ""
-    browser = find_browser() if "--no-cards" not in sys.argv else None
-    if browser:
-        d = OUT / "cards"
-        d.mkdir(exist_ok=True)
-        page = d / "u-value.html"
-        page.write_text(uvalue_share_card(profile), encoding="utf-8")
-        if render_png(browser, page, d / "u-value.png", tempfile.mkdtemp(prefix="cards-")):
-            image = site + "/cards/u-value.png"
+    image = render_share_card(profile, "u-value", uvalue_share_card(profile))
     intro = {"en": "Calculate the U-value (thermal transmittance) and thermal resistance of any wall online, free. Choose materials used in Egypt and the Arab world, such as red brick, cement brick, AAC, concrete, XPS, EPS and rock wool, enter the thickness of each layer and see straight away how much heat the wall lets through, how the temperature falls inside it, and how much an insulation layer saves.",
              "ar": "احسب معامل الانتقال الحراري U والمقاومة الحرارية لأي حائط أونلاين ومجانًا. اختر مواد البناء المستخدمة في مصر والوطن العربي، مثل الطوب الأحمر والطوب الأسمنتي والطوب الخفيف AAC والخرسانة وألواح العزل XPS وEPS والصوف الصخري، وأدخل سمك كل طبقة، فترى فورًا كم يمرر الحائط من حرارة، وكيف تتغير درجة الحرارة داخله، وكم توفر طبقة العزل."}
     related = [
-        (f'{base}tools/#stairs', {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"}),
+        (f'{base}tools/stairs/', {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"}),
         (f'{base}videos/', {"en": "Video: the science behind Passive Houses (with a quiz)", "ar": "فيديو: العلم وراء البيوت الموفرة للطاقة (مع اختبار)"}),
         (f'{base}papers/nanomaterials-thermal-efficiency-envelopes-2023/', {"en": "Research: nanomaterials and the thermal efficiency of building envelopes", "ar": "بحث: مواد النانو والكفاءة الحرارية لأغلفة المباني"}),
         (f'{base}papers/adaptive-envelopes-administrative-2026/', {"en": "Research: adaptive building envelopes in hot-arid climates", "ar": "بحث: الأغلفة المتكيفة للمباني الإدارية في المناخ الحار الجاف"}),
@@ -1266,10 +1250,7 @@ def build_uvalue_page(profile, mats):
     rel = "".join(f'<li><a href="{h}">{bi(t)}</a></li>' for h, t in related)
     body = f'''
 <main>
-<section class="page-hero"><div class="wrap">
-  <p class="crumbs"><a href="{base}">{ui("home")}</a> › <a href="{base}tools/">{ui("tools")}</a></p>
-  <h1>{bi({"en": "Wall U-value Calculator: Thermal Insulation Online", "ar": "حاسبة معامل U والعزل الحراري للحوائط أونلاين"})}</h1>
-</div></section>
+{tool_hero(base, {"en": "Wall U-value Calculator: Thermal Insulation Online", "ar": "حاسبة معامل U والعزل الحراري للحوائط أونلاين"})}
 <section class="wrap"><p class="lead">{bi(intro)}</p>
   <p class="btn-row"><a class="btn" href="#example">{bi({"en": "Worked example", "ar": "مثال محلول"})}</a>
   <a class="btn" href="#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a>
@@ -1277,7 +1258,7 @@ def build_uvalue_page(profile, mats):
 {uvalue_tool(mats, heading=False)}
 {uvalue_example(mats)}
 {materials_table(mats)}
-{uvalue_faq()}
+{faq_section(UVALUE_FAQ, {"en": "Frequently asked questions about U-value and wall insulation", "ar": "أسئلة شائعة عن معامل U والعزل الحراري للحوائط"})}
 <section class="wrap"><h2>{bi({"en": "Related", "ar": "روابط ذات صلة"})}</h2><ul class="uv-related">{rel}</ul></section>
 </main>'''
     author = {"@type": "Person", "name": name_en, "url": site + "/", "jobTitle": pick(profile.get("title", ""), "en")}
@@ -1292,9 +1273,7 @@ def build_uvalue_page(profile, mats):
          "alternateName": "الخصائص الحرارية لأهم مواد البناء في مصر والوطن العربي", "url": url + "#materials",
          "description": pick(mats["note"], "en"), "creator": author, "isAccessibleForFree": True, "inLanguage": ["en", "ar"],
          "variableMeasured": ["Density (kg/m3)", "Thermal conductivity λ (W/m·K)", "Thermal resistance R (m2·K/W)"]},
-        {"@type": "FAQPage", "mainEntity": [
-            {"@type": "Question", "name": pick(q, lang), "acceptedAnswer": {"@type": "Answer", "text": pick(a, lang)}}
-            for lang in ("en", "ar") for q, a in UVALUE_FAQ]},
+        faq_ld(UVALUE_FAQ),
         {"@type": "BreadcrumbList", "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "Home", "item": site + "/"},
             {"@type": "ListItem", "position": 2, "name": "Tools", "item": site + "/tools/"},
@@ -1315,6 +1294,136 @@ def build_uvalue_page(profile, mats):
     return url
 
 
+STAIRS_FAQ = [
+    ({"en": "How do I calculate the number of stair risers?", "ar": "كيف أحسب عدد درجات السلم (القوائم)؟"},
+     {"en": "Divide the floor-to-floor height by the riser height, aiming for 15 cm and never more than 18 cm. For a 3.00 m floor: 300 ÷ 15 = 20 risers.",
+      "ar": "اقسم ارتفاع الدور على ارتفاع القائمة، والأفضل 15 سم ولا تزيد على 18 سم. لدور ارتفاعه 3.00 م: 300 ÷ 15 = 20 قائمة."}),
+    ({"en": "What are the standard riser and tread sizes?", "ar": "ما المقاسات القياسية للقائمة والنائمة؟"},
+     {"en": "Riser 15–18 cm (15 is preferred) and tread 30 cm, which can be reduced to 27 cm as the riser grows. In public buildings the riser is at most 17 cm and the tread at least 28 cm.",
+      "ar": "القائمة 15–18 سم (والأفضل 15)، والنائمة 30 سم ويمكن أن تقل حتى 27 سم كلما زادت القائمة. وفي المباني العامة لا تزيد القائمة على 17 سم ولا تقل النائمة عن 28 سم."}),
+    ({"en": "What is the 2R + T rule?", "ar": "ما قاعدة 2ق + ن؟"},
+     {"en": "Twice the riser plus the tread should fall between 60 and 65 cm, matching a comfortable walking stride. For example 2 × 15 + 30 = 60 cm.",
+      "ar": "ضعف القائمة مضافًا إليه النائمة يجب أن يكون بين 60 و65 سم، وهو ما يناسب خطوة الإنسان المريحة. مثلًا 2 × 15 + 30 = 60 سم."}),
+    ({"en": "Why should a two-flight stair have an even number of risers?", "ar": "لماذا يكون عدد الدرجات زوجيًا في السلم ذي القلبتين؟"},
+     {"en": "So the two flights are equal and the landing sits at mid-height: 9 + 9 = 18, 10 + 10 = 20, 11 + 11 = 22.",
+      "ar": "حتى تتساوى القلبتان وتكون البسطة في منتصف الارتفاع: 9 + 9 = 18، و10 + 10 = 20، و11 + 11 = 22."}),
+    ({"en": "What is a comfortable stair pitch?", "ar": "ما زاوية الميل المريحة للسلم؟"},
+     {"en": "About 27° to 33°. A steeper stair is tiring and unsafe; a flatter one wastes floor area.",
+      "ar": "تقريبًا من 27° إلى 33°. السلم الأشد ميلًا متعب وغير آمن، والأقل ميلًا يهدر مساحة."}),
+    ({"en": "How long is the stair in plan?", "ar": "كم يكون طول السلم في المسقط الأفقي؟"},
+     {"en": "Each flight's going is (risers in the flight − 1) × tread, plus a landing at least as deep as the stair is wide. For 10 + 10 risers with a 30 cm tread and a 1.20 m wide stair: 9 × 30 = 2.70 m + 1.20 m = 3.90 m.",
+      "ar": "طول كل قلبة = (عدد قوائمها − 1) × النائمة، مضافًا إليه بسطة لا يقل عمقها عن عرض القلبة. لسلم 10 + 10 قوائم بنائمة 30 سم وعرض 1.20 م: 9 × 30 = 2.70 م + 1.20 م = 3.90 م."}),
+]
+
+
+def faq_section(faq, title):
+    items = "".join(f'<details class="faq"><summary>{bi(q)}</summary><p>{bi(a)}</p></details>' for q, a in faq)
+    return f'<section class="wrap" id="faq"><h2>{bi(title)}</h2>{items}</section>'
+
+
+def faq_ld(faq):
+    return {"@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": pick(q, lang), "acceptedAnswer": {"@type": "Answer", "text": pick(a, lang)}}
+        for lang in ("en", "ar") for q, a in faq]}
+
+
+def tool_hero(base, title):
+    return (f'<section class="page-hero"><div class="wrap"><p class="crumbs"><a href="{base}">{ui("home")}</a> › '
+            f'<a href="{base}tools/">{ui("tools")}</a></p><h1>{bi(title)}</h1></div></section>')
+
+
+def render_share_card(profile, slug, html_text):
+    """Renders cards/<slug>.png for a tool page; returns its absolute URL, or "" without a browser or with --no-cards."""
+    browser = find_browser() if "--no-cards" not in sys.argv else None
+    if not browser:
+        return ""
+    d = OUT / "cards"
+    d.mkdir(exist_ok=True)
+    page = d / f"{slug}.html"
+    page.write_text(html_text, encoding="utf-8")
+    if render_png(browser, page, d / f"{slug}.png", tempfile.mkdtemp(prefix="cards-")):
+        return profile.get("site_url", "").rstrip("/") + f"/cards/{slug}.png"
+    return ""
+
+
+def stairs_share_card(profile):
+    steps = "".join(f'<path d="M{20 + i * 34} {380 - i * 34}h34v-34"/>' for i in range(10))
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link href="{FONTS}" rel="stylesheet"><style>
+*{{box-sizing:border-box;margin:0}}html,body{{width:1200px;height:630px;overflow:hidden}}
+body{{font-family:"IBM Plex Sans Arabic","Segoe UI",Arial,sans-serif;background:#13294b;color:#fff;padding:56px 64px;display:flex;gap:40px;align-items:center;
+background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}}
+.txt{{flex:1}}h1{{font-family:"Source Serif 4",Georgia,serif;font-size:60px;line-height:1.1}}
+.ar{{font-family:"Noto Naskh Arabic",serif;font-size:48px;direction:rtl;margin-top:18px;color:#f3ecdb}}
+p{{font-size:24px;margin-top:22px;color:#dfe5ef}}.u{{color:#d2b06a;font-weight:700}}.foot{{margin-top:30px;font-size:20px;color:#d2b06a}}
+svg{{width:420px;height:420px}}path{{fill:none;stroke:#d2b06a;stroke-width:5;stroke-linejoin:round}}
+</style></head><body><div class="txt"><h1>Stair Design Calculator</h1><div class="ar">حاسبة تصميم السلالم</div>
+<p>Risers · treads · <span class="u">2R + T</span> · flights · scaled section</p>
+<div class="foot">{esc(profile.get("site_url", "").replace("https://", ""))}/tools/stairs/</div></div>
+<svg viewBox="0 0 400 400"><path d="M10 380H390" style="stroke:#fff;stroke-width:4"/>{steps}</svg></body></html>'''
+
+
+def build_stairs_page(profile):
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    base = "../../"
+    url = site + "/tools/stairs/"
+    image = render_share_card(profile, "stairs", stairs_share_card(profile))
+    intro = {"en": "Design a staircase online, free: enter the floor-to-floor height and get the number of risers, the riser and tread dimensions, the 2R + T comfort check, the pitch, the plan length with the landing and a scaled section of the stair. The values follow the Building Construction lessons on the Build2Wise channel, for architecture and civil engineering students.",
+             "ar": "صمّم السلم أونلاين ومجانًا: أدخل ارتفاع الدور فتحصل على عدد القوائم، ومقاس القائمة والنائمة، وفحص قاعدة 2ق + ن، وزاوية الميل، وطول السلم في المسقط مع البسطة، وقطاع للسلم بمقياس رسم. القيم مأخوذة من دروس تشييد المباني على قناة Build2Wise، لطلاب العمارة والهندسة المدنية."}
+    example = f'''
+<section class="wrap" id="example">
+  <h2>{bi({"en": "How to design a stair: worked example", "ar": "طريقة تصميم السلم: مثال محلول"})}</h2>
+  <p>{bi({"en": "A two-flight stair for a floor height of 3.00 m, 1.20 m wide:", "ar": "سلم من قلبتين لدور ارتفاعه 3.00 م وعرض القلبة 1.20 م:"})}</p>
+  <ol class="uv-steps">
+    <li>{bi({"en": "Number of risers = 300 ÷ 15 = 20 (even, so 10 + 10).", "ar": "عدد القوائم = 300 ÷ 15 = 20 (عدد زوجي، أي 10 + 10)."})}</li>
+    <li>{bi({"en": "Riser = 300 ÷ 20 = 15 cm; tread = 30 cm.", "ar": "القائمة = 300 ÷ 20 = 15 سم، والنائمة = 30 سم."})}</li>
+    <li>{bi({"en": "Check: 2 × 15 + 30 = 60 cm, within 60–65.", "ar": "الفحص: 2 × 15 + 30 = 60 سم، أي ضمن 60–65."})}</li>
+    <li>{bi({"en": "Each flight: (10 − 1) × 30 = 2.70 m; with a 1.20 m landing the stair is 3.90 m long in plan.", "ar": "طول كل قلبة: (10 − 1) × 30 = 2.70 م، ومع بسطة 1.20 م يصبح طول السلم في المسقط 3.90 م."})}</li>
+    <li>{bi({"en": "Landing level = 10 × 15 = +1.50 m.", "ar": "منسوب البسطة = 10 × 15 = ‎+1.50 م."})}</li>
+  </ol>
+</section>'''
+    related = [
+        (f'{base}tools/u-value/', {"en": "Wall U-value and thermal insulation calculator", "ar": "حاسبة معامل U والعزل الحراري للحوائط"}),
+        ("https://www.youtube.com/watch?v=OUYDQhrRlPA", {"en": "Video lesson: Stairs Design", "ar": "درس فيديو: تصميم السلالم"}),
+        (f'{base}videos/', {"en": "Video: review of concrete staircase drawings (with a quiz)", "ar": "فيديو: تعقيب على لوحات السلالم الخرسانية (مع اختبار)"}),
+    ]
+    rel = "".join(f'<li><a href="{h}">{bi(t)}</a></li>' for h, t in related)
+    body = f'''
+<main>
+{tool_hero(base, {"en": "Stair Design Calculator: Risers, Treads and Section", "ar": "حاسبة تصميم السلالم: القوائم والنوائم والقطاع"})}
+<section class="wrap"><p class="lead">{bi(intro)}</p>
+  <p class="btn-row"><a class="btn" href="#example">{bi({"en": "Worked example", "ar": "مثال محلول"})}</a>
+  <a class="btn" href="#faq">{bi({"en": "FAQ", "ar": "أسئلة شائعة"})}</a></p></section>
+{stairs_tool(heading=False)}
+{example}
+{faq_section(STAIRS_FAQ, {"en": "Frequently asked questions about stair design", "ar": "أسئلة شائعة عن تصميم السلالم"})}
+<section class="wrap"><h2>{bi({"en": "Related", "ar": "روابط ذات صلة"})}</h2><ul class="uv-related">{rel}</ul></section>
+</main>'''
+    author = {"@type": "Person", "name": name_en, "url": site + "/", "jobTitle": pick(profile.get("title", ""), "en")}
+    app = {"@type": "WebApplication", "name": "Stair design calculator", "alternateName": "حاسبة تصميم السلالم", "url": url,
+           "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
+           "inLanguage": ["en", "ar"], "description": intro["en"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+           "author": author, "featureList": ["Number of risers", "Riser and tread sizes", "2R+T comfort rule", "Pitch",
+                                             "Plan length and landing", "Scaled section drawing"]}
+    if image:
+        app["image"] = image
+    ld = {"@context": "https://schema.org", "@graph": [app, faq_ld(STAIRS_FAQ), {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": site + "/"},
+        {"@type": "ListItem", "position": 2, "name": "Tools", "item": site + "/tools/"},
+        {"@type": "ListItem", "position": 3, "name": "Stair design calculator", "item": url}]}]}
+    head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+            f'<script src="{base}static/stairs.js" defer></script>')
+    desc = ("Free stair design calculator: number of risers, riser and tread, 2R+T check, pitch, plan length and a scaled section. "
+            "| حاسبة مجانية لتصميم السلالم: عدد القوائم والقائمة والنائمة وقاعدة 2ق+ن وطول السلم وقطاع بمقياس رسم.")
+    kws = ["stair design calculator", "staircase calculator", "stair riser and tread calculator", "how to design a staircase",
+           "number of stair steps", "2R+T rule", "Blondel formula", "dog-leg stair", "stair landing", "stair pitch",
+           "حاسبة تصميم السلالم", "تصميم السلالم", "حساب عدد درجات السلم", "القائمة والنائمة", "مقاسات درجات السلم",
+           "قاعدة 2ق+ن", "تصميم سلم قلبتين", "بسطة السلم", "زاوية ميل السلم", "طول السلم في المسقط", "تشييد المباني"]
+    write_page("tools/stairs", layout(profile, "Stair Design Calculator | حاسبة تصميم السلالم: القائمة والنائمة", desc, body,
+                                      base, url, head, image, "tools", kws))
+    return url
+
+
 def build_tools(profile):
     if "tools" not in [k for k, _ in NAV]:
         return []
@@ -1324,37 +1433,39 @@ def build_tools(profile):
             "ar": "حاسبات تفاعلية لطلاب العمارة والإنشاء المعماري."}
     mats = load_materials()
     u_url = build_uvalue_page(profile, mats)
-    jump = (f'<p class="btn-row"><a class="btn" href="#stairs">{bi({"en": "Stair design", "ar": "تصميم السلالم"})}</a>'
-            f'<a class="btn" href="u-value/">{bi({"en": "Wall U-value", "ar": "معامل U للحائط"})}</a>'
-            f'<a class="btn" href="u-value/#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a></p>')
-    teaser = f'''
-<section class="wrap" id="uvalue">
-  <h2>{bi({"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"})}</h2>
-  <a class="card tool-card" href="u-value/">
-    <span class="tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#b5583a;flex:12"></i><i style="background:#9cc7e8;flex:5"></i><i style="background:#b5583a;flex:12"></i><i style="background:#cfc8bb;flex:2"></i></span>
-    <span><b>{bi({"en": "Calculate the U-value and thermal insulation of any wall", "ar": "احسب معامل U والعزل الحراري لأي حائط"})}</b>
-    <small>{bi({"en": "Layer-by-layer builder, temperature profile, worked example and a table of the thermal properties of building materials in Egypt and the Arab world.",
-                "ar": "تكوين الحائط طبقة بطبقة، ورسم لتغير الحرارة، ومثال محلول، وجدول الخصائص الحرارية لمواد البناء في مصر والوطن العربي."})}</small>
-    <span class="btn btn-sm btn-primary">{bi({"en": "Open the calculator →", "ar": "افتح الحاسبة ←"})}</span></span>
-  </a>
-</section>'''
+    s_url = build_stairs_page(profile)
+    wall = ('<span class="tool-art tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#b5583a;flex:12"></i>'
+            '<i style="background:#9cc7e8;flex:5"></i><i style="background:#b5583a;flex:12"></i><i style="background:#cfc8bb;flex:2"></i></span>')
+    stair = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M6 94H94" class="ta-floor"/>'
+             + "".join(f'<path d="M{8 + i * 10} {92 - i * 10}h10v-10"/>' for i in range(8)) + '</svg></span>')
+    table = ('<span class="tool-art tool-table" aria-hidden="true">' + "".join("<i></i>" for _ in range(12)) + '</span>')
+    tools = [
+        ("stairs/", stair, {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
+         {"en": "Number of risers, riser and tread, 2R + T check, pitch, plan length with the landing and a scaled section.",
+          "ar": "عدد القوائم، والقائمة والنائمة، وفحص 2ق + ن، وزاوية الميل، وطول السلم مع البسطة، وقطاع بمقياس رسم."}),
+        ("u-value/", wall, {"en": "Wall U-value and thermal insulation calculator", "ar": "حاسبة معامل U والعزل الحراري للحوائط"},
+         {"en": "Build a wall layer by layer and see its thermal resistance, U-value, temperature profile and the saving from insulation.",
+          "ar": "كوّن الحائط طبقة بطبقة، وشاهد مقاومته الحرارية ومعامل U وتغير الحرارة داخله والتوفير الناتج عن العزل."}),
+        ("u-value/#materials", table, {"en": "Thermal properties of building materials", "ar": "الخصائص الحرارية لمواد البناء"},
+         {"en": "Density, thermal conductivity and thermal resistance of the main building materials in Egypt and the Arab world.",
+          "ar": "الكثافة ومعامل التوصيل الحراري والمقاومة الحرارية لأهم مواد البناء في مصر والوطن العربي."}),
+    ]
+    cards = "".join(f'''<a class="card tool-card" href="{h}">{art}<span><b>{bi(t)}</b><small>{bi(d)}</small>
+    <span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a>''' for h, art, t, d in tools)
+    # links shared before the split pointed at sections of this page; send them to the new pages
+    redirect = ('<script>(function(){var m={"#stairs":"stairs/","#uvalue":"u-value/","#materials":"u-value/#materials"};'
+                'var t=m[location.hash];if(t)location.replace(t);})();</script>')
     body = f'''
 <main>
 {page_hero("tools")}
-<section class="wrap"><p class="lead">{bi(lead)}</p>{jump}</section>
-{teaser}
-{stairs_tool()}
+<section class="wrap"><p class="lead">{bi(lead)}</p><div class="tool-grid">{cards}</div></section>
 </main>'''
     author = {"@type": "Person", "name": name_en, "url": site + "/"}
-    app = lambda name, name_ar, anchor, about: {
-        "@type": "WebApplication", "name": name, "alternateName": name_ar, "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Any", "isAccessibleForFree": True, "inLanguage": ["en", "ar"], "url": site + "/tools/#" + anchor,
-        "about": about, "educationalLevel": "Undergraduate", "audience": {"@type": "EducationalAudience", "educationalRole": "student"},
-        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": author}
-    ld = {"@context": "https://schema.org", "@graph": [
-        app("Stair design calculator", "حاسبة تصميم السلالم", "stairs", "Staircase design: risers, treads, 2R+T rule")]}
-    head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-            f'<script src="../static/stairs.js" defer></script>')
+    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Free tools for architecture students",
+          "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": u, "name": n} for i, (u, n) in enumerate(
+              [(s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
+               (u_url + "#materials", "Thermal properties of building materials")])], "author": author}
+    head = redirect + f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
     desc = ("Free stair design and wall U-value calculators for architecture students, with a table of the thermal "
             "properties of building materials. | حاسبة تصميم السلالم وحاسبة العزل الحراري ومعامل U للحوائط، وجدول خصائص مواد البناء.")
     kws = ["stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
@@ -1363,7 +1474,7 @@ def build_tools(profile):
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
     write_page("tools", layout(profile, f'Free Tools for Architecture Students: Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", u_url]
+    return [site + "/tools/", s_url, u_url]
 
 
 def write_search_index(profile, papers):
@@ -1392,7 +1503,7 @@ def write_search_index(profile, papers):
     for a in ARTICLES:
         add("article", f'articles/{a["slug"]}/', a["title"], [a["text"][:1500]] + a["tags"], a["date"])
     if "tools" in [k for k, _ in NAV]:
-        add("tool", "tools/#stairs", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
+        add("tool", "tools/stairs/", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
             ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
         add("tool", "tools/u-value/", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},
             ["u-value", "thermal insulation", "thermal resistance", "wall", "insulation", "عزل حراري", "معامل انتقال حراري",

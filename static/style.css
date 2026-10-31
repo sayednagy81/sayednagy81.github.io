@@ -459,3 +459,15 @@ html[dir="rtl"] .quiz-title{margin:0 0 10px 44px}
 .uv-related li{margin:6px 0}
 @media (max-width:760px){.tool-card{grid-template-columns:70px 1fr;gap:14px}.tool-wall{height:90px}}
 #example .mt{min-width:0;font-size:.82rem}#example .mt th,#example .mt td{padding:7px 8px}
+
+/* ---------- tools index ---------- */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:18px;margin-top:20px}
+.tool-grid .tool-card{grid-template-columns:96px 1fr;align-items:start}
+.tool-art{display:grid;place-items:center;height:96px;border:2px solid var(--brass);border-radius:10px;background:var(--bg);overflow:hidden}
+.tool-art svg{width:80px;height:80px}
+.tool-art path{fill:none;stroke:var(--primary);stroke-width:3;stroke-linejoin:round}
+.tool-art .ta-floor{stroke:var(--brass)}
+.tool-art.tool-wall{display:flex;place-items:normal}
+.tool-table{grid-template-columns:repeat(3,1fr);gap:3px;padding:10px}
+.tool-table i{display:block;height:100%;min-height:14px;background:color-mix(in srgb,var(--primary) 18%,transparent);border-radius:2px}
+.tool-table i:nth-child(-n+3){background:var(--primary)}

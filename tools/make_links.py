@@ -33,9 +33,9 @@ def main(out):
 
     sections = []
     pages = [("الرئيسية", "/"), ("نبذة", "/about/"), ("المنشورات", "/publications/"), ("الفيديو", "/videos/"),
-             ("المقالات", "/articles/"), ("أدوات: حاسبة تصميم السلالم", "/tools/#stairs"),
+             ("المقالات", "/articles/"), ("أدوات (فهرس)", "/tools/"), ("أدوات: حاسبة تصميم السلالم", "/tools/stairs/"),
              ("أدوات: حاسبة العزل الحراري (معامل U)", "/tools/u-value/"), ("أدوات: جدول خصائص مواد البناء", "/tools/u-value/#materials"),
-             ("صورة مشاركة حاسبة معامل U", "/cards/u-value.png"), ("تواصل", "/contact/"),
+             ("صورة مشاركة حاسبة معامل U", "/cards/u-value.png"), ("صورة مشاركة حاسبة السلالم", "/cards/stairs.png"), ("تواصل", "/contact/"),
              ("خريطة الموقع sitemap.xml", "/sitemap.xml"), ("فهرس البحث search.json", "/search.json")]
     sections.append(("صفحات الموقع", [row(l, site + p) for l, p in pages]))
 
