@@ -1,5 +1,6 @@
 // Stair design calculator on /tools/ (markup from stairs_tool() in build.py).
-// All sizes in cm. Guidance values are the common textbook ones quoted in the note under the calculator.
+// All sizes in cm. Values follow the Building Construction lessons on the channel: riser 15–18 (aim 15),
+// tread 30 standard and down to 27, comfortable pitch about 27°–33°, an even riser count for two equal flights.
 (function () {
   "use strict";
   var form = document.getElementById("st-form");
@@ -7,10 +8,12 @@
   var root = document.documentElement;
   var $ = function (id) { return document.getElementById(id); };
   var LIMITS = {
-    res: { rMin: 15, rMax: 18, rIdeal: 17, tMin: 25 },
-    pub: { rMin: 15, rMax: 17, rIdeal: 16, tMin: 28 }
+    res: { rMin: 15, rMax: 18, rIdeal: 15, tMin: 27 },
+    pub: { rMin: 15, rMax: 17, rIdeal: 15, tMin: 28 }
   };
-  var COMFORT = 63, COMFORT_MIN = 60, COMFORT_MAX = 65, FLIGHT_MAX = 16;
+  var T_STD = 30, COMFORT = 63, COMFORT_MIN = 60, COMFORT_MAX = 65, FLIGHT_MAX = 16;
+  // the lessons quote 27°–33°; 15/30 itself is 26.6°, so the check allows half a degree either side
+  var PITCH_MIN = 26.5, PITCH_MAX = 33.9;
   var manualN = null;
 
   function ar() { return root.dataset.lang === "ar"; }
@@ -24,9 +27,16 @@
     var lim = LIMITS[$("st-use").value] || LIMITS.res;
     var flights = $("st-layout").value === "1" ? 1 : 2;
     var autoN = Math.max(Math.ceil(H / lim.rMax), Math.round(H / lim.rIdeal), 2);
+    if (flights === 2 && autoN % 2) {
+      // two equal flights need an even count: take the neighbour that keeps the riser in range, closest to the ideal
+      var fits = [autoN - 1, autoN + 1].filter(function (c) { return H / c >= lim.rMin && H / c <= lim.rMax; });
+      fits.sort(function (a, b) { return Math.abs(H / a - lim.rIdeal) - Math.abs(H / b - lim.rIdeal); });
+      autoN = fits[0] || autoN + 1;
+    }
     var n = manualN ? Math.min(Math.max(manualN, 2), 80) : autoN;
     var R = H / n;
-    var T = Math.max(lim.tMin, Math.round((COMFORT - 2 * R) * 2) / 2);
+    // standard tread 30 cm, reduced towards the minimum as the riser grows (2R + T ≈ 63)
+    var T = Math.min(T_STD, Math.max(lim.tMin, Math.round((COMFORT - 2 * R) * 2) / 2));
     var n1 = flights === 2 ? Math.ceil(n / 2) : n, n2 = n - n1;
     var L1 = (n1 - 1) * T, L2 = flights === 2 ? (n2 - 1) * T : 0;
     var plan = flights === 2 ? Math.max(L1, L2) + W : L1;
@@ -57,8 +67,11 @@
         "قاعدة الراحة 2ق + ن = " + fmt(s.blondel) + " سم (60–65)"],
       [Math.max(s.n1, s.n2) <= FLIGHT_MAX, "Longest flight " + Math.max(s.n1, s.n2) + " risers (at most " + FLIGHT_MAX + ")",
         "أطول قلبة " + Math.max(s.n1, s.n2) + " قائمة (بحد أقصى " + FLIGHT_MAX + ")"],
-      [s.angle >= 25 && s.angle <= 40, "Pitch " + fmt(s.angle) + "° (comfortable 25°–40°)", "زاوية الميل " + fmt(s.angle) + "° (المريح 25°–40°)"]
+      [s.angle >= PITCH_MIN && s.angle <= PITCH_MAX, "Pitch " + fmt(s.angle) + "° (comfortable about 27°–33°)",
+        "زاوية الميل " + fmt(s.angle) + "° (المريح تقريبًا 27°–33°)"]
     ];
+    if (s.flights === 2) checks.push([s.n % 2 === 0, "Even number of risers for two equal flights (" + s.n + ")",
+      "عدد درجات زوجي لقلبتين متساويتين (" + s.n + ")"]);
     if (s.flights === 2) checks.push([true, "Landing depth " + fmt(s.W) + " cm = stair width", "عمق البسطة " + fmt(s.W) + " سم = عرض القلبة"]);
     $("st-checks").innerHTML = checks.map(function (c) {
       return '<li class="' + (c[0] ? "ok" : "warn") + '"><span aria-hidden="true">' + (c[0] ? "✓" : "!") + "</span>" + t(c[1], c[2]) + "</li>";

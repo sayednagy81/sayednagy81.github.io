@@ -1014,8 +1014,8 @@ def stairs_tool():
       <ul class="calc-checks" id="st-checks"></ul>
     </div>
   </div>
-  <p class="muted calc-note">{bi({"en": "Checks use common design guidance (comfort rule 2R + T = 60–65 cm, riser 15–18 cm residential or 15–17 cm public, tread at least 25 cm residential or 28 cm public, at most 16 risers per flight, landing at least as deep as the stair is wide). They are a learning aid: always confirm against the building code that applies to your project.",
-                                  "ar": "الفحوص مبنية على الإرشادات التصميمية الشائعة: قاعدة الراحة 2ق + ن = 60–65 سم، والقائمة 15–18 سم في السكني و15–17 سم في المباني العامة، والنائمة 25 سم على الأقل في السكني و28 سم في العام، وألا تزيد القلبة الواحدة على 16 قائمة، وعمق البسطة لا يقل عن عرض القلبة. الحاسبة أداة تعليمية، فراجع دائمًا الكود المعمول به في مشروعك."})}</p>
+  <p class="muted calc-note">{bi({"en": "Checks follow the values taught in the Building Construction lessons: riser 15–18 cm (aim for 15), tread 30 cm standard and down to 27 cm, comfortable pitch about 27°–33°, an even number of risers for two equal flights, and the comfort rule 2R + T = 60–65 cm. Public buildings use a riser of at most 17 cm and a tread of at least 28 cm; a flight has at most 16 risers and the landing is at least as deep as the stair is wide. They are a learning aid: always confirm against the building code that applies to your project.",
+                                  "ar": "الفحوص تتبع القيم المشروحة في دروس تشييد المباني: القائمة 15–18 سم (والأفضل 15)، والنائمة 30 سم ويمكن أن تقل حتى 27 سم، وزاوية الميل المريحة تقريبًا 27°–33°، وعدد الدرجات زوجي في السلم ذي القلبتين المتساويتين، وقاعدة الراحة 2ق + ن = 60–65 سم. وفي المباني العامة لا تزيد القائمة على 17 سم ولا تقل النائمة عن 28 سم، ولا تزيد القلبة الواحدة على 16 قائمة، وعمق البسطة لا يقل عن عرض القلبة. الحاسبة أداة تعليمية، فراجع دائمًا الكود المعمول به في مشروعك."})}</p>
 </section>'''
 
 
