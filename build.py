@@ -40,7 +40,13 @@ UI = {
     "details": ("Details", "التفاصيل"),
     "summary": ("In brief", "باختصار"),
     "keywords": ("Keywords", "الكلمات المفتاحية"),
-    "cite": ("Cite this paper (BibTeX)", "اقتبس هذا البحث (BibTeX)"),
+    "cite": ("Cite this paper", "استشهد بهذا البحث"),
+    "ris": ("Download RIS (EndNote, Zotero, Mendeley)", "تنزيل RIS (EndNote وZotero وMendeley)"),
+    "bib_file": ("Download .bib", "تنزيل ‎.bib"),
+    "site_search": ("Search the site", "ابحث في الموقع"),
+    "search_ph": ("Search papers, videos, articles…", "ابحث في الأبحاث والفيديوهات والمقالات…"),
+    "search_hint": ("↑↓ to move · Enter to open · Esc to close", "↑↓ للتنقل · Enter للفتح · Esc للإغلاق"),
+    "tools": ("Tools", "أدوات"),
     "copy": ("Copy", "نسخ"),
     "copied": ("Copied", "تم النسخ"),
     "read": ("Read paper", "اقرأ البحث"),
@@ -413,6 +419,7 @@ def paper_detail(p, base, has_card):
 {visual_abstract(p, base, False)}
 {summary}{abstract}
 <h3>{ui("keywords")}</h3><div class="chips">{kw_chips(p, "span")}</div>
+<h3>{ui("cite")}</h3>{cite_block(p, base)}
 <div class="actions modal-actions"><a class="btn btn-sm btn-primary" href="{link}">{ui("full_page")}</a>{link_buttons(p, base)}{card_btn}</div>'''
 
 
@@ -450,9 +457,106 @@ def bibtex(p):
     return "\n".join(lines)
 
 
+def _initials(given):
+    return " ".join(w[0] + "." for w in given.replace(".", " ").split())
+
+
+def _split_name(name):
+    parts = name.split()
+    return (parts[-1], " ".join(parts[:-1])) if len(parts) > 1 else (name, "")
+
+
+def apa(p):
+    names = []
+    for a in p.get("authors", []):
+        last, given = _split_name(a)
+        names.append(f"{last}, {_initials(given)}".rstrip(", "))
+    if len(names) > 1:
+        authors = ", ".join(names[:-1]) + ", & " + names[-1]
+    else:
+        authors = "".join(names)
+    out = f'{authors} ({p.get("year", "")}). {pick(p["title"], "en")}.'
+    if p.get("journal"):
+        out += f' {p["journal"]}'
+        if p.get("volume"):
+            out += f', {p["volume"]}' + (f'({p["issue"]})' if p.get("issue") else "")
+        if p.get("pages"):
+            out += f', {p["pages"]}'
+        out += "."
+    if p.get("doi"):
+        out += f' https://doi.org/{p["doi"]}'
+    return out
+
+
+def ieee(p):
+    names = []
+    for a in p.get("authors", []):
+        last, given = _split_name(a)
+        names.append(f"{_initials(given)} {last}".strip())
+    if len(names) > 2:
+        authors = ", ".join(names[:-1]) + ", and " + names[-1]
+    else:
+        authors = " and ".join(names)
+    title = pick(p["title"], "en")
+    if p.get("type") == "book":
+        return f'{authors}, {title}. {p.get("year", "")}.'
+    bits = [f'{authors}, "{title},"']
+    if p.get("journal"):
+        bits.append(("in " if p.get("type") == "conference" else "") + p["journal"] + ",")
+    if p.get("volume"):
+        bits.append(f'vol. {p["volume"]},')
+    if p.get("issue"):
+        bits.append(f'no. {p["issue"]},')
+    if p.get("pages"):
+        bits.append(f'pp. {p["pages"]},' if "-" in str(p["pages"]) else f'Art. no. {p["pages"]},')
+    bits.append(f'{p.get("year", "")}' + (f', doi: {p["doi"]}.' if p.get("doi") else "."))
+    return " ".join(bits)
+
+
+def ris(p):
+    ty = {"conference": "CPAPER", "book": "BOOK"}.get(p.get("type"), "JOUR")
+    rows = [("TY", ty)] + [("AU", a) for a in p.get("authors", [])]
+    rows += [("TI", pick(p["title"], "en")), ("PY", p.get("year", ""))]
+    if p.get("journal"):
+        rows.append(("T2", p["journal"]))
+    for f, tag in (("volume", "VL"), ("issue", "IS")):
+        if p.get(f):
+            rows.append((tag, p[f]))
+    if p.get("pages"):
+        sp, _, ep = str(p["pages"]).partition("-")
+        rows.append(("SP", sp.strip()))
+        if ep:
+            rows.append(("EP", ep.strip()))
+    if p.get("doi"):
+        rows += [("DO", p["doi"]), ("UR", f'https://doi.org/{p["doi"]}')]
+    if p.get("abstract"):
+        rows.append(("AB", pick(p["abstract"], "en")))
+    rows += [("KW", k) for k in keywords(p, "en")]
+    rows.append(("ER", ""))
+    return "\r\n".join(f"{t}  - {v}" for t, v in rows) + "\r\n"
+
+
+def cite_block(p, base):
+    """Tabs with APA / IEEE / BibTeX, a copy button and RIS/BibTeX downloads (handled by app.js, class-based so it
+    also works inside the pop-up)."""
+    folder = f'{base}papers/{esc(p["id"])}/'
+    fmts = [("apa", "APA", apa(p)), ("ieee", "IEEE", ieee(p)), ("bibtex", "BibTeX", bibtex(p))]
+    tabs = "".join(f'<button type="button" class="cite-tab{" on" if i == 0 else ""}" data-fmt="{k}" aria-pressed="{"true" if i == 0 else "false"}">{lbl}</button>'
+                   for i, (k, lbl, _) in enumerate(fmts))
+    panes = "".join(f'<pre class="cite-text" data-fmt="{k}" dir="ltr"{"" if i == 0 else " hidden"}>{esc(t)}</pre>'
+                    for i, (k, _, t) in enumerate(fmts))
+    return f'''<div class="cite-box">
+  <div class="cite-tabs" role="group" aria-label="Citation style">{tabs}</div>
+  {panes}
+  <div class="actions"><button type="button" class="btn btn-sm btn-primary cite-copy" data-done-en="{esc(UI["copied"][0])}" data-done-ar="{esc(UI["copied"][1])}">{ui("copy")}</button>
+  <a class="btn btn-sm" href="{folder}cite.ris" download="{esc(p["id"])}.ris">{ui("ris")}</a>
+  <a class="btn btn-sm" href="{folder}cite.bib" download="{esc(p["id"])}.bib">{ui("bib_file")}</a></div>
+</div>'''
+
+
 # ---------- page shell ----------
 PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), ("videos", "videos/"),
-         ("articles", "articles/"), ("contact", "contact/")]
+         ("articles", "articles/"), ("tools", "tools/"), ("contact", "contact/")]
 NAV = list(PAGES)  # main() drops Videos/Articles when they are not configured
 
 
@@ -486,14 +590,20 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 <script>document.documentElement.classList.add("js");setTimeout(function(){{if(!window.__motionReady)document.documentElement.classList.remove("js")}},3000);</script>
 <script>try{{var l=localStorage.getItem("lang");if(l==="ar"||l==="en"){{var d=document.documentElement;d.dataset.lang=l;d.lang=l;d.dir=l==="ar"?"rtl":"ltr";}}}}catch(e){{}}</script>
 </head>
-<body>
+<body data-base="{base}">
 <header class="site-header"><div class="wrap bar">
   <a class="brand" href="{base}">{bi(profile["name"])}</a>
   <nav>{nav}</nav>
+  <button id="search-btn" class="btn btn-sm" type="button" aria-label="Search / بحث" aria-keyshortcuts="Control+K"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span class="kbd">Ctrl K</span></button>
   <button id="lang-btn" class="btn btn-sm" type="button" aria-label="Language / اللغة"><span class="l-en">{esc(UI["other_lang"][0])}</span><span class="l-ar">{esc(UI["other_lang"][1])}</span></button>
 </div></header>
 {body}
 <dialog id="paper-modal" aria-label="Paper details / تفاصيل البحث"><button class="modal-close" type="button" aria-label="Close / إغلاق">×</button><div class="modal-body"></div></dialog>
+<dialog id="site-search" aria-label="Search / بحث"><div class="ss-box">
+  <input id="ss-q" class="input" type="search" autocomplete="off" placeholder="{esc(UI["search_ph"][0])}" data-ph-en="{esc(UI["search_ph"][0])}" data-ph-ar="{esc(UI["search_ph"][1])}" aria-controls="ss-list">
+  <ul id="ss-list" role="listbox"></ul>
+  <p class="ss-hint muted">{ui("search_hint")}</p>
+</div></dialog>
 <footer class="site-footer"><div class="wrap">© {date.today().year} {bi(profile["name"])} · {ui("rights")}</div></footer>
 <script src="{base}static/app.js" defer></script>
 </body></html>'''
@@ -687,7 +797,7 @@ def build_pages(profile, papers, cards):
 </main>'''
     write_page("contact", layout(profile, f'{ui_en("contact")} | {name_en}', desc, contact, "../", site + "/contact/", ld, image, "contact"))
 
-    return [site + "/" + path for key, path in NAV if key not in ("videos", "articles")]
+    return [site + "/" + path for key, path in NAV if key not in ("videos", "articles", "tools")]
 
 
 def ui_en(key):
@@ -838,6 +948,106 @@ def build_media_pages(profile):
     return urls
 
 
+# ---------- tools (interactive calculators) ----------
+def stairs_tool():
+    """Stair calculator markup; the arithmetic and drawing live in static/stairs.js."""
+    def field(fid, label, inner):
+        return f'<label class="calc-field" for="{fid}"><span>{bi(label)}</span>{inner}</label>'
+    num = lambda fid, val, lo, hi, step: (f'<input id="{fid}" class="input" type="number" inputmode="decimal" '
+                                          f'value="{val}" min="{lo}" max="{hi}" step="{step}">')
+    use = ('<select id="st-use" class="input">'
+           '<option value="res" data-en="Residential / private" data-ar="سكني / خاص">Residential / private</option>'
+           '<option value="pub" data-en="Public building" data-ar="مبنى عام">Public building</option></select>')
+    layout_sel = ('<select id="st-layout" class="input">'
+                  '<option value="2" data-en="Two flights with a landing (dog-leg)" data-ar="قلبتان بينهما بسطة">Two flights with a landing (dog-leg)</option>'
+                  '<option value="1" data-en="One straight flight" data-ar="قلبة واحدة مستقيمة">One straight flight</option></select>')
+    stepper = ('<div class="stepper"><button type="button" class="btn btn-sm" data-step="-1" aria-label="fewer risers / قوائم أقل">−</button>'
+               '<output id="st-n">–</output><button type="button" class="btn btn-sm" data-step="1" aria-label="more risers / قوائم أكثر">+</button>'
+               '<button type="button" class="btn btn-sm" id="st-auto">' + bi({"en": "Auto", "ar": "تلقائي"}) + '</button></div>')
+    video = next((v for v in VIDEOS if v["id"] == "OUYDQhrRlPA"), None)
+    video_link = (f'<p class="muted">{bi({"en": "Explained step by step in the lesson:", "ar": "الشرح خطوة بخطوة في درس:"})} '
+                  f'<a href="https://www.youtube.com/watch?v=OUYDQhrRlPA" target="_blank" rel="noopener">{bi(video["title_bi"])}</a></p>'
+                  if video else "")
+    return f'''
+<section class="wrap" id="stairs">
+  <h2>{bi({"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"})}</h2>
+  <p class="lead">{bi({"en": "Enter the floor-to-floor height to get the number of risers, the riser and tread sizes, the plan length of the stair and a scaled section. Change the number of risers with − / + to compare options.",
+                       "ar": "أدخل ارتفاع الدور (من منسوب أرضية إلى التي تليها) لتحصل على عدد القوائم ومقاس القائمة والنائمة وطول السلم في المسقط وقطاعًا بمقياس رسم. غيّر عدد القوائم بزر − / + لتقارن البدائل."})}</p>
+  {video_link}
+  <div class="calc">
+    <form class="calc-in" id="st-form" onsubmit="return false">
+      {field("st-h", {"en": "Floor-to-floor height (cm)", "ar": "ارتفاع الدور (سم)"}, num("st-h", 300, 50, 1000, 1))}
+      {field("st-use", {"en": "Building type", "ar": "نوع المبنى"}, use)}
+      {field("st-layout", {"en": "Stair layout", "ar": "شكل السلم"}, layout_sel)}
+      {field("st-w", {"en": "Stair width (cm)", "ar": "عرض القلبة (سم)"}, num("st-w", 120, 60, 400, 5))}
+      <div class="calc-field"><span>{bi({"en": "Number of risers", "ar": "عدد القوائم"})}</span>{stepper}</div>
+    </form>
+    <div class="calc-out" aria-live="polite">
+      <div class="calc-stats" id="st-stats"></div>
+      <svg id="st-svg" class="calc-svg" role="img" aria-label="Stair section / قطاع السلم"></svg>
+      <ul class="calc-checks" id="st-checks"></ul>
+    </div>
+  </div>
+  <p class="muted calc-note">{bi({"en": "Checks use common design guidance (comfort rule 2R + T = 60–65 cm, riser 15–18 cm residential or 15–17 cm public, tread at least 25 cm residential or 28 cm public, at most 16 risers per flight, landing at least as deep as the stair is wide). They are a learning aid: always confirm against the building code that applies to your project.",
+                                  "ar": "الفحوص مبنية على الإرشادات التصميمية الشائعة: قاعدة الراحة 2ق + ن = 60–65 سم، والقائمة 15–18 سم في السكني و15–17 سم في المباني العامة، والنائمة 25 سم على الأقل في السكني و28 سم في العام، وألا تزيد القلبة الواحدة على 16 قائمة، وعمق البسطة لا يقل عن عرض القلبة. الحاسبة أداة تعليمية، فراجع دائمًا الكود المعمول به في مشروعك."})}</p>
+</section>'''
+
+
+def build_tools(profile):
+    if "tools" not in [k for k, _ in NAV]:
+        return []
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    lead = {"en": "Interactive calculators for architecture and building construction students.",
+            "ar": "حاسبات تفاعلية لطلاب العمارة والإنشاء المعماري."}
+    body = f'''
+<main>
+{page_hero("tools")}
+<section class="wrap"><p class="lead">{bi(lead)}</p></section>
+{stairs_tool()}
+</main>'''
+    ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Stair design calculator",
+          "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
+          "url": site + "/tools/#stairs", "author": {"@type": "Person", "name": name_en}}
+    head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+            f'<script src="../static/stairs.js" defer></script>')
+    write_page("tools", layout(profile, f'Stair design calculator | {name_en}', lead["en"] + " Stair design calculator: risers, treads, "
+                               "2R+T comfort rule, plan length and section.", body, "../", site + "/tools/", head, "", "tools"))
+    return [site + "/tools/"]
+
+
+def write_search_index(profile, papers):
+    """dist/search.json: one small entry per page, paper, video, article and tool for the Ctrl+K search box."""
+    kinds = {"page": ("Page", "صفحة"), "paper": ("Paper", "بحث"), "video": ("Video", "فيديو"),
+             "article": ("Article", "مقال"), "tool": ("Tool", "أداة")}
+    items = []
+
+    def add(kind, url, title, extra, sub=""):
+        en, ar = pick(title, "en"), pick(title, "ar")
+        items.append({"k": kind, "u": url, "en": en, "ar": ar, "sub": sub,
+                      "s": normalize(" ".join([en, ar] + [x for x in extra if x]))})
+
+    for key, path in NAV:
+        add("page", path, {"en": UI[key][0], "ar": UI[key][1]}, [key])
+    for p in papers:
+        extra = [pick(p.get("summary", ""), "en"), pick(p.get("summary", ""), "ar"), pick(p.get("abstract", ""), "en"),
+                 p.get("journal", ""), str(p.get("year", "")), p.get("doi", "")]
+        add("paper", f'papers/{p["id"]}/', p["title"], extra + keywords(p, "en") + keywords(p, "ar") + p.get("authors", []),
+            f'{p.get("journal", "")} {p.get("year", "")}'.strip())
+    for v in VIDEOS:
+        kw = v["keywords"]
+        kws = (kw.get("en", []) + kw.get("ar", [])) if isinstance(kw, dict) else list(kw)
+        add("video", f'https://www.youtube.com/watch?v={v["id"]}', v["title_bi"],
+            [pick(v["summary"], "en"), pick(v["summary"], "ar")] + kws, v["date"])
+    for a in ARTICLES:
+        add("article", f'articles/{a["slug"]}/', a["title"], [a["text"][:1500]] + a["tags"], a["date"])
+    if "tools" in [k for k, _ in NAV]:
+        add("tool", "tools/#stairs", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
+            ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
+    data = {"kinds": {k: {"en": en, "ar": ar} for k, (en, ar) in kinds.items()}, "items": items}
+    (OUT / "search.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
+
 def build_paper(profile, p, has_card):
     site = profile.get("site_url", "").rstrip("/")
     base = "../../"
@@ -902,8 +1112,7 @@ def build_paper(profile, p, has_card):
   {abstract_block}
   <h2>{ui("keywords")}</h2><div class="chips">{kw_chips(p, "span")}</div>
   <h2>{ui("cite")}</h2>
-  <pre id="bib" dir="ltr">{esc(bibtex(p))}</pre>
-  <button class="btn btn-sm" type="button" id="copy-bib" data-en="{esc(UI["copy"][0])}" data-ar="{esc(UI["copy"][1])}" data-done-en="{esc(UI["copied"][0])}" data-done-ar="{esc(UI["copied"][1])}">{esc(UI["copy"][0])}</button>
+  {cite_block(p, base)}
 </main>'''
     image = f'{site}/cards/{p["id"]}.png' if has_card else ""
     page = layout(profile, f'{title_en} | {pick(profile["name"], "en")}',
@@ -911,6 +1120,8 @@ def build_paper(profile, p, has_card):
     d = OUT / "papers" / p["id"]
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(page, encoding="utf-8")
+    (d / "cite.ris").write_text(ris(p), encoding="utf-8", newline="")
+    (d / "cite.bib").write_text(bibtex(p) + "\n", encoding="utf-8")
     return url
 
 
@@ -956,6 +1167,9 @@ def main():
     urls = build_pages(profile, papers, cards)
     urls += build_media_pages(profile)
     urls += [build_paper(profile, p, p["id"] in cards) for p in papers]
+
+    urls += build_tools(profile)
+    write_search_index(profile, papers)
 
     site = profile.get("site_url", "").rstrip("/")
     today = date.today().isoformat()

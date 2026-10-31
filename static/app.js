@@ -16,13 +16,14 @@
     root.lang = l;
     root.dir = l === "ar" ? "rtl" : "ltr";
     try { localStorage.setItem("lang", l); } catch (e) {}
-    var q = document.getElementById("q");
-    if (q) q.placeholder = q.getAttribute("data-ph-" + l);
-    var y = document.querySelector("#year option[data-" + l + "]");
-    if (y) y.textContent = y.getAttribute("data-" + l);
-    var cb = document.getElementById("copy-bib");
-    if (cb) cb.textContent = cb.getAttribute("data-" + l);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ph-en]"), function (el) {
+      el.placeholder = el.getAttribute("data-ph-" + l);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("option[data-en]"), function (o) {
+      o.textContent = o.getAttribute("data-" + l);
+    });
     updateCount();
+    document.dispatchEvent(new CustomEvent("langchange"));
   }
 
   var btn = document.getElementById("lang-btn");
@@ -77,16 +78,136 @@
   if (q) q.addEventListener("input", filter);
   if (year) year.addEventListener("change", filter);
 
-  // ---- copy BibTeX ----
-  var copy = document.getElementById("copy-bib");
-  if (copy) copy.addEventListener("click", function () {
-    var text = document.getElementById("bib").textContent;
-    var done = function () {
-      var l = lang();
-      copy.textContent = copy.getAttribute("data-done-" + l);
-      setTimeout(function () { copy.textContent = copy.getAttribute("data-" + l); }, 1500);
-    };
-    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+  // ---- cite box: APA / IEEE / BibTeX tabs and copy (works on paper pages and inside the pop-up) ----
+  function copyText(text, done) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () {});
+      return;
+    }
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    (document.querySelector("dialog[open]") || document.body).appendChild(ta);
+    ta.select();
+    try { if (document.execCommand("copy")) done(); } catch (e) {}
+    ta.remove();
+  }
+  document.addEventListener("click", function (e) {
+    var tab = e.target.closest && e.target.closest(".cite-tab");
+    if (tab) {
+      var box = tab.closest(".cite-box"), fmt = tab.getAttribute("data-fmt");
+      Array.prototype.forEach.call(box.querySelectorAll(".cite-tab"), function (t) {
+        var on = t === tab;
+        t.classList.toggle("on", on);
+        t.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      Array.prototype.forEach.call(box.querySelectorAll(".cite-text"), function (p) {
+        p.hidden = p.getAttribute("data-fmt") !== fmt;
+      });
+      return;
+    }
+    var cp = e.target.closest && e.target.closest(".cite-copy");
+    if (cp) {
+      var pre = cp.closest(".cite-box").querySelector(".cite-text:not([hidden])");
+      copyText(pre.textContent, function () {
+        var old = cp.innerHTML;
+        cp.textContent = "✓ " + cp.getAttribute("data-done-" + lang());
+        setTimeout(function () { cp.innerHTML = old; }, 1600);
+      });
+    }
+  });
+
+  // ---- site search (Ctrl+K or /): loads search.json once, matches every word in English and Arabic ----
+  var ss = document.getElementById("site-search");
+  var ssQ = document.getElementById("ss-q");
+  var ssList = document.getElementById("ss-list");
+  var base = document.body.getAttribute("data-base") || "";
+  var index = null, hits = [], sel = 0;
+
+  function loadIndex() {
+    if (index) return Promise.resolve(index);
+    return fetch(base + "search.json").then(function (r) { return r.json(); }).then(function (d) { index = d; return d; });
+  }
+  function itemUrl(it) { return /^https?:/.test(it.u) ? it.u : base + it.u; }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+  }
+  function runSearch() {
+    if (!index) return;
+    var l = lang(), words = normalize(ssQ.value.trim()).split(/\s+/).filter(Boolean);
+    if (!words.length) {
+      hits = index.items.filter(function (it) { return it.k === "page" || it.k === "tool"; });
+    } else {
+      hits = index.items.map(function (it) {
+        var title = normalize(it.en + " " + it.ar), score = 0;
+        for (var i = 0; i < words.length; i++) {
+          if (it.s.indexOf(words[i]) < 0) return null;
+          score += title.indexOf(words[i]) > -1 ? 3 : 1;
+        }
+        return { it: it, score: score };
+      }).filter(Boolean).sort(function (a, b) { return b.score - a.score; })
+        .slice(0, 12).map(function (h) { return h.it; });
+    }
+    sel = 0;
+    if (!hits.length) {
+      ssList.innerHTML = '<li class="ss-empty">' + (l === "ar" ? "لا توجد نتائج" : "No results") + "</li>";
+      return;
+    }
+    ssList.innerHTML = hits.map(function (it, i) {
+      var title = (l === "ar" ? it.ar || it.en : it.en || it.ar);
+      var ext = /^https?:/.test(it.u) ? ' target="_blank" rel="noopener"' : "";
+      return '<li role="option" id="ss-' + i + '"' + (i === 0 ? ' aria-selected="true"' : "") + '><a href="' + esc(itemUrl(it)) + '"' + ext + ">" +
+        '<span class="ss-kind ss-' + it.k + '">' + esc(index.kinds[it.k][l]) + "</span>" +
+        '<span class="ss-title" dir="auto">' + esc(title) + "</span>" +
+        (it.sub ? '<span class="ss-sub" dir="auto">' + esc(it.sub) + "</span>" : "") + "</a></li>";
+    }).join("");
+  }
+  function mark(i) {
+    var items = ssList.querySelectorAll("li[role=option]");
+    if (!items.length) return;
+    sel = (i + items.length) % items.length;
+    Array.prototype.forEach.call(items, function (li, j) {
+      if (j === sel) { li.setAttribute("aria-selected", "true"); li.scrollIntoView({ block: "nearest" }); }
+      else li.removeAttribute("aria-selected");
+    });
+  }
+  function openSearch() {
+    if (!ss || typeof ss.showModal !== "function") return;
+    if (!ss.open) ss.showModal();
+    ssQ.select();
+    loadIndex().then(runSearch, function () {
+      ssList.innerHTML = '<li class="ss-empty">' + (lang() === "ar" ? "تعذّر تحميل البحث" : "Search could not load") + "</li>";
+    });
+  }
+  var sb = document.getElementById("search-btn");
+  if (sb) sb.addEventListener("click", openSearch);
+  if (ss) {
+    ssQ.addEventListener("input", runSearch);
+    ssQ.addEventListener("keydown", function (e) {
+      // a search field would only clear itself on Esc, so close the box explicitly
+      if (e.key === "Escape") { e.preventDefault(); ss.close(); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); mark(sel + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); mark(sel - 1); }
+      else if (e.key === "Enter") {
+        var a = ssList.querySelector('li[aria-selected="true"] a');
+        if (a) { e.preventDefault(); a.click(); }
+      }
+    });
+    ss.addEventListener("click", function (e) {
+      if (e.target === ss) ss.close();
+      else if (e.target.closest("a")) ss.close();
+    });
+    document.addEventListener("langchange", runSearch);
+  }
+  document.addEventListener("keydown", function (e) {
+    var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || document.activeElement.isContentEditable;
+    // e.code keeps Ctrl+K working on an Arabic keyboard layout
+    if (((e.ctrlKey || e.metaKey) && (e.code === "KeyK" || e.key === "k")) || (e.key === "/" && !typing)) {
+      e.preventDefault();
+      openSearch();
+    }
   });
 
   // ---- motion: header shadow, scroll reveal, counting numbers ----

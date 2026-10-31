@@ -297,3 +297,65 @@ html[dir="rtl"] .va-full .va-step:not(:last-child)::after{animation-name:nudge-r
   .hero-art path{stroke-dashoffset:0}
   .js .reveal,.js .va .va-step{opacity:1;transform:none}
 }
+
+/* ---------- cite box ---------- */
+.cite-box{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin:8px 0}
+.cite-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.cite-tab{font:inherit;font-size:.8rem;padding:3px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.cite-tab:hover{border-color:var(--brass);color:var(--text)}
+.cite-tab.on{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.cite-text{margin:0 0 4px;white-space:pre-wrap;word-break:break-word;font-size:.8rem;background:var(--bg)}
+.cite-box .actions{padding-top:6px}
+
+/* ---------- site search (Ctrl+K) ---------- */
+#search-btn{gap:6px}
+#search-btn .ic{width:16px;height:16px}
+.kbd{font-size:.7rem;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-family:Consolas,monospace}
+#site-search{border:0;padding:0;border-radius:16px;width:min(640px,calc(100vw - 24px));margin-top:10vh;
+  background:var(--bg);color:var(--text);box-shadow:0 24px 70px rgba(10,20,40,.35)}
+#site-search[open]{animation:modal-in .25s cubic-bezier(.2,.8,.2,1)}
+#site-search::backdrop{background:rgba(10,20,40,.55);backdrop-filter:blur(3px)}
+.ss-box{padding:14px}
+#ss-q{width:100%;font-size:1.05rem}
+#ss-list{list-style:none;margin:10px 0 0;padding:0;max-height:min(60vh,460px);overflow:auto}
+#ss-list li a{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;padding:9px 10px;border-radius:10px;text-decoration:none;color:var(--text)}
+#ss-list li[aria-selected="true"] a,#ss-list li a:hover{background:var(--surface);box-shadow:inset 3px 0 0 var(--brass)}
+html[dir="rtl"] #ss-list li[aria-selected="true"] a,html[dir="rtl"] #ss-list li a:hover{box-shadow:inset -3px 0 0 var(--brass)}
+.ss-kind{grid-row:span 2;font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--brass-soft);color:var(--text);min-width:52px;text-align:center}
+.ss-paper{background:var(--primary);color:var(--primary-ink)}
+.ss-video{background:#c4302b;color:#fff}
+.ss-tool{background:var(--brass);color:#fff}
+.ss-title{font-weight:600;font-size:.93rem;line-height:1.4;text-align:start}
+.ss-sub{font-size:.76rem;color:var(--muted);text-align:start}
+.ss-empty{padding:14px 10px;color:var(--muted)}
+.ss-hint{margin:8px 4px 0;font-size:.75rem}
+@media (max-width:760px){.kbd,.ss-hint{display:none}}
+
+/* ---------- tools: stair calculator ---------- */
+.calc{display:grid;grid-template-columns:minmax(240px,320px) 1fr;gap:22px;align-items:start;margin-top:18px}
+.calc-in{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brass);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.calc-field{display:grid;gap:4px;font-size:.86rem;color:var(--muted)}
+.calc-field .input{width:100%;color:var(--text)}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper output{min-width:48px;text-align:center;font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--primary)}
+.stepper [data-step]{width:34px;justify-content:center;font-size:1.1rem}
+.calc-out{min-width:0}
+.calc-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.calc-stats .metric{min-width:0;padding:8px 10px}
+.calc-stats .metric b{font-size:1.35rem;direction:ltr}
+.calc-svg{direction:ltr;display:block;width:100%;height:auto;margin:14px 0 6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  background-image:linear-gradient(color-mix(in srgb,var(--primary) 6%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--primary) 6%,transparent) 1px,transparent 1px);background-size:20px 20px}
+.st-mass{fill:color-mix(in srgb,var(--brass) 22%,transparent);stroke:none}
+.st-cut{fill:none;stroke:var(--primary);stroke-width:2.2;stroke-linejoin:round}
+.st-back{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4}
+.st-floor{stroke:var(--text);stroke-width:2.4}
+.st-dim{fill:none;stroke:var(--brass);stroke-width:1.2}
+.st-lbl{fill:var(--text);font:600 13px var(--sans)}
+.calc-checks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.calc-checks li{display:flex;gap:8px;align-items:center;font-size:.9rem;padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--line)}
+.calc-checks li span{display:grid;place-items:center;flex:none;width:20px;height:20px;border-radius:50%;font-size:.75rem;font-weight:700;color:#fff}
+.calc-checks .ok span{background:#2d7a46}
+.calc-checks .warn span{background:#c0392b}
+.calc-checks .warn{border-color:color-mix(in srgb,#c0392b 45%,var(--line))}
+.calc-note{margin-top:14px;max-width:90ch}
+@media (max-width:760px){.calc{grid-template-columns:1fr}.st-lbl{font-size:21px}}
