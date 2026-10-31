@@ -1,3 +1,4 @@
 dist/
 .claude/
 __pycache__/
+tools/sync-config.json
