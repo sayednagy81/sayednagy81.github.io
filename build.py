@@ -100,6 +100,7 @@ PLATFORMS = {
     "whatsapp": ("WhatsApp", "Wa", "#1da851"),
     "github": ("GitHub", "GH", "#24292f"),
     "website": ("Website", "Web", "#555555"),
+    "blogger": ("Build2Wise Blog", "B", "#e8710a"),
 }
 
 # Line icons on a 24x24 grid; "c:x,y,r" entries are circles.

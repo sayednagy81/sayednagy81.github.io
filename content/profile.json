@@ -11,7 +11,7 @@
   },
 
   "youtube_channel_id": "UCDGZNYZFF43b7Tjlg8f0IzA",
-  "blog_feed": "",
+  "blog_feed": "https://build2wise.blogspot.com/feeds/posts/default",
 
   "email":"sayed_nagy@m-eng.capu.edu.eg",
   "photo": "images/profile.jpg",
@@ -52,7 +52,8 @@
     { "platform": "academia",     "url": "https://helwan.academia.edu/SayedMarey" },
     { "platform": "scopus",       "url": "https://www.scopus.com/authid/detail.uri?authorId=58213322400" },
     { "platform": "linkedin",     "url": "https://www.linkedin.com/in/sayed-m-n-a1940757/" },
-    { "platform": "youtube",      "url": "https://www.youtube.com/@Build2Wise" },
+    { "platform": "blogger",      "url": "https://build2wise.blogspot.com" },
+    { "platform": "youtube",     "url": "https://www.youtube.com/@Build2Wise" },
     { "platform": "wos",        "url": "https://www.webofscience.com/wos/author/record/G-5335-2014" }
   ]
 }
