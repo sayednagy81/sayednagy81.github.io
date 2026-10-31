@@ -387,3 +387,52 @@ html[dir="rtl"] .quiz-title{margin:0 0 10px 44px}
 .quiz-result b{direction:ltr;display:block;font-family:var(--serif);font-size:2.6rem;color:var(--primary)}
 .quiz-result p{margin:4px 0 0}
 @media (max-width:760px){.quiz-body{padding:18px 16px 20px}}
+
+/* ---------- tools: U-value calculator ---------- */
+.uv-layers{display:grid;gap:8px}
+.uv-side{margin:0;font-size:.78rem;color:var(--muted);font-weight:600}
+.uv-row{display:grid;grid-template-columns:26px minmax(0,1fr) minmax(0,1fr) auto 28px;grid-template-areas:"n m m m x" ". d k r .";gap:6px 8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.uv-num{grid-area:n;display:grid;place-items:center;width:24px;height:24px;border-radius:6px;font-size:.75rem;font-weight:700;color:#1b2433;border:1px solid rgba(0,0,0,.15)}
+.uv-m{grid-area:m;min-width:0;width:100%;padding:6px 8px;font-size:.85rem}
+.uv-del{grid-area:x;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;font-size:1rem;line-height:1}
+.uv-del:hover:not(:disabled){border-color:#c0392b;color:#c0392b}
+.uv-del:disabled{opacity:.35;cursor:default}
+.uv-mini{display:grid;gap:2px;font-size:.7rem;color:var(--muted)}
+.uv-row .uv-mini:nth-of-type(1){grid-area:d}.uv-row .uv-mini:nth-of-type(2){grid-area:k}
+.uv-mini .input{padding:5px 8px;font-size:.85rem;width:100%}
+.uv-r{grid-area:r;align-self:end;padding-bottom:6px;font-size:.75rem;color:var(--primary);font-weight:600;white-space:nowrap;direction:ltr}
+.uv-temps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.uv-air-out{fill:color-mix(in srgb,#e67e22 12%,transparent)}
+.uv-air-in{fill:color-mix(in srgb,#3498db 12%,transparent)}
+.uv-layer{stroke:rgba(0,0,0,.25);stroke-width:1}
+.uv-ins{fill:none;stroke:rgba(0,0,0,.35);stroke-width:1.2}
+.uv-temp{fill:none;stroke:#c0392b;stroke-width:2.6;stroke-linejoin:round}
+.uv-dot{fill:#c0392b}
+.uv-t{fill:var(--text);font:600 14px var(--sans)}
+.uv-ts{fill:#c0392b;font:600 12px var(--sans)}
+.uv-n{fill:var(--muted);font:600 12px var(--sans)}
+.uv-arrow{fill:none;stroke:#c0392b;stroke-width:1.6}
+.uv-cmp{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.uv-cmp p{margin:8px 0 0;font-size:.92rem}
+.uv-bar{display:grid;grid-template-columns:120px 1fr 48px;gap:8px;align-items:center;font-size:.85rem;margin:4px 0}
+.uv-bar b{direction:ltr;text-align:end}
+.uv-track{height:12px;border-radius:99px;background:var(--line);overflow:hidden}
+.uv-track i{display:block;height:100%;border-radius:99px;transition:width .4s ease}
+.uv-b0{background:#c0392b}
+.uv-b1{background:#2d7a46}
+.uv-tip{margin:0}
+@media (max-width:760px){
+  .uv-t{font-size:20px}.uv-ts,.uv-n{font-size:18px}
+  .uv-bar{grid-template-columns:96px 1fr 44px}
+}
+
+/* ---------- materials table ---------- */
+.mt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.mt{width:100%;border-collapse:collapse;font-size:.9rem;min-width:620px}
+.mt th,.mt td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:start}
+.mt td{direction:ltr;text-align:center;font-variant-numeric:tabular-nums}
+.mt thead th{background:var(--primary);color:var(--primary-ink);font-size:.8rem;font-weight:600;vertical-align:bottom}
+.mt tbody th{font-weight:500}
+.mt-group th{background:var(--brass-soft);font-family:var(--serif);font-weight:700;color:var(--text)}
+.mt tbody tr:not(.mt-group):hover{background:color-mix(in srgb,var(--brass) 8%,transparent)}
+.mt-star{color:var(--brass);font-weight:700}

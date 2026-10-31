@@ -1,0 +1,39 @@
+{
+  "note": {
+    "en": "Typical design values from ISO 10456, CIBSE Guide A and manufacturers' data. Real products vary with density, moisture and manufacturer: for official calculations use the product's data sheet and the code that applies (in Egypt, the Energy Efficiency Code ECP 306).",
+    "ar": "قيم تصميمية شائعة من المواصفة ISO 10456 ودليل CIBSE A وبيانات المصنّعين. تختلف القيم الفعلية حسب الكثافة والرطوبة والمصنّع، فاستخدم في الحسابات الرسمية النشرة الفنية للمنتج والكود المعمول به (في مصر: كود تحسين كفاءة الطاقة في المباني ECP 306)."
+  },
+  "groups": [
+    {"id": "masonry", "en": "Masonry", "ar": "المباني والطوب"},
+    {"id": "concrete", "en": "Concrete", "ar": "الخرسانة"},
+    {"id": "insulation", "en": "Thermal insulation", "ar": "مواد العزل الحراري"},
+    {"id": "finish", "en": "Plaster, finishes and cladding", "ar": "البياض والتشطيبات والتكسيات"},
+    {"id": "other", "en": "Other materials", "ar": "مواد أخرى"}
+  ],
+  "materials": [
+    {"id": "brick", "group": "masonry", "en": "Solid clay brick", "ar": "طوب طفلي مصمت (أحمر)", "density": 1700, "k": 0.77, "d": 25, "color": "#b5583a"},
+    {"id": "hbrick", "group": "masonry", "en": "Perforated (hollow) clay brick", "ar": "طوب طفلي مفرغ", "density": 1200, "k": 0.50, "d": 25, "color": "#c9765a", "varies": true},
+    {"id": "cbrick", "group": "masonry", "en": "Solid cement brick", "ar": "طوب أسمنتي مصمت", "density": 2000, "k": 1.10, "d": 25, "color": "#a7a39c", "varies": true},
+    {"id": "block", "group": "masonry", "en": "Hollow concrete block", "ar": "بلوك أسمنتي مفرغ", "density": 1300, "k": 1.00, "d": 20, "color": "#9ea3a8", "varies": true},
+    {"id": "aac", "group": "masonry", "en": "Autoclaved aerated concrete (AAC)", "ar": "خرسانة خلوية (طوب خفيف AAC)", "density": 500, "k": 0.14, "d": 20, "color": "#d9d6cf"},
+    {"id": "limestone", "group": "masonry", "en": "Limestone (medium)", "ar": "حجر جيري متوسط", "density": 2000, "k": 1.40, "d": 5, "color": "#d8c9a3"},
+    {"id": "concrete", "group": "concrete", "en": "Reinforced concrete", "ar": "خرسانة مسلحة", "density": 2300, "k": 2.30, "d": 20, "color": "#7f868c"},
+    {"id": "pconcrete", "group": "concrete", "en": "Plain concrete", "ar": "خرسانة عادية", "density": 2200, "k": 1.65, "d": 10, "color": "#959ba0"},
+    {"id": "eps", "group": "insulation", "en": "Expanded polystyrene (EPS)", "ar": "فوم بوليسترين ممدد (EPS)", "density": 20, "k": 0.038, "d": 5, "color": "#f4e6a1", "insulation": true},
+    {"id": "xps", "group": "insulation", "en": "Extruded polystyrene (XPS)", "ar": "فوم بوليسترين مبثوق (XPS)", "density": 35, "k": 0.034, "d": 5, "color": "#9cc7e8", "insulation": true},
+    {"id": "wool", "group": "insulation", "en": "Rock wool", "ar": "صوف صخري", "density": 80, "k": 0.040, "d": 5, "color": "#e9c46a", "insulation": true},
+    {"id": "glasswool", "group": "insulation", "en": "Glass wool", "ar": "صوف زجاجي", "density": 20, "k": 0.040, "d": 5, "color": "#f6d98b", "insulation": true},
+    {"id": "pu", "group": "insulation", "en": "Polyurethane foam", "ar": "فوم بولي يوريثان", "density": 35, "k": 0.025, "d": 5, "color": "#f2d0a9", "insulation": true},
+    {"id": "air", "group": "insulation", "en": "Still air gap (25 mm or more)", "ar": "فراغ هوائي ساكن (25 مم فأكثر)", "density": null, "k": null, "r": 0.18, "d": 5, "color": "#ffffff"},
+    {"id": "plaster", "group": "finish", "en": "Cement–sand plaster", "ar": "بياض أسمنتي (مونة أسمنت ورمل)", "density": 1800, "k": 1.00, "d": 2, "color": "#cfc8bb"},
+    {"id": "gypsum", "group": "finish", "en": "Gypsum plaster", "ar": "بياض جبس", "density": 1000, "k": 0.40, "d": 1.5, "color": "#ece7dc"},
+    {"id": "board", "group": "finish", "en": "Gypsum board", "ar": "ألواح جبس بورد", "density": 900, "k": 0.25, "d": 1.25, "color": "#f3f1ec"},
+    {"id": "ceramic", "group": "finish", "en": "Ceramic / porcelain tiles", "ar": "بلاط سيراميك / بورسلين", "density": 2300, "k": 1.30, "d": 1, "color": "#d7dde2"},
+    {"id": "granite", "group": "finish", "en": "Granite", "ar": "جرانيت", "density": 2700, "k": 2.80, "d": 3, "color": "#8d8a86"},
+    {"id": "marble", "group": "finish", "en": "Marble", "ar": "رخام", "density": 2800, "k": 3.50, "d": 3, "color": "#e3e0da"},
+    {"id": "wood", "group": "other", "en": "Softwood timber", "ar": "خشب لين (موسكي)", "density": 500, "k": 0.13, "d": 2.5, "color": "#c99a62"},
+    {"id": "glass", "group": "other", "en": "Glass", "ar": "زجاج", "density": 2500, "k": 1.00, "d": 0.6, "color": "#cfe8ef"},
+    {"id": "steel", "group": "other", "en": "Steel", "ar": "حديد / صلب", "density": 7800, "k": 50, "d": null, "color": "#6b7178", "table_only": true},
+    {"id": "aluminium", "group": "other", "en": "Aluminium", "ar": "ألومنيوم", "density": 2700, "k": 160, "d": null, "color": "#b9bfc4", "table_only": true}
+  ]
+}

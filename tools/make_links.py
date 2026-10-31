@@ -33,7 +33,8 @@ def main(out):
 
     sections = []
     pages = [("الرئيسية", "/"), ("نبذة", "/about/"), ("المنشورات", "/publications/"), ("الفيديو", "/videos/"),
-             ("المقالات", "/articles/"), ("أدوات: حاسبة تصميم السلالم", "/tools/"), ("تواصل", "/contact/"),
+             ("المقالات", "/articles/"), ("أدوات: حاسبة تصميم السلالم", "/tools/#stairs"),
+             ("أدوات: حاسبة العزل الحراري (معامل U)", "/tools/#uvalue"), ("أدوات: جدول خصائص مواد البناء", "/tools/#materials"), ("تواصل", "/contact/"),
              ("خريطة الموقع sitemap.xml", "/sitemap.xml"), ("فهرس البحث search.json", "/search.json")]
     sections.append(("صفحات الموقع", [row(l, site + p) for l, p in pages]))
 

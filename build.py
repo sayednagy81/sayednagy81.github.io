@@ -564,15 +564,27 @@ PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), (
 NAV = list(PAGES)  # main() drops Videos/Articles when they are not configured
 
 
-def layout(profile, title, desc, body, base, canonical="", head_extra="", image="", active=""):
+def layout(profile, title, desc, body, base, canonical="", head_extra="", image="", active="", keywords=()):
     default_lang = profile.get("default_lang", "en")
     name_en = pick(profile["name"], "en")
     nav = "".join(f'<a href="{base}{path}"{" class=on aria-current=page" if key == active else ""}>{ui(key)}</a>'
                   for key, path in NAV)
     can = f'<link rel="canonical" href="{esc(canonical)}">' if canonical else ""
-    img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
-           f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
-           if image else "")
+    if image:
+        img = (f'<meta property="og:image" content="{esc(image)}"><meta property="og:image:width" content="1200">'
+               f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">')
+    elif profile.get("photo") and profile.get("site_url"):
+        # pages without a share card still get a picture in link previews (WhatsApp, Facebook, LinkedIn)
+        photo = ext_url(profile["photo"], profile["site_url"].rstrip("/") + "/")
+        img = f'<meta property="og:image" content="{esc(photo)}"><meta name="twitter:card" content="summary">'
+    else:
+        img = ""
+    img += ('<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="ar_EG">'
+            f'<meta property="og:site_name" content="{esc(name_en)}">')
+    if canonical:
+        img += f'<meta property="og:url" content="{esc(canonical)}">'
+    if keywords:
+        img += f'<meta name="keywords" content="{esc(", ".join(keywords))}">'
     return f'''<!doctype html>
 <html lang="{default_lang}" dir="{"rtl" if default_lang == "ar" else "ltr"}" data-lang="{default_lang}">
 <head>
@@ -934,8 +946,31 @@ def build_media_pages(profile):
 <section class="wrap"><p class="lead">{ui("videos_lead")}</p>{f'<p class="muted">{ui("quiz_lead")}</p>' if QUIZZES else ""}<p>{sub}</p><div class="vgrid">{grid}</div></section>
 </main>'''
         head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-        write_page("videos", layout(profile, f'{ui_en("videos")} | {name_en}', UI["videos_lead"][0], body, "../",
-                                    site + "/videos/", head, "", "videos"))
+        # each quiz as schema.org Quiz, so search engines can show it as practice questions
+        quiz_ld = []
+        for v in VIDEOS:
+            qs = QUIZZES.get(v["id"])
+            if not qs:
+                continue
+            quiz_ld.append({
+                "@type": "Quiz", "name": "Quiz: " + pick(v["title_bi"], "en"), "alternateName": "اختبار: " + pick(v["title_bi"], "ar"),
+                "about": {"@type": "Thing", "name": pick(v["title_bi"], "en")}, "inLanguage": ["en", "ar"],
+                "educationalAlignment": {"@type": "AlignmentObject", "alignmentType": "educationalSubject", "targetName": "Architecture"},
+                "isBasedOn": f'https://www.youtube.com/watch?v={v["id"]}', "author": {"@type": "Person", "name": name_en},
+                "hasPart": [{"@type": "Question", "eduQuestionType": "Multiple choice", "text": pick(q["q"], "en"),
+                             "acceptedAnswer": {"@type": "Answer", "text": pick(q["options"][q["answer"]], "en"),
+                                                "answerExplanation": {"@type": "Comment", "text": pick(q.get("explain", ""), "en")}},
+                             "suggestedAnswer": [{"@type": "Answer", "text": pick(o, "en")}
+                                                 for i, o in enumerate(q["options"]) if i != q["answer"]]} for q in qs]})
+        if quiz_ld:
+            head += f'<script type="application/ld+json">{json.dumps({"@context": "https://schema.org", "@graph": quiz_ld}, ensure_ascii=False)}</script>'
+        vkws = ["architecture lectures", "building construction", "construction drawings", "stair design", "suspended ceilings",
+                "electrical installations drawings", "passive house", "architecture quiz",
+                "محاضرات عمارة", "تشييد المباني", "رسومات تنفيذية", "تصميم السلالم", "الأسقف المعلقة", "التركيبات الكهربائية",
+                "البيوت الموفرة للطاقة", "اختبارات عمارة", "Build2Wise"]
+        vdesc = (UI["videos_lead"][0] + " Short quizzes after each lesson. | " + UI["videos_lead"][1] + " مع اختبارات قصيرة بعد كل درس.")
+        write_page("videos", layout(profile, f'Architecture Video Lessons & Quizzes | {name_en}', vdesc, body, "../",
+                                    site + "/videos/", head, "", "videos", vkws))
         urls.append(site + "/videos/")
 
     if "articles" in nav_keys:
@@ -945,8 +980,12 @@ def build_media_pages(profile):
 {page_hero("articles")}
 <section class="wrap"><p class="lead">{ui("articles_lead")}</p><div class="agrid">{grid}</div></section>
 </main>'''
-        write_page("articles", layout(profile, f'{ui_en("articles")} | {name_en}', UI["articles_lead"][0], body, "../",
-                                      site + "/articles/", "", "", "articles"))
+        akws = ["sustainable architecture articles", "building materials", "energy efficient buildings", "smart glass",
+                "مقالات عمارة", "العمارة المستدامة", "مواد البناء", "كفاءة الطاقة في المباني"] + \
+               sorted({t for a in ARTICLES for t in a["tags"]})
+        write_page("articles", layout(profile, f'Scientific Articles on Sustainable Architecture | {name_en}',
+                                      UI["articles_lead"][0] + " | " + UI["articles_lead"][1], body, "../",
+                                      site + "/articles/", "", "", "articles", akws))
         urls.append(site + "/articles/")
         for a in ARTICLES:
             base = "../../"
@@ -970,7 +1009,7 @@ def build_media_pages(profile):
             write_page(f'articles/{a["slug"]}', layout(profile, f'{a["title"]} | {name_en}', a["text"][:300], body, base,
                                                       a["link"] or f'{site}/articles/{a["slug"]}/',
                                                       f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>',
-                                                      a["image"], "articles"))
+                                                      a["image"], "articles", a["tags"]))
     return urls
 
 
@@ -1019,6 +1058,91 @@ def stairs_tool():
 </section>'''
 
 
+def load_materials():
+    data = load_json(ROOT / "content" / "materials.json")
+    groups = {g["id"] for g in data["groups"]}
+    for m in data["materials"]:
+        if m.get("group") not in groups:
+            fail(f'materials.json: "{m.get("id")}" has an unknown group / مجموعة غير معروفة')
+        if not m.get("r") and not (isinstance(m.get("k"), (int, float)) and m["k"] > 0):
+            fail(f'materials.json: "{m.get("id")}" needs a positive "k" (λ) / يلزم معامل توصيل موجب')
+    return data
+
+
+def materials_table(data):
+    """Physical properties table (density, λ, R for a typical thickness), grouped; same data the calculator uses."""
+    def num(v, digits):
+        return "—" if v is None else (f"{v:.{digits}f}".rstrip("0").rstrip(".") if isinstance(v, float) else str(v))
+    rows = ""
+    for g in data["groups"]:
+        rows += f'<tr class="mt-group"><th colspan="5" scope="colgroup">{bi(g)}</th></tr>'
+        for m in (x for x in data["materials"] if x["group"] == g["id"]):
+            r = m.get("r") or (m["d"] / 100 / m["k"] if m.get("d") else None)
+            star = '<sup class="mt-star" aria-label="varies">*</sup>' if m.get("varies") else ""
+            k = m.get("k")
+            k_txt = "—" if not k else (f"{k:.3f}" if k < 0.1 else f"{k:.2f}" if k < 10 else f"{k:g}")
+            rows += (f'<tr><th scope="row">{bi(m)}{star}</th><td>{num(m.get("density"), 0)}</td>'
+                     f'<td>{k_txt}</td><td>{num(m.get("d"), 2)}</td>'
+                     f'<td>{f"{r:.2f}" if r is not None else "—"}</td></tr>')
+    head = "".join(f'<th scope="col">{bi(h)}</th>' for h in (
+        {"en": "Material", "ar": "المادة"}, {"en": "Density ρ (kg/m³)", "ar": "الكثافة ρ (كجم/م³)"},
+        {"en": "Thermal conductivity λ (W/m·K)", "ar": "معامل التوصيل الحراري λ (وات/م·ك)"},
+        {"en": "Typical thickness (cm)", "ar": "السمك الشائع (سم)"},
+        {"en": "Thermal resistance R = d/λ (m²·K/W)", "ar": "المقاومة الحرارية R = d/λ (م²·ك/وات)"}))
+    return f'''
+<section class="wrap" id="materials">
+  <h2>{bi({"en": "Thermal properties of common building materials in Egypt and the Arab world", "ar": "الخصائص الحرارية لأهم مواد البناء في مصر والوطن العربي"})}</h2>
+  <p class="lead">{bi({"en": "Density, thermal conductivity (λ) and thermal resistance (R) for the typical thickness of each material. A lower λ means a better insulator; a higher R means more resistance to heat flow. The calculator above uses these same values.",
+                       "ar": "الكثافة ومعامل التوصيل الحراري (λ) والمقاومة الحرارية (R) للسمك الشائع لكل مادة. كلما قل λ كانت المادة أفضل عزلًا، وكلما زادت R زادت مقاومة الطبقة لانتقال الحرارة. الحاسبة أعلاه تستخدم نفس هذه القيم."})}</p>
+  <div class="mt-wrap"><table class="mt">
+    <thead><tr>{head}</tr></thead>
+    <tbody>{rows}</tbody>
+  </table></div>
+  <p class="muted calc-note"><sup>*</sup> {bi({"en": "Depends strongly on the hole pattern, mix and manufacturer.", "ar": "تختلف كثيرًا حسب شكل التفريغ والخلطة والمصنّع."})}
+  {bi(data["note"])}</p>
+</section>'''
+
+
+def uvalue_tool(data):
+    """Wall U-value calculator markup; layers, arithmetic and drawing live in static/uvalue.js."""
+    calc_mats = [{k: m[k] for k in ("id", "en", "ar", "k", "r", "color", "insulation") if k in m}
+                 for m in data["materials"] if not m.get("table_only")]
+    mats_json = json.dumps(calc_mats, ensure_ascii=False).replace("</", "<\\/")
+    num = lambda fid, val, lo, hi: (f'<input id="{fid}" class="input" type="number" inputmode="decimal" '
+                                    f'value="{val}" min="{lo}" max="{hi}" step="1">')
+    presets = [("brick", {"en": "Brick wall 25 cm", "ar": "حائط طوب 25 سم"}),
+               ("brick-xps", {"en": "Brick + 5 cm insulation", "ar": "طوب + عزل 5 سم"}),
+               ("cavity", {"en": "Double brick wall with air gap", "ar": "حائط طوب مزدوج بفراغ هوائي"}),
+               ("aac", {"en": "AAC block 20 cm", "ar": "طوب خفيف (AAC) 20 سم"}),
+               ("concrete", {"en": "Concrete wall 20 cm", "ar": "حائط خرسانة 20 سم"})]
+    preset_btns = "".join(f'<button type="button" class="chip" data-preset="{k}">{bi(lbl)}</button>' for k, lbl in presets)
+    return f'''
+<section class="wrap" id="uvalue">
+  <h2>{bi({"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"})}</h2>
+  <p class="lead">{bi({"en": "Build a wall layer by layer, from outside to inside, and see its thermal resistance, its U-value and how the temperature falls through it. Start from a ready wall or add your own layers.",
+                       "ar": "كوّن الحائط طبقة بطبقة من الخارج إلى الداخل، فتظهر مقاومته الحرارية ومعامل الانتقال الحراري U وكيف تتغير درجة الحرارة داخله. ابدأ من حائط جاهز أو أضف طبقاتك."})}</p>
+  <script type="application/json" id="uv-mats">{mats_json}</script>
+  <div class="chips chips-filter" id="uv-presets">{preset_btns}</div>
+  <div class="calc">
+    <div class="calc-in">
+      <div class="uv-layers" id="uv-layers"></div>
+      <button type="button" class="btn btn-sm" id="uv-add">+ {bi({"en": "Add layer", "ar": "أضف طبقة"})}</button>
+      <div class="uv-temps">
+        <label class="calc-field" for="uv-to"><span>{bi({"en": "Outside temperature (°C)", "ar": "حرارة الخارج (°م)"})}</span>{num("uv-to", 40, -30, 60)}</label>
+        <label class="calc-field" for="uv-ti"><span>{bi({"en": "Inside temperature (°C)", "ar": "حرارة الداخل (°م)"})}</span>{num("uv-ti", 24, -10, 40)}</label>
+      </div>
+    </div>
+    <div class="calc-out" aria-live="polite">
+      <div class="calc-stats" id="uv-stats"></div>
+      <svg id="uv-svg" class="calc-svg" role="img" aria-label="Wall section and temperature / قطاع الحائط ودرجة الحرارة"></svg>
+      <div id="uv-compare"></div>
+    </div>
+  </div>
+  <p class="muted calc-note">{bi({"en": "Method: U = 1 / (Rsi + Σ d/λ + Rse), with surface resistances Rsi = 0.13 and Rse = 0.04 m²·K/W for walls (ISO 6946) and 0.18 m²·K/W for a still air gap of 25 mm or more. The λ values come from the properties table below and you can edit them; use the manufacturer's value when you have it. Thermal bridges such as columns and beams are not included, so a real wall performs somewhat worse.",
+                                  "ar": "طريقة الحساب: U = 1 / (Rsi + مجموع d/λ + Rse)، مع مقاومة السطح الداخلي Rsi = 0.13 والخارجي Rse = 0.04 م²·ك/وات للحوائط (ISO 6946)، و0.18 م²·ك/وات لفراغ هوائي ساكن سمكه 25 مم فأكثر. قيم λ مأخوذة من جدول الخصائص أدناه ويمكنك تعديلها، واستخدم قيمة المصنّع إن توفرت. الجسور الحرارية مثل الأعمدة والكمرات غير محسوبة، فأداء الحائط الفعلي أقل قليلًا."})}</p>
+</section>'''
+
+
 def build_tools(profile):
     if "tools" not in [k for k, _ in NAV]:
         return []
@@ -1026,19 +1150,43 @@ def build_tools(profile):
     name_en = pick(profile["name"], "en")
     lead = {"en": "Interactive calculators for architecture and building construction students.",
             "ar": "حاسبات تفاعلية لطلاب العمارة والإنشاء المعماري."}
+    mats = load_materials()
+    jump = (f'<p class="btn-row"><a class="btn" href="#stairs">{bi({"en": "Stair design", "ar": "تصميم السلالم"})}</a>'
+            f'<a class="btn" href="#uvalue">{bi({"en": "Wall U-value", "ar": "معامل U للحائط"})}</a>'
+            f'<a class="btn" href="#materials">{bi({"en": "Material properties table", "ar": "جدول خصائص المواد"})}</a></p>')
     body = f'''
 <main>
 {page_hero("tools")}
-<section class="wrap"><p class="lead">{bi(lead)}</p></section>
+<section class="wrap"><p class="lead">{bi(lead)}</p>{jump}</section>
 {stairs_tool()}
+{uvalue_tool(mats)}
+{materials_table(mats)}
 </main>'''
-    ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": "Stair design calculator",
-          "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
-          "url": site + "/tools/#stairs", "author": {"@type": "Person", "name": name_en}}
+    author = {"@type": "Person", "name": name_en, "url": site + "/"}
+    app = lambda name, name_ar, anchor, about: {
+        "@type": "WebApplication", "name": name, "alternateName": name_ar, "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any", "isAccessibleForFree": True, "inLanguage": ["en", "ar"], "url": site + "/tools/#" + anchor,
+        "about": about, "educationalLevel": "Undergraduate", "audience": {"@type": "EducationalAudience", "educationalRole": "student"},
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": author}
+    dataset = {"@type": "Dataset", "name": "Thermal properties of common building materials in Egypt and the Arab world",
+               "alternateName": "الخصائص الحرارية لأهم مواد البناء في مصر والوطن العربي", "url": site + "/tools/#materials",
+               "description": pick(mats["note"], "en"), "creator": author, "isAccessibleForFree": True, "inLanguage": ["en", "ar"],
+               "keywords": ["thermal conductivity", "density", "thermal resistance", "building materials", "Egypt"],
+               "variableMeasured": ["Density (kg/m3)", "Thermal conductivity λ (W/m·K)", "Thermal resistance R (m2·K/W)"]}
+    ld = {"@context": "https://schema.org", "@graph": [
+        app("Stair design calculator", "حاسبة تصميم السلالم", "stairs", "Staircase design: risers, treads, 2R+T rule"),
+        app("Wall U-value calculator", "حاسبة العزل الحراري للحائط (معامل U)", "uvalue", "Thermal transmittance of walls"),
+        dataset]}
     head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-            f'<script src="../static/stairs.js" defer></script>')
-    write_page("tools", layout(profile, f'Stair design calculator | {name_en}', lead["en"] + " Stair design calculator: risers, treads, "
-                               "2R+T comfort rule, plan length and section.", body, "../", site + "/tools/", head, "", "tools"))
+            f'<script src="../static/stairs.js" defer></script><script src="../static/uvalue.js" defer></script>')
+    desc = ("Free stair design and wall U-value calculators for architecture students, with a table of the thermal "
+            "properties of building materials. | حاسبة تصميم السلالم وحاسبة العزل الحراري ومعامل U للحوائط، وجدول خصائص مواد البناء.")
+    kws = ["stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
+           "thermal conductivity of building materials", "building materials Egypt", "architecture students",
+           "حاسبة تصميم السلالم", "القائمة والنائمة", "حساب معامل U", "العزل الحراري للحوائط", "معامل التوصيل الحراري",
+           "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
+    write_page("tools", layout(profile, f'Stair & U-value Calculators, Building Materials Table | {name_en}', desc,
+                               body, "../", site + "/tools/", head, "", "tools", kws))
     return [site + "/tools/"]
 
 
@@ -1070,6 +1218,9 @@ def write_search_index(profile, papers):
     if "tools" in [k for k, _ in NAV]:
         add("tool", "tools/#stairs", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
             ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
+        add("tool", "tools/#uvalue", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},
+            ["u-value", "thermal insulation", "thermal resistance", "wall", "insulation", "عزل حراري", "معامل انتقال حراري",
+             "مقاومة حرارية", "حائط", "جدار", "عزل"])
     data = {"kinds": {k: {"en": en, "ar": ar} for k, (en, ar) in kinds.items()}, "items": items}
     (OUT / "search.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
