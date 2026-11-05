@@ -707,6 +707,8 @@ def home_tools():
         return ""
     cards = [("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
               {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
+             ("tools/sun-path/", "☀", "#a35a10", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
+              {"en": "Solar angles and shadow length for any place and time", "ar": "زوايا الشمس وطول الظل لأي مكان ووقت"}),
              ("tools/stairs/", "≡", "#a8822f", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
               {"en": "Risers, treads, flights and a scaled section", "ar": "القوائم والنوائم والقلبات وقطاع بمقياس رسم"})]
     items = "".join(f'<a class="card pcard" href="{h}"><span class="pbadge" style="background:{c}">{s}</span>'
@@ -1424,6 +1426,167 @@ def build_stairs_page(profile):
     return url
 
 
+SUNPATH_FAQ = [
+    ({"en": "How do I calculate the length of a shadow?", "ar": "كيف أحسب طول الظل؟"},
+     {"en": "Shadow length = object height ÷ tan(solar altitude). A 10 m object with the sun at 36.5° casts a shadow of about 13.5 m on level ground.",
+      "ar": "طول الظل = ارتفاع الجسم ÷ ظل زاوية ارتفاع الشمس (tan). جسم ارتفاعه 10 م والشمس على ارتفاع 36.5° يلقي ظلًا طوله نحو 13.5 م على أرض مستوية."}),
+    ({"en": "What is the difference between solar altitude and azimuth?", "ar": "ما الفرق بين ارتفاع الشمس وسمت الشمس؟"},
+     {"en": "Altitude is the angle of the sun above the horizon. Azimuth is its compass direction, measured clockwise from true north: 90° is east, 180° south and 270° west.",
+      "ar": "ارتفاع الشمس هو زاويتها فوق الأفق. والسمت هو اتجاهها على البوصلة مقيسًا مع عقارب الساعة من الشمال الحقيقي: 90° شرق، و180° جنوب، و270° غرب."}),
+    ({"en": "How high does the sun get in Cairo?", "ar": "ما أقصى ارتفاع للشمس في القاهرة؟"},
+     {"en": "At solar noon in Cairo the sun reaches about 83.4° at the June solstice, 59.9° at the March equinox and 36.5° at the December solstice. That is why shading that works in June may not stop low winter sun.",
+      "ar": "عند الظهر الشمسي في القاهرة تصل الشمس إلى نحو 83.4° في انقلاب يونيو، و59.9° في اعتدال مارس، و36.5° في انقلاب ديسمبر. ولهذا قد لا يحجب التظليل المناسب في يونيو شمس الشتاء المنخفضة."}),
+    ({"en": "Why is the sun not due south at exactly 12:00?", "ar": "لماذا لا تكون الشمس جنوبًا تمامًا عند الساعة 12:00؟"},
+     {"en": "Clock time differs from solar time because of the site's longitude, the equation of time and daylight saving. In Cairo on 21 December solar noon falls at about 11:53.",
+      "ar": "يختلف توقيت الساعة عن التوقيت الشمسي بسبب خط طول الموقع ومعادلة الزمن والتوقيت الصيفي. في القاهرة يوم 21 ديسمبر يقع الظهر الشمسي نحو الساعة 11:53."}),
+    ({"en": "Which UTC offset should I enter for Egypt?", "ar": "ما فرق التوقيت الذي أدخله لمصر؟"},
+     {"en": "Enter the offset in force on the chosen date: +2 in winter and +3 during daylight saving time. The calculator has no time zone database, so check the current rules.",
+      "ar": "أدخل الفرق المعمول به في التاريخ المختار: +2 شتاءً و+3 في التوقيت الصيفي. لا تحتوي الحاسبة على قاعدة بيانات للمناطق الزمنية، فراجع القواعد الحالية."}),
+    ({"en": "Can I use the results for a whole building?", "ar": "هل تصلح النتائج لمبنى كامل؟"},
+     {"en": "They are for preliminary design. The tool models one vertical object on level ground, not a 3D building, and leaves out terrain, neighbouring buildings and refraction. Directions are from true north, not magnetic north.",
+      "ar": "النتائج للتصميم المبدئي. تحسب الأداة جسمًا رأسيًا واحدًا على أرض مستوية وليس مبنى ثلاثي الأبعاد، ولا تشمل التضاريس والمباني المجاورة والانكسار الجوي. والاتجاهات من الشمال الحقيقي لا المغناطيسي."}),
+]
+
+
+def sunpath_tool():
+    """Sun path calculator markup; page logic in static/sunpath.js, solar position in static/solar.js."""
+    def field(fid, label, inner):
+        return (f'<div class="calc-field"><label for="{fid}">{bi(label)}</label>{inner}'
+                f'<p class="sp-err" id="e_{fid}" role="alert"></p></div>')
+
+    def num(fid, val, step, extra=""):
+        return (f'<input id="{fid}" class="input" type="number" step="{step}" inputmode="decimal" value="{val}" '
+                f'aria-describedby="e_{fid}"{extra}>')
+
+    metric = lambda mid, label: f'<div class="metric"><b id="{mid}">—</b><span>{bi(label)}</span></div>'
+    # the left-to-right mark keeps this text in order inside an Arabic page
+    scales = "".join(f'<option value="{v}">‎1 px = {v} m</option>' for v in ("0.1", "0.5", "1", "2", "5"))
+    return f'''
+<section class="wrap" id="calculator">
+  <div class="calc">
+    <form class="calc-in" id="sp-form" novalidate autocomplete="off" onsubmit="return false">
+      {field("lat", {"en": "Latitude (°, north +)", "ar": "خط العرض (°، الشمال +)"}, num("lat", "30.0444", "any"))}
+      {field("lon", {"en": "Longitude (°, east +)", "ar": "خط الطول (°، الشرق +)"}, num("lon", "31.2357", "any"))}
+      {field("date", {"en": "Date", "ar": "التاريخ"}, '<input id="date" class="input" type="date" value="2026-06-21" aria-describedby="e_date">')}
+      {field("time", {"en": "Local clock time", "ar": "التوقيت المحلي (الساعة)"}, '<input id="time" class="input" type="time" value="12:00" aria-describedby="e_time">')}
+      {field("utc", {"en": "UTC offset on this date (h)", "ar": "فرق التوقيت عن UTC في هذا التاريخ (ساعة)"}, num("utc", "3", "0.25"))}
+      {field("height", {"en": "Object height (m)", "ar": "ارتفاع الجسم (م)"}, num("height", "10", "any", ' min="0"'))}
+      <div class="calc-field"><label for="scale">{bi({"en": "Diagram scale", "ar": "مقياس الرسم"})}</label>
+        <select id="scale" class="input"><option value="auto" data-en="Auto-fit (not to scale)" data-ar="ملاءمة تلقائية (غير مقيس)">Auto-fit (not to scale)</option>{scales}</select></div>
+      <p class="muted sp-note">{bi({"en": "Default: Cairo. Enter the UTC offset in force on the chosen date, including daylight saving (Cairo: +2 in winter, +3 during DST; check the current rules).",
+                                    "ar": "القيم الافتراضية للقاهرة. أدخل فرق التوقيت المعمول به في التاريخ المختار شاملًا التوقيت الصيفي (القاهرة: +2 شتاءً و+3 في التوقيت الصيفي؛ راجع القواعد الحالية)."})}</p>
+    </form>
+    <div class="calc-out" aria-live="polite">
+      <div class="calc-stats sp-stats">
+        {metric("alt", {"en": "solar altitude", "ar": "ارتفاع الشمس"})}
+        {metric("azi", {"en": "solar azimuth (from true north)", "ar": "سمت الشمس (من الشمال الحقيقي)"})}
+        {metric("shadow", {"en": "shadow length (flat ground)", "ar": "طول الظل (أرض مستوية)"})}
+        {metric("direction", {"en": "shadow bearing (from true north)", "ar": "اتجاه الظل (من الشمال الحقيقي)"})}
+        {metric("decl", {"en": "solar declination", "ar": "ميل الشمس"})}
+        {metric("eot", {"en": "equation of time", "ar": "معادلة الزمن"})}
+      </div>
+      <p class="sp-warn" id="warn" hidden></p>
+      <svg id="drawing" class="calc-svg" viewBox="0 0 600 420" role="img" aria-label="Plan-view shadow diagram, north up / مخطط الظل في المسقط، الشمال لأعلى">
+        <defs><marker id="sp-arrow" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 Z" class="sp-sunfill"/></marker></defs>
+        <circle cx="300" cy="200" r="150" class="sp-ring"/>
+        <path d="M300 35V365M135 200H465" class="sp-axis"/>
+        <text x="300" y="26" text-anchor="middle" class="sp-t" id="tN">N</text>
+        <text x="300" y="386" text-anchor="middle" class="sp-t" id="tS">S</text>
+        <text x="476" y="205" class="sp-t" id="tE">E</text>
+        <text x="124" y="205" text-anchor="end" class="sp-t" id="tW">W</text>
+        <line id="shadowLine" x1="300" y1="200" x2="300" y2="200" class="sp-shadow"/>
+        <path id="beyond" d="" class="sp-beyond" visibility="hidden"/>
+        <line id="sunLine" x1="300" y1="200" x2="300" y2="80" class="sp-sun" marker-end="url(#sp-arrow)"/>
+        <rect x="290" y="190" width="20" height="20" class="sp-obj"/>
+        <g id="scaleBar" visibility="hidden"><line id="sbLine" x1="40" y1="405" x2="140" y2="405" class="sp-bar"/><text id="sbText" x="40" y="398" class="sp-s"></text></g>
+        <text id="sketch" x="560" y="405" text-anchor="end" class="sp-sk"></text>
+      </svg>
+      <p class="muted" id="disclaimer"></p>
+    </div>
+  </div>
+  <p class="muted calc-note">{bi({"en": "Method: NOAA Solar Calculator algorithm (after Meeus, Astronomical Algorithms), checked against NREL SPA to within about 0.01° in altitude and 0.03° in azimuth. Altitude is geometric, without atmospheric refraction. For preliminary design only, not for survey, regulatory or high-precision engineering use.",
+                                  "ar": "الطريقة: خوارزمية NOAA لحساب موضع الشمس (وفق Meeus)، وقد قورنت بنموذج NREL SPA بفارق نحو 0.01° في الارتفاع و0.03° في السمت. الارتفاع هندسي دون الانكسار الجوي. النتائج للتصميم المبدئي فقط، وليست للمسح أو الاعتماد التنظيمي أو الهندسة عالية الدقة."})}</p>
+</section>'''
+
+
+def sunpath_share_card(profile):
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link href="{FONTS}" rel="stylesheet"><style>
+*{{box-sizing:border-box;margin:0}}html,body{{width:1200px;height:630px;overflow:hidden}}
+body{{font-family:"IBM Plex Sans Arabic","Segoe UI",Arial,sans-serif;background:#13294b;color:#fff;padding:56px 64px;display:flex;gap:40px;align-items:center;
+background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px}}
+.txt{{flex:1}}h1{{font-family:"Source Serif 4",Georgia,serif;font-size:56px;line-height:1.1}}
+.ar{{font-family:"Noto Naskh Arabic",serif;font-size:46px;direction:rtl;margin-top:18px;color:#f3ecdb}}
+p{{font-size:24px;margin-top:22px;color:#dfe5ef}}.u{{color:#d2b06a;font-weight:700}}.foot{{margin-top:30px;font-size:20px;color:#d2b06a}}
+svg{{width:420px;height:300px}}path{{fill:none;stroke:#d2b06a;stroke-width:3;stroke-dasharray:6 8}}
+.arc{{stroke:#fff;stroke-width:4;stroke-dasharray:none}}circle{{fill:#d2b06a}}.g{{stroke:#fff;stroke-width:5;stroke-dasharray:none}}.s{{stroke:#8ea3bd;stroke-width:14;stroke-dasharray:none;stroke-linecap:round}}
+</style></head><body><div class="txt"><h1>Sun Path &amp; Shadow Calculator</h1><div class="ar">حاسبة مسار الشمس والظلال</div>
+<p>Altitude · azimuth · <span class="u">shadow length</span> · plan diagram</p>
+<div class="foot">{esc(profile.get("site_url", "").replace("https://", ""))}/tools/sun-path/</div></div>
+<svg viewBox="0 0 420 300"><path d="M90 230L312 82"/><path class="arc" d="M30 230 A180 180 0 0 1 390 230"/><circle cx="312" cy="82" r="24"/><path class="g" d="M10 230H410"/><path class="s" d="M210 230H90"/><path class="g" d="M210 230V150"/></svg></body></html>'''
+
+
+def build_sunpath_page(profile):
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    base = "../../"
+    url = site + "/tools/sun-path/"
+    image = render_share_card(profile, "sun-path", sunpath_share_card(profile))
+    intro = {"en": "Find the position of the sun and the length of a shadow for any place, date and time, free and online. Enter the site, the date, the clock time and the object height to get solar altitude, azimuth, shadow length and direction, with a plan diagram. It helps architects and students study building orientation, shading and overshadowing, in Egypt and anywhere else.",
+             "ar": "احسب موضع الشمس وطول الظل لأي مكان وتاريخ ووقت، مجانًا وأونلاين. أدخل الموقع والتاريخ والساعة وارتفاع الجسم، فتحصل على ارتفاع الشمس وسمتها وطول الظل واتجاهه مع مخطط في المسقط. تساعد الأداة المعماريين والطلاب على دراسة توجيه المباني والتظليل والظلال المتبادلة، في مصر وأي مكان آخر."}
+    example = f'''
+<section class="wrap" id="example">
+  <h2>{bi({"en": "How to calculate a shadow: worked example", "ar": "طريقة حساب الظل: مثال محلول"})}</h2>
+  <p>{bi({"en": "A 10 m high object in Cairo (30.04° N, 31.24° E) on 21 December at 12:00, UTC +2:", "ar": "جسم ارتفاعه 10 م في القاهرة (30.04° شمالًا، 31.24° شرقًا) يوم 21 ديسمبر الساعة 12:00، بفرق توقيت +2:"})}</p>
+  <ol class="uv-steps">
+    <li>{bi({"en": "The calculator gives a solar altitude of 36.5° and an azimuth of 182.0°, so the sun is almost due south.", "ar": "تعطي الحاسبة ارتفاعًا للشمس قدره 36.5° وسمتًا قدره 182.0°، أي أن الشمس جنوبًا تقريبًا."})}</li>
+    <li>{bi({"en": "Shadow length = height ÷ tan(altitude) = 10 ÷ tan(36.5°) ≈ 13.5 m.", "ar": "طول الظل = الارتفاع ÷ tan(الارتفاع الشمسي) = 10 ÷ tan(36.5°) ≈ 13.5 م."})}</li>
+    <li>{bi({"en": "Shadow bearing = azimuth + 180° = 2.0°, so the shadow falls almost due north.", "ar": "اتجاه الظل = السمت + 180° = 2.0°، أي أن الظل يقع شمالًا تقريبًا."})}</li>
+  </ol>
+  <p>{bi({"en": "At midday on 21 June the same object casts a much shorter shadow, so test both the summer and winter dates when you study spacing and shading.", "ar": "وظهر يوم 21 يونيو يلقي الجسم نفسه ظلًا أقصر بكثير، فاختبر تاريخي الصيف والشتاء عند دراسة التباعد والتظليل."})}</p>
+</section>'''
+    related = [
+        (f'{base}tools/u-value/', {"en": "Wall U-value and thermal insulation calculator", "ar": "حاسبة معامل U والعزل الحراري للحوائط"}),
+        (f'{base}tools/stairs/', {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"}),
+        (f'{base}articles/', {"en": "Articles on sustainable architecture", "ar": "مقالات في العمارة المستدامة"}),
+        (f'{base}papers/adaptive-envelopes-administrative-2026/', {"en": "Research: adaptive building envelopes in hot-arid climates", "ar": "بحث: الأغلفة المتكيفة للمباني الإدارية في المناخ الحار الجاف"}),
+    ]
+    rel = "".join(f'<li><a href="{h}">{bi(t)}</a></li>' for h, t in related)
+    body = f'''
+<main>
+{tool_hero(base, {"en": "Sun Path & Shadow Calculator for Architects", "ar": "حاسبة مسار الشمس والظلال للمعماريين"})}
+<section class="wrap"><p class="lead">{bi(intro)}</p>
+  <p class="btn-row"><a class="btn" href="#example">{bi({"en": "Worked example", "ar": "مثال محلول"})}</a>
+  <a class="btn" href="#faq">{bi({"en": "FAQ", "ar": "أسئلة شائعة"})}</a></p></section>
+{sunpath_tool()}
+{example}
+{faq_section(SUNPATH_FAQ, {"en": "Frequently asked questions about sun path and shadows", "ar": "أسئلة شائعة عن مسار الشمس والظلال"})}
+<section class="wrap"><h2>{bi({"en": "Related", "ar": "روابط ذات صلة"})}</h2><ul class="uv-related">{rel}</ul></section>
+</main>'''
+    author = {"@type": "Person", "name": name_en, "url": site + "/", "jobTitle": pick(profile.get("title", ""), "en")}
+    app = {"@type": "WebApplication", "name": "Sun path and shadow calculator", "alternateName": "حاسبة مسار الشمس والظلال", "url": url,
+           "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "isAccessibleForFree": True,
+           "inLanguage": ["en", "ar"], "description": intro["en"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+           "author": author, "featureList": ["Solar altitude and azimuth", "Shadow length and bearing", "Solar declination and equation of time",
+                                             "Plan-view shadow diagram with scale"]}
+    if image:
+        app["image"] = image
+    ld = {"@context": "https://schema.org", "@graph": [app, faq_ld(SUNPATH_FAQ), {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": site + "/"},
+        {"@type": "ListItem", "position": 2, "name": "Tools", "item": site + "/tools/"},
+        {"@type": "ListItem", "position": 3, "name": "Sun path and shadow calculator", "item": url}]}]}
+    head = (f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+            f'<script src="{base}static/solar.js" defer></script><script src="{base}static/sunpath.js" defer></script>')
+    desc = ("Free sun path and shadow calculator: solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram. "
+            "| حاسبة مجانية لمسار الشمس وطول الظل واتجاهه لأي مكان ووقت.")
+    kws = ["sun path calculator", "shadow length calculator", "solar altitude and azimuth", "sun position calculator", "shadow calculator for buildings",
+           "how to calculate shadow length", "building orientation", "solar angle calculator", "sun path Cairo", "shading design",
+           "حاسبة مسار الشمس", "حساب طول الظل", "زاوية ارتفاع الشمس", "سمت الشمس", "حساب موضع الشمس", "مسار الشمس في القاهرة",
+           "توجيه المباني", "التظليل المعماري", "ظلال المباني", "حاسبة الظل"]
+    write_page("tools/sun-path", layout(profile, "Sun Path & Shadow Calculator | حاسبة مسار الشمس والظلال", desc, body,
+                                        base, url, head, image, "tools", kws))
+    return url
+
+
 def build_tools(profile):
     if "tools" not in [k for k, _ in NAV]:
         return []
@@ -1434,12 +1597,18 @@ def build_tools(profile):
     mats = load_materials()
     u_url = build_uvalue_page(profile, mats)
     s_url = build_stairs_page(profile)
+    p_url = build_sunpath_page(profile)
     wall = ('<span class="tool-art tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#b5583a;flex:12"></i>'
             '<i style="background:#9cc7e8;flex:5"></i><i style="background:#b5583a;flex:12"></i><i style="background:#cfc8bb;flex:2"></i></span>')
     stair = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M6 94H94" class="ta-floor"/>'
              + "".join(f'<path d="M{8 + i * 10} {92 - i * 10}h10v-10"/>' for i in range(8)) + '</svg></span>')
     table = ('<span class="tool-art tool-table" aria-hidden="true">' + "".join("<i></i>" for _ in range(12)) + '</span>')
+    sun = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M8 74 A42 42 0 0 1 92 74"/>'
+           '<circle cx="68" cy="42" r="9"/><path d="M6 80H94" class="ta-floor"/></svg></span>')
     tools = [
+        ("sun-path/", sun, {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
+         {"en": "Solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram.",
+          "ar": "ارتفاع الشمس وسمتها وطول الظل واتجاهه لأي مكان ووقت، مع مخطط في المسقط."}),
         ("stairs/", stair, {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
          {"en": "Number of risers, riser and tread, 2R + T check, pitch, plan length with the landing and a scaled section.",
           "ar": "عدد القوائم، والقائمة والنائمة، وفحص 2ق + ن، وزاوية الميل، وطول السلم مع البسطة، وقطاع بمقياس رسم."}),
@@ -1463,18 +1632,18 @@ def build_tools(profile):
     author = {"@type": "Person", "name": name_en, "url": site + "/"}
     ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Free tools for architecture students",
           "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": u, "name": n} for i, (u, n) in enumerate(
-              [(s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
+              [(p_url, "Sun path and shadow calculator"), (s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
                (u_url + "#materials", "Thermal properties of building materials")])], "author": author}
     head = redirect + f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-    desc = ("Free stair design and wall U-value calculators for architecture students, with a table of the thermal "
-            "properties of building materials. | حاسبة تصميم السلالم وحاسبة العزل الحراري ومعامل U للحوائط، وجدول خصائص مواد البناء.")
-    kws = ["stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
+    desc = ("Free sun path, stair design and wall U-value calculators for architecture students, with a table of the thermal "
+            "properties of building materials. | حاسبات مسار الشمس وتصميم السلالم والعزل الحراري ومعامل U، وجدول خصائص مواد البناء.")
+    kws = ["sun path calculator", "shadow calculator", "حاسبة مسار الشمس", "stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
            "thermal conductivity of building materials", "building materials Egypt", "architecture students",
            "حاسبة تصميم السلالم", "القائمة والنائمة", "حساب معامل U", "العزل الحراري للحوائط", "معامل التوصيل الحراري",
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
-    write_page("tools", layout(profile, f'Free Tools for Architecture Students: Stair & U-value Calculators | {name_en}', desc,
+    write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", s_url, u_url]
+    return [site + "/tools/", p_url, s_url, u_url]
 
 
 def write_search_index(profile, papers):
@@ -1503,6 +1672,9 @@ def write_search_index(profile, papers):
     for a in ARTICLES:
         add("article", f'articles/{a["slug"]}/', a["title"], [a["text"][:1500]] + a["tags"], a["date"])
     if "tools" in [k for k, _ in NAV]:
+        add("tool", "tools/sun-path/", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
+            ["sun", "solar altitude", "azimuth", "shadow length", "orientation", "shading", "شمس", "ظل", "ظلال", "ارتفاع الشمس",
+             "سمت", "توجيه المباني", "التظليل"])
         add("tool", "tools/stairs/", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
             ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
         add("tool", "tools/u-value/", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},
