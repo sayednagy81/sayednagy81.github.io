@@ -705,7 +705,9 @@ def write_page(rel, html_text):
 def home_tools():
     if "tools" not in [k for k, _ in NAV]:
         return ""
-    cards = [("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
+    cards = [("courses/thermal-comfort/", "10", "#047857", {"en": "Thermal comfort course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
+              {"en": "Ten interactive lectures with building photos and charts", "ar": "عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية"}),
+             ("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
               {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
              ("tools/sun-path/", "☀", "#a35a10", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
               {"en": "Solar angles and shadow length for any place and time", "ar": "زوايا الشمس وطول الظل لأي مكان ووقت"}),
@@ -1605,7 +1607,12 @@ def build_tools(profile):
     table = ('<span class="tool-art tool-table" aria-hidden="true">' + "".join("<i></i>" for _ in range(12)) + '</span>')
     sun = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M8 74 A42 42 0 0 1 92 74"/>'
            '<circle cx="68" cy="42" r="9"/><path d="M6 80H94" class="ta-floor"/></svg></span>')
+    course = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 18H86V70H14Z"/><path d="M26 58V44M42 58V34M58 58V48M74 58V28"/>'
+              '<path d="M50 70V84M34 84H66" class="ta-floor"/></svg></span>')
     tools = [
+        ("../courses/thermal-comfort/", course, {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
+         {"en": "Ten interactive Arabic lectures on classrooms, with building photos, charts and PowerPoint download.",
+          "ar": "عشر محاضرات تفاعلية عن القاعات التعليمية، مع صور المباني ورسوم بيانية وتحميل بصيغة PowerPoint."}),
         ("sun-path/", sun, {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
          {"en": "Solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram.",
           "ar": "ارتفاع الشمس وسمتها وطول الظل واتجاهه لأي مكان ووقت، مع مخطط في المسقط."}),
@@ -1643,7 +1650,7 @@ def build_tools(profile):
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
     write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", p_url, s_url, u_url]
+    return [site + "/tools/", site + "/courses/thermal-comfort/", p_url, s_url, u_url]
 
 
 def write_search_index(profile, papers):
@@ -1672,6 +1679,9 @@ def write_search_index(profile, papers):
     for a in ARTICLES:
         add("article", f'articles/{a["slug"]}/', a["title"], [a["text"][:1500]] + a["tags"], a["date"])
     if "tools" in [k for k, _ in NAV]:
+        add("tool", "courses/thermal-comfort/", {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
+            ["thermal comfort", "energy efficiency", "classrooms", "lectures", "PMV", "IEQ", "PCM", "BIM", "nZEB", "الراحة الحرارية",
+             "كفاءة الطاقة", "محاضرات", "القاعات التعليمية", "التهوية", "العزل", "الأفنية"])
         add("tool", "tools/sun-path/", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
             ["sun", "solar altitude", "azimuth", "shadow length", "orientation", "shading", "شمس", "ظل", "ظلال", "ارتفاع الشمس",
              "سمت", "توجيه المباني", "التظليل"])

@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مقرر الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية | د. سيد مرعي</title>
+  <meta name="description" content="عشر محاضرات تفاعلية (260 شريحة) عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، مع صور المباني ورسوم بيانية من الدراسات وتحميل بصيغة PowerPoint. Ten interactive Arabic lectures on thermal comfort and energy efficiency in classrooms.">
+  <meta name="keywords" content="الراحة الحرارية, كفاءة الطاقة, القاعات التعليمية, محاضرات عمارة, PMV, جودة البيئة الداخلية IEQ, العزل الحراري, المواد متغيرة الطور PCM, التهوية الطبيعية, BIM, nZEB, thermal comfort, energy efficiency, classrooms, architecture lectures">
+  <link rel="canonical" href="https://sayednagy81.github.io/courses/thermal-comfort/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ar_AR">
+  <meta property="og:title" content="مقرر الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية">
+  <meta property="og:description" content="عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية من الدراسات.">
+  <meta property="og:url" content="https://sayednagy81.github.io/courses/thermal-comfort/">
+  <meta property="og:image" content="https://sayednagy81.github.io/courses/thermal-comfort/img/sultan-hassan.jpg">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"مقرر الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية","alternateName":"Thermal comfort and energy efficiency in classrooms","description":"عشر محاضرات تفاعلية لطلاب العمارة عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية.","inLanguage":"ar","isAccessibleForFree":true,"url":"https://sayednagy81.github.io/courses/thermal-comfort/","provider":{"@type":"Person","name":"Sayed Marey Nagy","url":"https://sayednagy81.github.io/"}}</script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cairo & Tajawal -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- PptxGenJS for Native .PPTX Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      --emerald-primary: #059669;
+      --emerald-light: #ECFDF5;
+      --solar-amber: #D97706;
+      --slate-text: #0F172A;
+      --canva-purple: #7D2AE8;
+      --canva-cyan: #00C4CC;
+    }
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      overflow-x: hidden;
+    }
+    /* Slide transition animations */
+    .slide-enter {
+      animation: slideFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideFadeIn {
+      0% { opacity: 0; transform: translateY(14px) scale(0.99); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .stagger-1 { animation: fadeUp 0.4s 0.06s ease-out both; }
+    .stagger-2 { animation: fadeUp 0.4s 0.14s ease-out both; }
+    .stagger-3 { animation: fadeUp 0.4s 0.22s ease-out both; }
+    .stagger-4 { animation: fadeUp 0.4s 0.30s ease-out both; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .canva-gradient {
+      background: linear-gradient(135deg, #00C4CC 0%, #7D2AE8 100%);
+    }
+    .light-slide-stage {
+      background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 65%, #F0FDF4 100%);
+    }
+    /* Custom Scrollbar - Light Theme */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 9999px; }
+    .course-chart svg { display: block; width: 100%; height: auto; }
+    .site-strip a { color: #047857; font-weight: 800; }
+    .course-notes a { color: #047857; text-decoration: underline; }
+    body > * { min-width: 0; max-width: 100%; }
+    main > * { min-width: 0; }
+    #lectureSelectDropdown { min-width: 0; width: 100%; max-width: 100%; }
+    @media (max-width: 1023px) {
+      main > aside { order: 2; }
+      main > section { order: 1; }
+      .light-slide-stage { overflow: visible !important; min-height: 0 !important; }
+      .light-slide-stage .\-top-24, .light-slide-stage .\-bottom-24 { display: none; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900">
+
+  <div class="site-strip bg-emerald-50 border-b border-emerald-200 text-xs px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 justify-between">
+    <span><a href="/">د. سيد مرعي</a> &nbsp;/&nbsp; <a href="/tools/">الأدوات والمقررات</a> &nbsp;/&nbsp; مقرر الراحة الحرارية</span>
+    <a href="#course-notes">مصادر الصور والأرقام</a>
+  </div>
+
+  <!-- TOP NAVIGATION & EXPORT TOOLBAR (LIGHT THEME) -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-2.5 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand & Course Selector -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md shadow-emerald-500/20 text-white">
+          <i data-lucide="sun" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">10 محاضرات × 26 شريحة = 260 شريحة</span>
+          </div>
+          <h1 class="text-sm md:text-base font-black text-slate-900 mt-0.5">مقرر الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية (المحاضرات 1 إلى 10)</h1>
+        </div>
+      </div>
+
+      <!-- Lecture Switcher + PPTX / Canva / Google Drive Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Lecture Dropdown Selector (1 to 10) -->
+        <div class="flex items-center bg-slate-100 border border-slate-300 rounded-xl px-2.5 py-1.5">
+          <i data-lucide="book-open" class="w-4 h-4 text-emerald-600 ml-1.5"></i>
+          <select id="lectureSelectDropdown" onchange="switchLecture(parseInt(this.value))" class="bg-transparent text-slate-900 text-xs font-extrabold focus:outline-none cursor-pointer">
+            <option value="0" selected>المحاضرة 1: أسس الراحة الحرارية و IEQ (26 شريحة)</option>
+            <option value="1">المحاضرة 2: التشكيل العمراني والأفنية والتراث (26 شريحة)</option>
+            <option value="2">المحاضرة 3: فيزياء الغلاف والعزل الديناميكي (26 شريحة)</option>
+            <option value="3">المحاضرة 4: المواد متغيرة الطور RT25HC PCM (26 شريحة)</option>
+            <option value="4">المحاضرة 5: الفتحات والتزجيج وكاسرات 45° (26 شريحة)</option>
+            <option value="5">المحاضرة 6: التهوية الطبيعية والهجينة DISO (26 شريحة)</option>
+            <option value="6">المحاضرة 7: أنظمة TABS وكفاءة التكييف HVAC (26 شريحة)</option>
+            <option value="7">المحاضرة 8: نمذجة BIM والمحاكاة الطاقية (26 شريحة)</option>
+            <option value="8">المحاضرة 9: إعادة التأهيل العميق و nZEB (26 شريحة)</option>
+            <option value="9">المحاضرة 10: تقييم LEED/GPRS والذكاء الاصطناعي (26 شريحة)</option>
+          </select>
+        </div>
+
+        <!-- Download Current Lecture PPTX -->
+        <button id="pptxSingleBtn" onclick="generateSingleLecturePPTX()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition shadow-sm cursor-pointer">
+          <i data-lucide="file-down" class="w-4 h-4"></i>
+          <span id="pptxSingleBtnText">تحميل محاضرة (.PPTX)</span>
+        </button>
+
+        <!-- Batch Generate All 10 Lectures PPTX + Save to Google Drive -->
+        <button onclick="openModal('batchDriveModal')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black transition shadow-sm cursor-pointer">
+          <i data-lucide="folder-up" class="w-4 h-4"></i>
+          <span>تحميل المحاضرات العشر (.PPTX)</span>
+        </button>
+
+        <!-- Canva Integration Hub -->
+        <button onclick="openModal('canvaModal')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl canva-gradient hover:opacity-95 text-white text-xs font-extrabold transition shadow-sm">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>بوابة @Canva</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick 10-Lecture Pills Bar -->
+    <div class="max-w-7xl mx-auto pt-2 mt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-1">
+      <span class="text-[11px] font-bold text-slate-500 shrink-0 ml-1">انتقال سريع للمحاضرات:</span>
+      <div id="lecturePillsBar" class="flex items-center gap-1.5"></div>
+    </div>
+  </header>
+
+  <!-- MAIN PRESENTATION WORKSPACE (LIGHT THEME) -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 py-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    
+    <!-- RIGHT SIDEBAR: 26 SLIDES THUMBNAIL NAVIGATOR -->
+    <aside class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-3 max-h-[78vh] flex flex-col shadow-sm">
+      <div class="flex items-center justify-between pb-2.5 mb-2 border-b border-slate-200">
+        <span id="sidebarLectureTitle" class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i>
+          <span>شرائح المحاضرة (26 شريحة)</span>
+        </span>
+        <button onclick="toggleAutoPlay()" id="autoPlayBtn" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-600 text-slate-700 hover:text-white font-bold transition flex items-center gap-1">
+          <i data-lucide="play" class="w-3 h-3"></i>
+          <span>تلقائي</span>
+        </button>
+      </div>
+
+      <!-- Section Jump Buttons -->
+      <div class="grid grid-cols-3 gap-1 mb-2.5 text-[10px] font-bold">
+        <button onclick="jumpToSlide(0)" class="py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100">المدخل (1-3)</button>
+        <button onclick="jumpToSlide(3)" class="py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">المفهوم (4-7)</button>
+        <button onclick="jumpToSlide(7)" class="py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">الأنواع (8-12)</button>
+        <button onclick="jumpToSlide(12)" class="py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">المميزات (13-15)</button>
+        <button onclick="jumpToSlide(15)" class="py-1 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">التطبيقات (16-19)</button>
+        <button onclick="jumpToSlide(19)" class="py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100">المباني (20-26)</button>
+      </div>
+
+      <!-- Slide List -->
+      <div id="slideListContainer" class="overflow-y-auto space-y-1.5 pr-1 flex-1"></div>
+    </aside>
+
+    <!-- CENTER STAGE: INTERACTIVE 16:9 SLIDE CANVAS (CRISP LIGHT THEME) -->
+    <section class="lg:col-span-9 flex flex-col gap-3">
+      
+      <!-- 16:9 Presentation Stage -->
+      <div id="slideStage" class="relative w-full min-h-[540px] md:min-h-[600px] rounded-3xl light-slide-stage border-2 border-emerald-500/40 shadow-xl overflow-hidden flex flex-col justify-between p-5 md:p-8">
+        
+        <!-- Subtle Architectural Blueprint Grid Background (Light Mode) -->
+        <div class="absolute inset-0 pointer-events-none opacity-40" style="background-image: radial-gradient(#CBD5E1 1px, transparent 1px); background-size: 28px 28px;"></div>
+        <div class="absolute -top-24 -left-24 w-72 h-72 bg-emerald-200/40 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-72 h-72 bg-amber-200/40 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Slide Top Header Bar -->
+        <div class="relative z-10 flex flex-wrap items-center justify-between border-b border-slate-200 pb-3 mb-4 gap-2">
+          <div class="flex items-center gap-2">
+            <span id="slideLectureBadge" class="px-3 py-1 rounded-full bg-slate-900 text-white font-black text-xs">المحاضرة 9</span>
+            <span id="slideBadgeNumber" class="px-3 py-1 rounded-full bg-emerald-600 text-white font-black text-xs shadow-sm">شريحة 1 / 26</span>
+            <span id="slideCategoryBadge" class="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs">المدخل والأهداف</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-600 font-bold">
+            <span>بكالوريوس الهندسة المعمارية</span>
+            <span>•</span>
+            <span id="slideHeaderRightTag" class="text-emerald-700 font-extrabold">تصميم @Canva الفاتح</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Slide Content Area -->
+        <div id="slideContentBox" class="relative z-10 flex-1 flex flex-col justify-center">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+        <!-- Slide Bottom Footer & Interactive Speaker Notes Bar -->
+        <div class="relative z-10 mt-5 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <span id="slideFooterRef" class="font-bold text-slate-700">المراجع المعتمدة في المقرر</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openModal('labModal')" class="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold flex items-center gap-1 transition">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              <span>مختبر المحاكاة التفاعلي</span>
+            </button>
+            <button onclick="toggleSpeakerNotes()" class="px-3 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1 transition">
+              <i data-lucide="message-square-quote" class="w-3.5 h-3.5"></i>
+              <span>ملاحظات المحاضر وحركة Canva</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collapsible Speaker Notes & Canva Animation Spec Drawer (Light Mode) -->
+      <div id="speakerNotesDrawer" class="hidden bg-white border border-amber-300 rounded-2xl p-4 text-xs md:text-sm space-y-2 shadow-md">
+        <div class="flex items-center justify-between">
+          <h4 class="font-extrabold text-amber-800 flex items-center gap-1.5">
+            <i data-lucide="wand-2" class="w-4 h-4 text-amber-600"></i>
+            <span>دليل الإلقاء الأكاديمي وإعدادات التحريك في Canva (Canva Magic Animate)</span>
+          </h4>
+          <button onclick="toggleSpeakerNotes()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <p id="speakerNotesText" class="text-slate-700 leading-relaxed font-medium"></p>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <span id="canvaTransitionTag" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 text-xs font-bold"></span>
+          <span id="canvaVisualTag" class="px-2.5 py-1 rounded-lg bg-cyan-50 text-cyan-800 border border-cyan-200 text-xs font-bold"></span>
+        </div>
+      </div>
+
+      <!-- Slide Controls Bar (Light Mode) -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-2">
+          <button onclick="prevSlide()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <span>الشريحة السابقة</span>
+          </button>
+          <button onclick="nextSlide()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1.5 transition shadow-sm">
+            <span>الشريحة التالية</span>
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="flex-1 max-w-md mx-2 hidden sm:block">
+          <div class="flex justify-between text-[11px] text-slate-600 font-bold mb-1">
+            <span id="progressLabelText">تقدم المحاضرة</span>
+            <span id="progressPercentText">4%</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div id="progressBarFill" class="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-300" style="width: 4%;"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold">
+          <span>الأسهم (← →) للتنقل بين الشرائح</span>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODAL 1: BATCH 10 LECTURES PPTX GENERATOR & GOOGLE DRIVE FOLDER SAVER -->
+  <div id="batchDriveModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-amber-100 border border-amber-300 text-amber-700 flex items-center justify-center">
+            <i data-lucide="folder-git-2" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">تحميل المحاضرات العشر بصيغة PowerPoint</h3>
+            <p class="text-xs text-slate-600">حمّل أي محاضرة منفردة أو المحاضرات العشر كلها (260 شريحة)، مع صور المباني والرسوم البيانية.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('batchDriveModal')" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <!-- Download options -->
+      <div class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <p class="text-xs text-slate-700 font-bold">اختر طريقة التحميل:</p>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="saveAll10ToLocalDriveFolder()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center gap-1.5 shadow-sm transition cursor-pointer">
+            <i data-lucide="hard-drive-download" class="w-4 h-4"></i>
+            <span>عشرة ملفات منفصلة (.PPTX)</span>
+          </button>
+          <button onclick="generateMasterCoursePPTX()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black flex items-center gap-1.5 shadow-sm transition cursor-pointer">
+            <i data-lucide="book-marked" class="w-4 h-4"></i>
+            <span>ملف موحد للمقرر بالكامل (260 شريحة .PPTX)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Batch Progress Status Bar -->
+      <div id="batchProgressBox" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between text-xs font-extrabold text-amber-900">
+          <span id="batchStatusText">جاري توليد ملفات العروض التقديمية بالوضع الفاتح...</span>
+          <span id="batchPercentText">0%</span>
+        </div>
+        <div class="w-full h-3 bg-white rounded-full overflow-hidden border border-amber-200">
+          <div id="batchProgressFill" class="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-300" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Grid of All 10 Lectures with Individual PPTX Download & Preview -->
+      <div id="tenLecturesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+          </div>
+  </div>
+
+  <!-- MODAL 2: @CANVA INTEGRATION HUB (LIGHT THEME) -->
+  <div id="canvaModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-purple-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl canva-gradient flex items-center justify-center text-white font-black text-lg">C</div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">بوابة الربط المباشر مع منصة @Canva (للمحاضرات 1 إلى 10 بالوضع الفاتح)</h3>
+            <p class="text-xs text-slate-600">استورد ملفات الـ PPTX الفاتحة مباشرة إلى Canva أو استخدم أداة Bulk Create و Docs to Deck</p>
+          </div>
+        </div>
+        <button onclick="closeModal('canvaModal')" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+          <div class="space-y-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px]">الطريقة الأسرع (PPTX إلى Canva)</span>
+            <h4 class="text-sm font-black text-slate-900">1. استيراد ملف PPTX الفاتح في Canva</h4>
+            <p class="text-slate-600 leading-relaxed">حمّل ملف الـ <code>.PPTX</code> لأي محاضرة (مصمم بخلفية فاتحة ورسومات عالية الدقة)، واسحبه داخل <strong>Canva.com</strong> ليُفتح كعرض تقديمي قابل للتعديل والتحريك بالكامل.</p>
+          </div>
+          <button onclick="generateSingleLecturePPTX()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black transition">تحميل PPTX المحاضرة الحالية</button>
+        </div>
+
+        <div class="bg-cyan-50/70 border border-cyan-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+          <div class="space-y-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-cyan-600 text-white font-bold text-[11px]">Canva Bulk Create</span>
+            <h4 class="text-sm font-black text-slate-900">2. جدول CSV للمحاضرات العشر (260 شريحة)</h4>
+            <p class="text-slate-600 leading-relaxed">حمّل ملف <code>CSV</code> الشامل لجميع المحاضرات العشر أو المحاضرة الحالية لربطه بأداة <strong>Bulk Create</strong> في Canva.</p>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <button onclick="downloadCanvaCSV(false)" class="w-full py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-black transition">CSV المحاضرة الحالية (26 شريحة)</button>
+            <button onclick="downloadCanvaCSV(true)" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-black transition">CSV المقرر الكامل (260 شريحة)</button>
+          </div>
+        </div>
+
+        <div class="bg-purple-50/70 border border-purple-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
+          <div class="space-y-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-purple-600 text-white font-bold text-[11px]">Canva Docs to Deck</span>
+            <h4 class="text-sm font-black text-slate-900">3. نسخ نص العرض لـ Canva Doc</h4>
+            <p class="text-slate-600 leading-relaxed">انسخ محتوى الشرائح الـ 26 للمحاضرة الحالية والصقه في مستند <strong>Canva Doc</strong> ثم اختر <em>Convert to Presentation</em>.</p>
+          </div>
+          <button onclick="copyCanvaDocText()" id="copyCanvaBtn" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black transition">نسخ نص المحاضرة لـ Canva</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: INTERACTIVE ARCHITECTURAL SIMULATION LAB (LIGHT THEME) -->
+  <div id="labModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-slate-900">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-emerald-100 text-emerald-700"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+          <div>
+            <h3 class="text-lg font-black text-slate-900">مختبر المحاكاة المعماري التفاعلي (حاسبة الغلاف الذكي، PCM، و nZEB PV)</h3>
+            <p class="text-xs text-slate-600">اختبر تأثير استراتيجيات المقرر العشر على استهلاك الطاقة والراحة الحرارية وتحجيم الخلايا الشمسية</p>
+          </div>
+        </div>
+        <button onclick="closeModal('labModal')" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <h4 class="text-sm font-black text-emerald-800">مدخلات المبنى الجامعي وحزمة التطوير:</h4>
+          <div>
+            <div class="flex justify-between mb-1 font-bold">
+              <span>المساحة الطابقية للمبنى ($\text{m}^2$):</span>
+              <span id="calcAreaVal" class="text-emerald-700">1564 m²</span>
+            </div>
+            <input id="calcAreaInput" type="range" min="1000" max="10000" step="100" value="1564" oninput="updateNZEBCalc()" class="w-full accent-emerald-600" />
+          </div>
+          <div>
+            <div class="flex justify-between mb-1 font-bold">
+              <span>كثافة الطاقة قبل التطوير ($\text{Baseline EUI}$):</span>
+              <span id="calcEuiVal" class="text-rose-600">57.5 kWh/m²/yr</span>
+            </div>
+            <input id="calcEuiInput" type="range" min="35" max="150" step="2.5" value="57.5" oninput="updateNZEBCalc()" class="w-full accent-rose-600" />
+          </div>
+          <div>
+            <div class="flex justify-between mb-1 font-bold">
+              <span>نسبة الوفر من تطوير الغلاف والأنظمة ($\text{Retrofit Saving}$):</span>
+              <span id="calcSaveVal" class="text-emerald-700">68%</span>
+            </div>
+            <input id="calcSaveInput" type="range" min="15" max="75" step="1" value="68" oninput="updateNZEBCalc()" class="w-full accent-emerald-600" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-2xl bg-slate-100 border border-slate-200 flex flex-col justify-center">
+            <span class="text-slate-500 font-bold">الاستهلاك المتبقي بعد التأهيل</span>
+            <span id="outTargetEnergy" class="text-lg font-black text-slate-900 mt-1">28,790 kWh/yr</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col justify-center">
+            <span class="text-emerald-700 font-bold">قدرة محطة PV للوصول لـ nZEB</span>
+            <span id="outPvKwp" class="text-lg font-black text-emerald-800 mt-1">16.5 kWp</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col justify-center">
+            <span class="text-amber-800 font-bold">مساحة ألواح PV على السطح</span>
+            <span id="outPvArea" class="text-lg font-black text-amber-700 mt-1">124 m²</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 flex flex-col justify-center">
+            <span class="text-sky-800 font-bold">خفض الانبعاثات السنوي</span>
+            <span id="outCo2Saved" class="text-lg font-black text-sky-700 mt-1">45.1 Tons CO₂</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="course-notes" class="course-notes max-w-7xl mx-auto w-full px-4 py-8 text-sm leading-7 text-slate-800 bg-white border-t border-slate-200">
+    <h2 class="text-lg font-black text-slate-900 mb-2">عن هذا المقرر</h2>
+    <p>عشر محاضرات تفاعلية لطلاب العمارة عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، من أسس الراحة الحرارية إلى الأفنية والغلاف والمواد متغيرة الطور والفتحات والتهوية وأنظمة التكييف والنمذجة وإعادة التأهيل وأنظمة التقييم. يمكن تحميل كل محاضرة بصيغة PowerPoint مع صورها ورسومها.</p>
+    <p class="mt-2" dir="ltr" lang="en">Ten interactive lectures in Arabic on thermal comfort and energy efficiency in classrooms. Each lecture can be downloaded as PowerPoint, with its photos and charts.</p>
+    <h3 class="font-black text-slate-900 mt-5 mb-1">الرسوم البيانية</h3>
+    <p>الرسوم مبنية من الأرقام المذكورة في نص المحاضرات، واسم المصدر مكتوب أسفل كل رسم. الرسوم التي تعتمد على حساب بسيط مكتوب ذلك عليها. والأرقام منقولة كما وردت في المحاضرات، فارجع إلى الدراسة الأصلية قبل الاستشهاد بها.</p>
+    <h3 class="font-black text-slate-900 mt-5 mb-1">الصور</h3>
+    <p>الصور من Wikimedia Commons بتراخيص حرة. إذا لم تتوفر صورة حرة للمبنى المذكور بقي الرسم التخطيطي مع تنبيه بذلك، وإذا كانت الصورة لجزء آخر من الجامعة ذُكر ذلك تحتها.</p>
+    <ul id="photoCredits" class="list-disc pl-5 mt-2" dir="ltr" style="text-align:left"></ul>
+  </section>
+
+  <!-- Hidden High-Res Canvas for rendering Light-Theme Architectural Illustrations into the .PPTX files -->
+  <canvas id="pptxRenderCanvas" width="1200" height="675" class="hidden"></canvas>
+
+  <script src="media.js"></script>
+  <script>
+    // ============================================================================
+    // MASTER CURRICULUM GENERATOR FOR ALL 10 LECTURES (10 x 26 = 260 SLIDES)
+    // ============================================================================
+    const lecturesMeta = [
+      {
+        id: 1,
+        code: "Lecture_01_Thermal_Comfort_IEQ",
+        shortTitle: "المحاضرة 1: الراحة الحرارية و IEQ",
+        fullTitle: "أسس الراحة الحرارية وجودة البيئة الداخلية (IEQ) في القاعات والمراسم المعمارية",
+        subtitle: "المفهوم، نماذج PMV/PPD والتكيفي، المميزات والعيوب، التطبيقات، وحالات جامعات أسيوط والأردن ونجران",
+        accentHex: "0D9488",
+        caseStudies: [
+          { name: "قاعات الرسم الكبرى بجامعة أسيوط (Abdallah, 2015)", stat: "83% عدم راحة حرارية", detail: "دراسة ميدانية على 6 صالات رسم كبرى (H1-H6) و269 طالباً؛ الإضاءة تستهلك 50-75% من القدرة الاسمية وتضاعف الحمل الحراري." },
+          { name: "مراسم التصميم المعماري في الأردن (Al-Jokhadar et al., 2023)", stat: "77.4% تحسن أكاديمي", detail: "ربط جودة البيئة الداخلية (IEQ) بالدرجات النهائية للطلاب؛ الضوضاء وتقلب الحرارة يتصدران أسباب عدم الرضا وأعراض SBS." },
+          { name: "قاعات جامعة نجران بالسعودية (Elbellahy et al., 2023)", stat: "تقييم بعد التشغيل POE", detail: "رصد التناقض الحاد بين نفاذ الإضاءة الطبيعية وارتفاع الحرارة الإشعاعية بجوار النوافذ غير المظللة." }
+        ],
+        coreEquation: "M - W = ±C ± R ± K + E + Q_res  |  T_op = A·T_a + (1 - A)·T_mrt",
+        keyMetrics: [
+          { label: "طاقة التكييف بالمبنى التعليمي", val: "60%–80%", color: "rose" },
+          { label: "عزل ملابس الطالبات (Icl)", val: "0.80–0.95 clo", color: "amber" },
+          { label: "نطاق الراحة القياسي PMV", val: "±0.5 (PPD<10%)", color: "emerald" }
+        ],
+        concepts: [
+          "تعريف الراحة الحرارية (ASHRAE 55): حالة ذهنية تعبر عن الرضا عن البيئة الحرارية المحيطة وتخضع للتقييم الذاتي والفسيولوجي.",
+          "درجة الحرارة الفعالة (Operative Temperature Top): تجمع بين حرارة الهواء الجاف (Ta) ومتوسط الحرارة الإشعاعية للأسطح (Tmrt).",
+          "تكامل مصفوفة جودة البيئة الداخلية (IEQ): الراحة الحرارية + جودة الهواء (CO2 < 1000-1500 ppm) + الإضاءة (500 lux للمرسم) + الصوت (< 40 dBA)."
+        ],
+        types: [
+          "النوع الأول: نموذج الاتزان الحراري الثابت (Fanger PMV/PPD) — دقيق في القاعات المكيفة بالكامل ولكنه يغفل التكيف السلوكي.",
+          "النوع الثاني: النموذج التكيفي (Adaptive Comfort Model: T_comf = 0.31·T_pma + 17.8°C) — يخفض طاقة التبريد 20-35% في المباني المهواة طبيعياً.",
+          "النوع الثالث: مقاييس الرصد الميداني الذاتية (TSV, HPV, ASV) عبر استبيانات التقييم بعد التشغيل (POE).",
+          "النوع الرابع: مؤشرات الإجهاد الحراري والفسيولوجي (PET & UTCI) للفراغات الانتقالية وشبه المفتوحة."
+        ],
+        prosCons: [
+          "مميزات PMV: موحد عالمياً ومعتمد في DesignBuilder؛ عيوبه: يفترض ثبات الملابس (بينما يوجد فرق +0.35 clo بين الطالبات والطلاب).",
+          "تأثير الحرارة على الدماغ: كل ارتفاع 1°C فوق 25°C يخفض الأداء الإدراكي 2%، وتراكم CO2 فوق 2000 ppm يسبب الصداع والخمول."
+        ],
+        archApps: [
+          "توجيه المحور الطولي للقاعات (شرق–غرب) وزيادة ارتفاع سقف المرسم (≥ 4.0–4.5m) لتجميع الهواء الساخن بعيداً عن الطلاب.",
+          "ترك ممر حركة داخلي عازل (1.2–1.5m) بجوار النوافذ المشمسة لحماية الطلاب من عدم التماثل الإشعاعي (Radiant Asymmetry)."
+        ]
+      },
+      {
+        id: 2,
+        code: "Lecture_02_Campus_Courtyards_Heritage",
+        shortTitle: "المحاضرة 2: الأفنية والتشكيل العمراني",
+        fullTitle: "التشكيل العمراني للحرم الجامعي، هندسة الأفنية (Courtyards)، والحلول التراثية السلبية",
+        subtitle: "المناخ الموضعي (Microclimate)، نسب H/W، التظليل الهجين ENVI-met، وحالات جامعة سوهاج والقاهرة التاريخية",
+        accentHex: "15803D",
+        caseStudies: [
+          { name: "فناءا كليتي الزراعة والتربية - جامعة سوهاج الجديدة (Abdallah, 2019)", stat: "H/W = 1.2 مقابل 0.7", detail: "توزيع 900 استبيان؛ تفوق فناء كلية التربية (H/W=1.2) حرارياً على فناء الزراعة المكشوف (H/W=0.7) في القاعات المطلة." },
+          { name: "التطوير الهجين لفناء جامعة سوهاج (Abdallah & Mahmoud, 2025)", stat: "خفض PET بـ 13.9°C", detail: "محاكاة 6 بدائل في ENVI-met؛ دمج التشجير والبرجولات خفض PET بمقدار 11.1–13.9°C وخفض طاقة المبنى الكلية 30%." },
+          { name: "مدارس القاهرة التاريخية: السلطان حسن وابن طولون (Heritage, 2026)", stat: "كتلة > 0.58 kg/m³", detail: "تكامل الصحن والأروقة والإيوانات، مع تحذير علمي من فقدان الكفاءة بنسبة 28–35% بحلول 2035 بسبب UHI وتلوث PM2.5." }
+        ],
+        coreEquation: "Aspect Ratio = H / W ≥ 1.2  |  ΔPET = -11.1°C to -13.9°C (Hybrid Courtyard)",
+        keyMetrics: [
+          { label: "خفض مؤشر الراحة الخارجي PET", val: "-11.1 إلى -13.9°C", color: "emerald" },
+          { label: "النسبة الهندسية المثلى للفناء", val: "H/W ≥ 1.2", color: "amber" },
+          { label: "خفض الطاقة الكلي للمبنى", val: "-30%", color: "cyan" }
+        ],
+        concepts: [
+          "الهواء الداخل للقاعات الدراسية يُسحب من الفناء الخارجي؛ فإذا كان الفناء مغطى بالأسفلت (MRT > 60°C) تتضاعف أحمال التبريد.",
+          "يعمل الفناء العميق كمنظم حراري عبر التبريد الإشعاعي الليلي نحو السماء (Sky View Factor) والتظليل الذاتي نهاراً."
+        ],
+        types: [
+          "النوع الأول: الأفنية حسب النسبة الهندسية — ضحلة (H/W < 0.7)، متوسطة (0.8-1.0)، وعميقة مظللة (H/W ≥ 1.2).",
+          "النوع الثاني: منظومة المدرسة التراثية الإسلامية — الصحن المكشوف، الرواق المظلل (Riwāq)، والإيوان ذو الكتلة الحرارية الثقيلة.",
+          "النوع الثالث: المشربية الخشبية الهيجروسكوبية (5 وظائف ضوئية وحرارية) والملقف الهوائي (Wind Catcher).",
+          "النوع الرابع: الأفنية الجامعية الهجينة المعاصرة (برجولات تظليل شبه منفذة + أشجار محلية كثيفة النتح)."
+        ],
+        prosCons: [
+          "مميزات الأفنية الهجينة: تبريد الهواء قبل دخوله للقاعات بـ 3–4°C وخفض الحرارة الإشعاعية MRT بمقدار 15–25°C.",
+          "عيوب الاستنساخ الحرفي للتراث اليوم: دخول الجسيمات الدقيقة (PM2.5) عبر الملاقف المفتوحة وتراجع الكفاءة 28-35% بسبب الجزر الحرارية UHI."
+        ],
+        archApps: [
+          "منهجية الربط المزدوج (Coupled Simulation): محاكاة الفناء في ENVI-met ثم تصدير ملف الطقس الموضعي إلى DesignBuilder.",
+          "استبدال الأسفلت الأسود (26% من مساحة الحرم) بأرضيات باردة عاكسة (Albedo ≥ 0.50) ومظلات خلايا شمسية."
+        ]
+      },
+      {
+        id: 3,
+        code: "Lecture_03_Envelope_Physics_Dynamic_Insulation",
+        shortTitle: "المحاضرة 3: فيزياء الغلاف والعزل المتغير",
+        fullTitle: "فيزياء غلاف المبنى التعليمي ومعضلة العزل الفائق مقابل الممانعة الحرارية المتغيرة",
+        subtitle: "معاملات U-value، الإزاحة الزمنية Time Lag، مفارقة الاحتباس الداخلي، ومفهوم الصمام الثنائي الحراري",
+        accentHex: "1E3A8A",
+        caseStudies: [
+          { name: "المبنى الجامعي الحكومي النموذجي بمصر - 5 طوابق (Sustainability, 2026)", stat: "6020 m² (U_roof=2.26)", detail: "تشخيص الحوائط (U=1.924) والسقف (U=2.264 W/m²K) وتطويرها وفق ASHRAE 90.1 عبر الأقاليم المناخية المصرية." },
+          { name: "مقارنة المدارس الخفيفة والمتوسطة الكتلة (Teli et al., 2014)", stat: "أبرد بـ 2.7°C", detail: "تحليل 2990 استبياناً طلابياً؛ المبنى ذو الكتلة الحرارية المتوسطة أبرد بمقدار 2.7°C صيفاً من المبنى خفيف الوزن." },
+          { name: "المدارس المتوسطية تحت تغير المناخ (Moazzen et al., 2023)", stat: "+1.5°C & +3.5°C", detail: "العزل المفرط الثابت غير مجدٍ اقتصادياً؛ الحل الأمثل يجمع بين عزل معتدل وتظليل وطاقة شمسية." }
+        ],
+        coreEquation: "U = 1 / R_T [W/m²K]  |  Time Lag φ = t_max(in) - t_max(out) ≥ 8 Hours",
+        keyMetrics: [
+          { label: "سقف المبنى التقليدي القائم", val: "U = 2.264 W/m²K", color: "rose" },
+          { label: "المطلوب بالكود للسقف المطور", val: "U ≤ 0.35 W/m²K", color: "emerald" },
+          { label: "خفض الحرارة بالكتلة الحرارية", val: "-2.7°C بالداخل", color: "cyan" }
+        ],
+        concepts: [
+          "الفرق بين الانتقال الحراري المستقر (Steady-State) والديناميكي (Transient) المحكوم بالسعة الحرارية والإزاحة الزمنية (φ) ومعامل التضاؤل (f).",
+          "درجة حرارة الهواء الشمسية (Sol-Air Temperature) تفسر لماذا يسخن سقف الطابق الأخير بـ +2°C أكثر من الطوابق السفلية."
+        ],
+        types: [
+          "النوع الأول: الغلاف التقليدي غير المعزول (U_wall = 1.924, U_roof = 2.264 W/m²K) — نفاذية عالية للحرارة.",
+          "النوع الثاني: الغلاف ذو الكتلة الحرارية العالية (> 0.58 kg/m³) — يمتص حرارة الطلاب نهاراً.",
+          "النوع الثالث: الغلاف المعزول عزلاً فائقاً ثابتاً (Passivhaus U = 0.138 W/m²K) — يعمل كترمس حراري يحبس حرارة الطلاب بالداخل!",
+          "النوع الرابع: الغلاف ذو الممانعة المتغيرة ديناميكياً (Dynamic Thermal Diode: عازل نهاراً ومفرغ للحرارة ليلاً)."
+        ],
+        prosCons: [
+          "مفارقة الاحتباس الحراري الداخلي: في قاعة تضم 100 طالب وإضاءة 15 W/m²، يمنع العزل الثابت الفائق تسرب الحرارة الداخلية ليلاً (يفشل في 25% من الوقت).",
+          "الكتلة الحرارية الداخلية مع العزل الخارجي المهوى تحقق أفضل اتزان حراري واقتصادي."
+        ],
+        archApps: [
+          "القاعدة الذهبية لترتيب الطبقات: توضع الكتلة الحرارية الثقيلة جهة الداخل (لامتصاص حرارة الطلاب) والعزل الحراري جهة الخارج (لصد الشمس).",
+          "تصميم السقف المزدوج المظلل والعاكس (Cool Roof SRI > 78) لخفض حرارة سطح المدرجات بمقدار 15–20°C."
+        ]
+      },
+      {
+        id: 4,
+        code: "Lecture_04_Smart_Materials_RT25HC_PCM",
+        shortTitle: "المحاضرة 4: المواد متغيرة الطور PCM",
+        fullTitle: "توظيف المواد متغيرة الطور (PCMs) ومواد البناء الذكية في القاعات الدراسية",
+        subtitle: "تخزين الحرارة الكامنة، طبقة 40mm Rubitherm RT25HC، وحالة حرم الأكاديمية العربية AASTMT بمرسى مطروح",
+        accentHex: "4F46E5",
+        caseStudies: [
+          { name: "حرم الأكاديمية العربية AASTMT بمرسى مطروح (ELTanany et al., Aug 2026)", stat: "-7.65% عدم راحة", detail: "محاكاة 6 سيناريوهات في DesignBuilder v7 / EnergyPlus v9.4؛ طبقة 40mm RT25HC جهة الخارج هي الأكفأ." },
+          { name: "التحسين متعدد الأهداف للمبنى التعليمي بأستراليا (NSGA-II & Monte Carlo)", stat: "-24% طاقة | -16.5% حر", detail: "فحص 2000 سيناريو بطريقة مونت كارلو وخوارزمية NSGA-II لموازنة غلاف المبنى بين الطاقة والراحة." }
+        ],
+        coreEquation: "Q_total = m·c_p·ΔT_solid + m·ΔH_latent + m·c_p·ΔT_liquid (CondFD Algorithm)",
+        keyMetrics: [
+          { label: "المادة الذكية المرجعية", val: "RT25HC (25°C)", color: "cyan" },
+          { label: "السمك والموضع الأمثل", val: "40 mm (جهة الخارج)", color: "emerald" },
+          { label: "خفض ساعات عدم الراحة", val: "-7.65% إلى -16.5%", color: "amber" }
+        ],
+        concepts: [
+          "تمتص المواد متغيرة الطور (PCMs) حرارة الانصهار الكامنة (Latent Heat ≈ 230 kJ/kg) عند درجة حرارة ثابتة (25°C) دون رفع حرارة الغرفة.",
+          "تعمل طبقة رقيقة بسمك 40 mm كبطارية حرارية تعادل كفاءة حائط حجري سميك بوزن إنشائي أقل بـ 90%."
+        ],
+        types: [
+          "النوع الأول: المواد العضوية البارافينية (مثل Rubitherm RT25HC) — مستقرة كيميائياً ولا تعاني من التبريد الفائق.",
+          "النوع الثاني: الأملاح المائية غير العضوية (Salt Hydrates) — موصلية أعلى ولكنها قد تعاني من انفصال الطور.",
+          "النوع الثالث: طرق الدمج المعماري — الكبسلة الميكروية في الألواح الجبسية، أو شرائح الكبسلة الكلية (Macro-Panels 40mm)."
+        ],
+        prosCons: [
+          "المميزات: تقليص ذروة حمل التبريد نهاراً وخفض ساعات عدم الراحة السنوية بنسبة 7.65% في وضع التشغيل الحر.",
+          "العيوب والمحاذير: خطر فشل التصلب الليلي (Incomplete Night Solidification) إذا لم تتوفر تهوية ليلية باردة أو تفريغ بـ TABS."
+        ],
+        archApps: [
+          "وضع طبقة 40mm RT25HC PCM على الجانب الخارجي للحائط الخارجي لاعتراض الموجة الشمسية والتصلب السريع ليلاً.",
+          "تفعيل خوارزمية الفروق المحدودة (CondFD) في برنامج DesignBuilder v7 بفاصل زمني 1–3 دقائق لنمذجة التحول الطوري."
+        ]
+      },
+      {
+        id: 5,
+        code: "Lecture_05_Fenestration_Glazing_Shading",
+        shortTitle: "المحاضرة 5: الفتحات وكاسرات الشمس 45°",
+        fullTitle: "تصميم الفتحات، التزجيج المتقدم، وأنظمة كاسرات الشمس الحركية والإضاءة الطبيعية",
+        subtitle: "موازنة WWR و WFR، هيمنة الحرارة الإشعاعية Tg عبر تحليل SHAP، وحالات جامعة نجران وجامعة القاهرة",
+        accentHex: "D97706",
+        caseStudies: [
+          { name: "توجيه النوافذ ونسب WWR بجامعة نجران (Elbellahy, Sep 2026)", stat: "R² = 0.93 مع الحرارة", detail: "ارتباط طردي قوي جداً (r=0.96) بين مساحة النافذة للأرضية (WFR) وكل من الحرارة (R²=0.93) والإضاءة (R²=0.92)." },
+          { name: "نموذج التعلم الآلي التفسيري SHAP للفصول (Luo et al., Sep 2026)", stat: "Tg أقوى بـ 3 أضعاف!", detail: "دقة Random Forest R²=0.992؛ زيادة 1°C في حرارة الكرة الإشعاعية (Tg) ترفع TSV بـ 0.35–0.50 مقابل 0.10–0.18 للهواء." },
+          { name: "تطوير واجهات قسم العمارة بجامعة القاهرة (Aboulnaga & Moustafa, 2016)", stat: "400–500 lux VeLux", detail: "تقييم الإضاءة الطبيعية ببرنامج VeLux وتحديث الزجاج في الطوابق 2 و4 و5 لخفض حمل التبريد." }
+        ],
+        coreEquation: "LSG = VLT / SHGC > 1.6  |  ΔTSV / ΔT_g = +0.35 to +0.50 per 1°C (SHAP ML)",
+        keyMetrics: [
+          { label: "أثر 1°C إشعاعي (Tg) على TSV", val: "+0.35 إلى +0.50", color: "rose" },
+          { label: "كاسرات شمس حركية بزاوية", val: "45° (إزاحة 6 ساعات)", color: "amber" },
+          { label: "الإضاءة القياسية للقاعات", val: "400–500 lux", color: "emerald" }
+        ],
+        concepts: [
+          "معضلة الفتحات: زيادة نسبة النافذة (WWR) ترفع الإضاءة الطبيعية (R²=0.92) لكنها ترفع حرارة القاعة بنفس القوة (R²=0.93).",
+          "أثبت تحليل SHAP أن الإشعاع الشمسي والحرارة الإشعاعية (Tg) يؤثران على شعور الطالب بالحر بـ 3 أضعاف تأثير حرارة الهواء (Ta)."
+        ],
+        types: [
+          "الزجاج المزدوج منخفض الانبعاثية المدعم بالأرجون (Double Low-E Argon: U ≤ 1.6 W/m²K, SHGC ≤ 0.28, VLT ≥ 0.60).",
+          "رقائق التحكم الشمسي النانوية الرقيقة (Thin Solar Control Films) لتطوير النوافذ القائمة سريعاً.",
+          "كاسرات الشمس الحركية بزاوية 45° (Kinetic 45° Louvers) التي تخلق إزاحة زمنية 6 ساعات، والأرفف الضوئية (Light Shelves)."
+        ],
+        prosCons: [
+          "تطبيق نسبة WWR موحدة على جميع الواجهات خطأ فادح؛ الواجهة الجنوبية تستقبل إضاءة أعلى من الشمالية ويسهل تظليلها أفقياً.",
+          "الواجهة الشمالية الغربية والغربية هي الأخطر حرارياً بعد الظهر ويجب تقليص WWR فيها إلى ≤ 15% مع كاسرات 45°."
+        ],
+        archApps: [
+          "دمج الرف الضوئي (Light Shelf) على ارتفاع 2.1m لمنع الإشعاع المباشر عن الصفوف الأمامية وعكس الضوء 8–10m لعمق المرسم.",
+          "ربط صفوف مصابيح LED الموازية للنوافذ بحساسات تعتيم نهاري (Daylight Dimming) لتوفير 50–75% من كهرباء الإضاءة."
+        ]
+      },
+      {
+        id: 6,
+        code: "Lecture_06_Natural_Hybrid_Ventilation_DISO",
+        shortTitle: "المحاضرة 6: التهوية الطبيعية والهجينة DISO",
+        fullTitle: "استراتيجيات التهوية الطبيعية، التهوية الليلية المتقاطعة، والأنظمة الهجينة (Mixed-Mode)",
+        subtitle: "مقارنة SSV و CV وتكوين DISO، نسبة فتحات 9.6%، وحالات البحرين وأيرلندا ورومانيا وجامعة أسيوط",
+        accentHex: "0284C7",
+        caseStudies: [
+          { name: "تأثير الفتحات والتهوية بجامعة الخليج في البحرين (Reda et al., 2021)", stat: "قاعة 9.7×3.5×2.3m", detail: "تحليل سيناريوهات الفتحات في المناخ الحار الرطب؛ تحسين مسار الهواء يلغي البؤر الساخنة الراكدة." },
+          { name: "مرونة التهوية بالمدارس منخفضة الطاقة في أيرلندا (Tavakoli et al., Jan 2026)", stat: "-42% إلى -48% احترار", detail: "فتحات بنسبة 9.6% من الأرضية تخفض الذروة 2.5°C، والتهوية الهجينة تحمي الأداء الإدراكي وتحول الفصل لملجأ مناخي." },
+          { name: "المدرجات الجامعية بتيميشوارا رومانيا (Sarbu & Pacurar, 2015)", stat: "CO2 من 2400 لـ 1500", detail: "فتح النوافذ يدوياً خفض CO2 من 2400 إلى 1500 ppm، والدمج الهجين خفض PPD من 21% إلى 7.4%." }
+        ],
+        coreEquation: "Opening-to-Floor Ratio ≥ 9.6%  |  ACH = (1/t)·ln[(C_0 - C_out)/(C_t - C_out)]",
+        keyMetrics: [
+          { label: "وفر الطاقة الأولية بالتهوية", val: "18%–33%", color: "emerald" },
+          { label: "خفض الاحترار بالتهوية الهجينة", val: "-42% إلى -48%", color: "cyan" },
+          { label: "راحة التهوية المتقاطعة مقابل أحادية", val: "70% مقابل 1%!", color: "amber" }
+        ],
+        concepts: [
+          "تصل كثافة الطلاب في الفصول إلى 4 أضعاف المكاتب الإدارية؛ وإغلاق النوافذ مع وحدات Split يضاعف CO2 إلى 2400 ppm.",
+          "التهوية التبريدية (Ventilative Cooling) تعمل بثلاث آليات: تجديد الأكسجين، تبريد فسيولوجي للجلد، وتفريغ ليلي لكتلة المبنى."
+        ],
+        types: [
+          "النوع الأول: التهوية أحادية الجانب (SSV) — تفشل في القاعات العميقة ولا تحقق الراحة إلا في 1%–2% من الوقت (Omrani; Kyritsi).",
+          "النوع الثاني: التهوية المتقاطعة (Cross-Ventilation CV) — تحقق الراحة في 40% إلى 70% من الوقت.",
+          "النوع الثالث: تكوين المدخل المزدوج والمخرج المفرد (DISO) — يضاعف سرعة الهواء الداخلي 3 مرات ويقضي على الأركان الراكدة.",
+          "النوع الرابع: التهوية التبريدية الهجينة (مراوح سقفية تستهلك 12-26% فقط + تفريغ ليلي مؤتمت Night-Purge)."
+        ],
+        prosCons: [
+          "المميزات: خفض فقد الأداء الإدراكي للطلاب من 23% إلى أقل من 10% وتوفير 18–33% من الطاقة الأولية السنوية.",
+          "العيوب: التعارض مع الضوضاء الصوتية (يتطلب LA90 بين 45–48.5 dBA وفق Zhang et al., 2026) ودخول غبار PM2.5."
+        ],
+        archApps: [
+          "تصميم فتحات تهوية صافية بنسبة 9.6% من مساحة أرضية الفصل الدراسي لخفض ذروة الحرارة الداخلية بمقدار 2.5°C.",
+          "إضافة فتحات شيش صوتية علوية (Acoustic Transfer Grilles) أعلى حائط الممر الداخلي لتحويل الفصول أحادية الجانب إلى متقاطعة."
+        ]
+      },
+      {
+        id: 7,
+        code: "Lecture_07_TABS_Active_HVAC_Systems",
+        shortTitle: "المحاضرة 7: أنظمة TABS وكفاءة HVAC",
+        fullTitle: "الأنظمة الحرارية النشطة في هيكل المبنى (TABS) وكفاءة أنظمة التكييف (HVAC) في القاعات",
+        subtitle: "التبريد الإشعاعي الهيكلي، فصل التبريد عن التهوية (DOAS+ERV)، وحالات المبنى الجامعي المصري وتكامل TABS+PCM",
+        accentHex: "0369A1",
+        caseStudies: [
+          { name: "تطوير نظام التكييف بالمبنى الجامعي المصري 6020 m² (Sustainability, 2026)", stat: "من FCU إلى VAV نقي", detail: "المساحة المكيفة 3848.24 m² كانت تعمل بـ FCU بدون أي هواء نقي؛ التحول لـ VAV وفق ASHRAE 62.1 وفر الطاقة ومنع العدوى." },
+          { name: "تكامل نظام TABS مع طبقة 40mm RT25HC PCM في القاعات الجامعية", stat: "Top = 23.5–24.8°C", detail: "تثبيت الحرارة الفعالة داخل القاعة وتحقيق PMV ضمن ±0.5 وPPD < 10% مع خفض إجمالي الطاقة بنسبة 30%." },
+          { name: "موازنة CO2 والراحة الحرارية في فصول جنوب ويلز (Zapata-Lancaster, Feb 2026)", stat: "دمج MVHR / ERV", detail: "معالجة التعارض بين طرد الفيروسات/CO2 والحفاظ على الراحة الحرارية عبر مبادلات استرجاع الطاقة." }
+        ],
+        coreEquation: "q_TABS = h_r·(T_AUST - T_surf) + h_c·(T_a - T_surf)  |  Condition: T_surf > T_dew_point + 1.5°C",
+        keyMetrics: [
+          { label: "ثبات الحرارة الفعالة بـ TABS+PCM", val: "23.5°C–24.8°C", color: "emerald" },
+          { label: "خفض الطاقة الكلية للمبنى", val: "-30%", color: "cyan" },
+          { label: "وفر رفع الضبط 1°C مع مراوح", val: "7%–10% للدرجة", color: "amber" }
+        ],
+        concepts: [
+          "يفقد الطالب الجالس 50% من حرارته بالإشعاع؛ والماء يمتلك سعة حرارية تعادل 3500 ضعف الهواء، مما يجعل التبريد المائي الإشعاعي (TABS) فائق الكفاءة.",
+          "تدفن أنابيب PEX داخل البلاطة الخرسانية لتشحن بالبرودة ليلاً وتمتص حرارة الطلاب نهاراً بهدوء صوتي مطلق."
+        ],
+        types: [
+          "وحدات الملف والمروحة التقليدية (FCU / Split) — تفتقر لإمداد الهواء النقي وتسبب ضوضاء وتراكم CO2.",
+          "أنظمة حجم الهواء المتغير المركزية (VAV) وأنظمة التدفق المتغير للمبرد ذات العاكس المزدوج (VRF / Dual-Inverter).",
+          "المنظومة الهجينة المثلى: بلاطات خرسانية نشطة (TABS للحمل المحسوس) + نظام هواء خارجي مخصص (DOAS + ERV للحمل الكامن والأكسجين)."
+        ],
+        prosCons: [
+          "مميزات TABS: هدوء صوتي (< 35 dBA)، تجانس حراري، وتوفير 40–60 cm من ارتفاع الطابق بإلغاء السقف المستعار العميق.",
+          "العيوب والمحاذير: خطر التكثف السطحي (Condensation) إذا انخفضت حرارة السقف دون نقطة الندى (Tdp)، وبطء الاستجابة اللحظية."
+        ],
+        archApps: [
+          "يُمنع تغطية سقف TABS الخرساني بسقف جبسي مصمت؛ وتُعالج الصوتيات عبر شرائح صوتية رأسية معلقة (Vertical Acoustic Baffles).",
+          "تطبيق درجات الضبط الديناميكية (Dynamic Setpoints 25-26°C) مع مراوح السقف يوفر 20-30% من كهرباء التبريد."
+        ]
+      },
+      {
+        id: 8,
+        code: "Lecture_08_BIM_BEM_Energy_Simulation",
+        shortTitle: "المحاضرة 8: نمذجة BIM والمحاكاة الطاقية",
+        fullTitle: "نمذجة معلومات البناء (BIM) والمحاكاة الرقمية المتقدمة للطاقة والمناخ (BEM & GIS)",
+        subtitle: "تكامل Revit و Insight و DesignBuilder عبر gbXML، التوأم الرقمي، وحالة جامعة قناة السويس (وفر 68%)",
+        accentHex: "2563EB",
+        caseStudies: [
+          { name: "إعادة تأهيل مبنى جامعة قناة السويس بالإسماعيلية (Danial, Mahmoud, & Tawfik, 2023)", stat: "وفر 68% بالطاقة!", detail: "مساحة 1563.89 m² واستهلاك أساسي 57.53 kWh/m²؛ النمذجة بـ 5 برامج (Revit, Insight, GBS, DesignBuilder, Climate Consultant) خفضته إلى 18.41 kWh/m²." },
+          { name: "التوأم الرقمي للحرم الجامعي (Tumedei et al., Feb 2026)", stat: "Live Digital Twin", detail: "ربط نموذج BIM بحساسات IoT الحية لاتخاذ قرارات تشغيلية لحظية وتحسين راحة الطلاب." },
+          { name: "خرائط كفاءة الطاقة الحضرية عبر GIS (Energies, 2020)", stat: "41,010 مضلع مبنى", detail: "ربط أكثر من 111 ألف شهادة أداء طاقي (EPCs) بـ QGIS لحساب مؤشر K_BLOCK وتحديد أولويات التطوير." }
+        ],
+        coreEquation: "EUI = Annual Energy (kWh) / Area (m²)  |  ASHRAE 14 Calibration: NMBE ±5%, CV(RMSE) ≤ 15%",
+        keyMetrics: [
+          { label: "الوفر بجامعة قناة السويس", val: "68% (من 57.5 لـ 18.4)", color: "emerald" },
+          { label: "ساعات المحاكاة السنوية", val: "8,760 ساعة/سنة", color: "cyan" },
+          { label: "تطابق جدول الجامعة مع الشمس", val: "8 AM – 3 PM (Sun-Thu)", color: "amber" }
+        ],
+        concepts: [
+          "الانتقال من التصميم الحدسي إلى التصميم المبني على الأدلة الرقمية (Evidence-Based BEM) عبر تحويل الغرف المعمارية إلى مناطق حرارية (Thermal Zones).",
+          "معايرة نموذج خط الأساس (Baseline Calibration) بفواتير الكهرباء الشهرية لمدة 12 شهراً شرط أساسي لمصداقية المحاكاة."
+        ],
+        types: [
+          "الفئة 1 (تحليل المناخ): برنامج Climate Consultant 6.0 لاستخراج الخريطة السيكرومترية والاستراتيجيات السلبية.",
+          "الفئة 2 (محاكاة BIM السحابية): Autodesk Revit + Insight 360 + Green Building Studio (GBS) للمقارنة السريعة.",
+          "الفئة 3 (المحاكاة الديناميكية الدقيقة): DesignBuilder v7 المبني على محرك EnergyPlus v9.4 (يدعم PCM, TABS, CFD).",
+          "الفئة 4 و5 (المناخ الموضعي والإقليمي): برنامج ENVI-met للأفنية ونظم QGIS لحساب مؤشر K_BLOCK للحرم الجامعي."
+        ],
+        prosCons: [
+          "مميزات Revit Insight: سرعة فائقة وتكامل مباشر؛ عيوبه: تبسيط الأنظمة الميكانيكية وعدم دعم المواد متغيرة الطور PCM.",
+          "مميزات DesignBuilder: دقة فيزيائية شاملة؛ تحدياته: يتطلب فحصاً دقيقاً لملف gbXML لمنع الفجوات الهندسية."
+        ],
+        archApps: [
+          "تفعيل خيار حساب المساحات والحجوم (Areas and Volumes) في Revit والتحقق من إغلاق كافة الفراغات قبل تصدير gbXML.",
+          "ضبط جدول الإشغال الواقعي للجامعات المصرية (الأحد إلى الخميس من 8:00 صباحاً حتى 3:00 عصراً، والجمعة والسبت إجازة)."
+        ]
+      },
+      {
+        id: 9,
+        code: "Lecture_09_Deep_Retrofitting_nZEB",
+        shortTitle: "المحاضرة 9: إعادة التأهيل العميق و nZEB",
+        fullTitle: "استراتيجيات إعادة التأهيل المستدام (Deep Retrofitting) ومباني الطاقة الصفرية (nZEB) في الجامعات",
+        subtitle: "المفهوم، المستويات الأربعة، منحنى التكلفة المثلى EN 15459، تحجيم PV/BIPV، وحالات جامعات القاهرة وقناة السويس والباسك وEnergis",
+        accentHex: "059669",
+        caseStudies: [
+          { name: "مبنى قسم العمارة - جامعة القاهرة 8 طوابق (Aboulnaga & Moustafa, 2016)", stat: "Case B + PV (8 طوابق)", detail: "إنشاء 1989 بارتفاع طابق 3.6m وسط حرم جامعي 96% من أسطحه مكشوفة (4% فقط خضراء)؛ تطوير الطوابق 2 و4 و5." },
+          { name: "مبنى Energis بجامعة كيلسي للتكنولوجيا - بولندا (Majewski et al., 2020)", stat: "فحص FLIR (14.7–28.2°C)", detail: "مساحة 6288.92 m²؛ التصوير الحراري FLIR للقاعات 4.09 و1.14 كشف الجسور الحرارية وحرارة الإضاءة السقفية (28.2°C)." },
+          { name: "كلية العمارة بجامعة إقليم الباسك إسبانيا (Irulegi et al., 2017)", stat: "تحقيق NZEB الكامل", detail: "خفض الطلب بأكثر من 50% عبر أداة Energy Concept Adviser وتغيير سلوك الطلاب ثم تغطية الباقي بألواح PV." }
+        ],
+        coreEquation: "Global Cost C_G(30 yr) = C_I + Σ[C_a,i · R_disc] - V_f  |  E_PV(annual) ≥ E_consumed(annual)",
+        keyMetrics: [
+          { label: "المباني القائمة حتى 2050", val: "85%–90%", color: "amber" },
+          { label: "الحزمة المثلى للتكلفة والطاقة", val: "PV4 + OP1 + GL3", color: "emerald" },
+          { label: "محطة PV لمبنى قناة السويس", val: "16.5 kWp (125 m²)", color: "cyan" }
+        ],
+        concepts: [
+          "85–90% من المباني التعليمية لعام 2050 قائمة بالفعل وتستهلك 60% من الطاقة؛ إعادة التأهيل تحفظ الكربون المتجسد بالهيكل الخرساني.",
+          "الهرم المعكوس لـ nZEB: (1) خفض الحمل سلبياً بالغلاف والفناء (-40%)، (2) رفع كفاءة الإضاءة والتكييف (-25%)، (3) تغطية الباقي بـ PV."
+        ],
+        types: [
+          "المستوى 1 (سطحي Shallow 10-20%): إضاءة LED + أفلام شمسية + ضبط الحرارة (استرداد خلال 1–2.5 سنة بدون تعطيل).",
+          "المستوى 2 (متوسط Medium 25-45%): عزل السقف النهائي + كاسرات 45° + زجاج مزدوج Low-E (ينفذ في العطلة الصيفية).",
+          "المستوى 3 و4 (عميق Deep & nZEB 68–100%): دمج PCM + تحديث HVAC + مظلات أسطح كهروضوئية Rooftop PV & BIPV."
+        ],
+        prosCons: [
+          "ترك المبنى القائم بدون تطوير هو الخيار الأغلى مالياً على مدى 30 عاماً بسبب فواتير الكهرباء المتراكمة (منحنى باريتو للتكلفة المثلى).",
+          "تطابق ذروة سطوع الشمس مع ساعات الدراسة (8 صباحاً–3 عصراً) يلغي الحاجة لبطاريات التخزين المكلفة في الجامعات."
+        ],
+        archApps: [
+          "تحويل مظلات الأسطح الكهروضوئية (Rooftop PV Parasol) لعنصر مزدوج يولد الكهرباء ويظلل السقف الخرساني (-14°C).",
+          "التنفيذ المرحلي على 3 عطلات أكاديمية مع التمويل عبر عقود ضمان الأداء الطاقي (ESCOs) دون أعباء على ميزانية الجامعة."
+        ]
+      },
+      {
+        id: 10,
+        code: "Lecture_10_Green_Rating_GPRS_LEED_AI_IoT",
+        shortTitle: "المحاضرة 10: تقييم GPRS/LEED والذكاء الاصطناعي",
+        fullTitle: "أنظمة تقييم المباني الخضراء (LEED & GPRS)، العدالة الحرارية، والذكاء الاصطناعي (AI & IoT)",
+        subtitle: "تخصيص الهرم الأخضر للجامعات بـ AHP، شبكات LSTM و SHAP، العدالة الحرارية ESG، وحالات جامعة النيل والجامعات المصرية",
+        accentHex: "6D28D9",
+        caseStudies: [
+          { name: "تقييم نظام BMS بمبنى جامعة النيل في مصر (AbdelAzim et al., 2017)", stat: "مقارنة LEED و AHP", detail: "تطوير نظام تقييم مصري للمباني القائمة عبر AHP؛ تفعيل نظام BMS حقق قفزة كبيرة في كفاءة الطاقة ونقاط التقييم." },
+          { name: "تخصيص نظام الهرم الأخضر للمباني الجامعية بمصر (Arafat et al., 2023)", stat: "GPRS-Uni (AHP)", detail: "إعادة توزيع الأوزان النسبية لرفع وزن جودة البيئة الداخلية (IEQ 22-25%) وكفاءة الطاقة والمياه لتلائم الجامعات." },
+          { name: "تقييم المباني التعليمية الذكية وإطار IQAD-IAH (Majewski 2020; Heritage 2026)", stat: "LSTM + CNN + SHAP", detail: "الأتمتة الصارمة التي تلغي تحكم الطالب تفشل؛ الذكاء الاصطناعي الناجح يتمحور حول الإنسان (Human-Centric AI)." }
+        ],
+        coreEquation: "AHP Consistency: CR = CI / RI < 0.10  |  WASPAS: Q_i = 0.5·WSM + 0.5·WPM",
+        keyMetrics: [
+          { label: "دقة التنبؤ الحراري بـ Random Forest", val: "R² = 0.992", color: "emerald" },
+          { label: "وزن الطاقة و IEQ في GPRS الجامعي", val: "> 50% من التقييم", color: "amber" },
+          { label: "نطاق الصوت والحرارة الأمثل NSGA-II", val: "45 dBA | 22.6–24.8°C", color: "cyan" }
+        ],
+        concepts: [
+          "الحوكمة البيئية وتوثيق الاستدامة عبر أنظمة التقييم القياسية المخصصة مناخياً واقتصادياً باستخدام عملية التحليل الهرمي (AHP).",
+          "العدالة الحرارية (ESG Thermal Equity): ضمان تكافؤ الراحة الحرارية لجميع الطلاب (مراعياً فروق الملابس الجندرية Icl وموقع الجلوس)."
+        ],
+        types: [
+          "أنظمة التقييم: LEED BD+C (Schools/Higher Ed) مقابل نظام الهرم الأخضر المصري المخصص للجامعات (Customized GPRS).",
+          "خوارزميات الذكاء الاصطناعي: التعلم الآلي التفسيري (Random Forest + SHAP)، الشبكات الزمنية العميقة (LSTM)، والرؤية الحاسوبية (CNN/YOLOv5).",
+          "أنظمة إدارة المباني الذكية (BMS) المربوطة بحساسات إنترنت الأشياء (IoT: Ta, Tg, RH, Va, CO2, PM2.5, LA90)."
+        ],
+        prosCons: [
+          "مميزات AI + BMS: التنبؤ بالحمل الحراري قبل حدوثه بـ 3–6 ساعات لمعالجة بطء استجابة الكتلة الحرارية وTABS وPCM.",
+          "العيوب (فجوة الأداء Performance Gap): المبنى الذكي يفشل إذا اعتمد على حساس حائطي واحد وحرم الطلاب من التحكم التكيفي الشخصي."
+        ],
+        archApps: [
+          "تصميم لوحة قيادة التوأم الرقمي (IEQ & Energy Dashboard) لكل قاعة ومراعاة التقسيم الحراري الدقيق (Micro-Zoning).",
+          "الدمج الشامل للمحاضرات العشر في مشروع التخرج: الفناء الهجين + الغلاف الذكي بـ PCM + كاسرات 45° + تهوية DISO + TABS + محاكاة BIM + PV نحو nZEB."
+        ]
+      }
+    ];
+
+    // Build 26 complete slides dynamically for any Lecture (0 to 9)
+    // Lecture 9 (index 8) uses the ultra-detailed 26 slides, and Lectures 1-8 & 10 generate their own complete 26 slides!
+    function build26SlidesForLecture(lecIndex) {
+      const m = lecturesMeta[lecIndex];
+      const n = m.id;
+      const cs1 = m.caseStudies[0];
+      const cs2 = m.caseStudies[1];
+      const cs3 = m.caseStudies[2] || m.caseStudies[0];
+
+      return [
+        { num: 1, cat: "المدخل والأهداف", title: `${m.fullTitle}`, subtitle: `المحاضرة (${n}) من 10 — ${m.subtitle}`, visualType: `lec_${n}_hero`, buildingName: cs1.name, metrics: m.keyMetrics, bullets: [m.concepts[0], m.concepts[1] || m.types[0], `تطبيقات عملية وحالات دراسية موثقة: ${cs1.name}، و${cs2.name}.`], canvaAnim: "Match & Move (انتقال انسيابي لعناصر الغلاف)", notes: `مقدمة المحاضرة ${n}: استعرض مع الطلاب أهمية الموضوع وكيف يتكامل مع بقية محاضرات المقرر العشر.` },
+        { num: 2, cat: "المدخل والأهداف", title: `أهداف المحاضرة (${n}) ومخرجات التعلم المستهدفة (ILOs)`, subtitle: "الكفاءات المعرفية والمهارية لطالب بكالوريوس الهندسة المعمارية", visualType: "ilo_grid", buildingName: `مصفوفة أهداف التعلم للمحاضرة ${n}`, metrics: m.keyMetrics, bullets: [`1. استيعاب المفهوم الفيزيائي والمعماري لـ: ${m.shortTitle}.`, `2. التمييز الدقيق بين الأنواع والتصنيفات الهندسية وتطبيق معادلة: (${m.coreEquation}).`, `3. التقييم النقدي للمميزات والعيوب وتطبيق الحلول في استوديو التصميم المعماري وتحليل الحالات الدراسية.`], canvaAnim: "Rise & Stagger (ظهور متدرج للأهداف)", notes: "تأكد من ربط مخرجات التعلم بالتمرين الأسبوعي في نهاية المحاضرة." },
+        { num: 3, cat: "المدخل والأهداف", title: `الإشكالية المعمارية والأرقام الحاكمة في ${m.shortTitle}`, subtitle: "لماذا يمثل هذا المحور أولوية قصوى في تصميم وتطوير المباني الجامعية؟", visualType: "stats_chart", buildingName: `التشخيص الكمي: ${cs1.name}`, metrics: m.keyMetrics, bullets: [cs1.detail, cs2.detail, m.prosCons[0]], canvaAnim: "Chart Wipe (تحريك الأعمدة البيانية المقارنة)", notes: "ناقش الدلالات الرقمية الموثقة في الأبحاث المرجعية وكيف تؤثر على استهلاك الطاقة وصحة الطلاب." },
+        { num: 4, cat: "المفهوم والأسس", title: `المحور الأول: المفهوم العلمي والفلسفة المعمارية`, subtitle: `التأصيل النظري والفيزيائي لـ ${m.shortTitle}`, visualType: "concept_diagram", buildingName: "مخطط التوازن الفيزيائي والبيئي داخل القاعة الجامعية", metrics: m.keyMetrics, bullets: [m.concepts[0], m.concepts[1] || m.archApps[0], m.concepts[2] || m.archApps[1]], canvaAnim: "Pop & Scale (إبراز المفهوم المحوري)", notes: "اشرح العلاقة التبادلية بين شكل الكتلة المعمارية والغلاف وبين البيئة الداخلية للقاعة." },
+        { num: 5, cat: "المفهوم والأسس", title: `المعادلات الفيزيائية والرياضية الحاكمة`, subtitle: "النماذج الحسابية المعتمدة في الأكواد وبرامج المحاكاة", visualType: "equations_board", buildingName: `النموذج الرياضي: ${m.coreEquation}`, metrics: m.keyMetrics, bullets: [`المعادلة الحاكمة الأساسية: ${m.coreEquation}.`, "تفسير المتغيرات الفيزيائية وكيفية التحكم في كل متغير منها عبر قرارات التصميم المعماري.", "ربط المعادلات الرياضية بمعايير ASHRAE 55 و ASHRAE 90.1 والكود المصري ECP 306."], canvaAnim: "Typewriter Math Reveal (كتابة متتابعة للمعادلات)", notes: "وضح للطلاب كيف تترجم هذه المعادلة داخل محرك EnergyPlus و DesignBuilder." },
+        { num: 6, cat: "المفهوم والأسس", title: `المتغيرات البيئية والمعمارية المؤثرة على الأداء`, subtitle: "تحليل الحساسية للمتغيرات المناخية والتشغيلية", visualType: "variables_matrix", buildingName: "مصفوفة المتغيرات الحاكمة في الفراغات التعليمية", metrics: m.keyMetrics, bullets: ["تأثير الإشعاع الشمسي ودرجة حرارة الأسطح المحيطة (Tmrt & Tg) على توازن القاعة.", "تأثير كثافة الإشغال الطلابي العالية والأحمال الداخلية للإضاءة وأجهزة الحاسب.", m.prosCons[1] || m.archApps[0]], canvaAnim: "Flow Cascade (تدفق المتغيرات البيئية)", notes: "استخدم أمثلة من قاعات الكلية الفعلية لتقريب الصورة لذهن الطالب." },
+        { num: 7, cat: "المفهوم والأسس", title: `المخطط المفاهيمي لتدفق الطاقة والحرارة في القاعة`, subtitle: "تتبع مسارات الكسب والفقد الحراري على مدار الـ 24 ساعة", visualType: "energy_flow", buildingName: "دورة الأداء الحراري النهاري والليلي في المبنى التعليمي", metrics: m.keyMetrics, bullets: ["مسار النهار (8 صباحاً – 3 عصراً): ذروة الإشعاع الشمسي بالتزامن مع ذروة حضور الطلاب والمحاضرات.", "مسار الليل (10 مساءً – 6 صباحاً): تفريغ الشحنة الحرارية المختزنة نحو السماء والهواء الليلي البارد.", m.archApps[0]], canvaAnim: "Cycle Spin (حركة دائرية لدورة النهار والليل)", notes: "أكد على أهمية التفريغ الليلي لإعادة شحن الكتلة الحرارية والمواد الذكية." },
+        { num: 8, cat: "الأنواع والتصنيفات", title: `المحور الثاني: التصنيف الهندسي العام للأنواع والأنظمة`, subtitle: `خريطة التصنيفات المعمارية والتقنية في ${m.shortTitle}`, visualType: "types_tree", buildingName: "شجرة التصنيف المعماري للحلول والأنظمة", metrics: m.keyMetrics, bullets: [m.types[0], m.types[1], m.types[2], m.types[3] || m.archApps[1]], canvaAnim: "Hierarchy Expand (تفرع شجري للأنواع الأربعة)", notes: "قدم نظرة بانورامية على الأنواع الأربعة قبل تفصيل كل نوع في الشرائح التالية." },
+        { num: 9, cat: "الأنواع والتصنيفات", title: `التحليل التفصيلي للنوع الأول والثاني`, subtitle: "الخصائص الفيزيائية، نطاق الاستخدام، ومؤشرات الكفاءة", visualType: "type_detail_1", buildingName: "مقارنة هندسية بين النمط التقليدي والنمط المطور الأول", metrics: m.keyMetrics, bullets: [m.types[0], m.types[1], `نتائج التطبيق الميداني في: ${cs1.name} (${cs1.stat}).`], canvaAnim: "Split Wipe (مقارنة بصرية نصفية)", notes: "وضح بالرسم الفرق الجوهري في الأداء بين النوع الأول والثاني." },
+        { num: 10, cat: "الأنواع والتصنيفات", title: `التحليل التفصيلي للنوع الثالث والأنظمة المتقدمة`, subtitle: "الجيل الحديث من المعالجات المعمارية والتقنية", visualType: "type_detail_2", buildingName: "تفصيلة النظام المتقدم في القاعات الجامعية", metrics: m.keyMetrics, bullets: [m.types[2], m.types[3] || m.concepts[0], `الأثر الموثق في: ${cs2.name} (${cs2.stat}).`], canvaAnim: "Zoom Focus (تكبير لتفاصيل النظام المتقدم)", notes: "اشرح لماذا يمثل النوع الثالث والرابع نقلة نوعية في كفاءة المباني التعليمية." },
+        { num: 11, cat: "الأنواع والتصنيفات", title: `الأنظمة الهجينة والتكاملية (Hybrid Integrated Systems)`, subtitle: "الجمع الذكي بين الحلول السلبية والأنظمة النشطة منخفضة الطاقة", visualType: "hybrid_system", buildingName: "منظومة التكامل الهجين في القاعات والمراسم", metrics: m.keyMetrics, bullets: ["دمج الحلول المعمارية السلبية مع الأنظمة الميكانيكية والتحكم الذكي لتعظيم الوفر الطاقي.", m.archApps[0], m.archApps[1]], canvaAnim: "Layer Merge (اندماج طبقات النظام الهجين)", notes: "في المناخات الحارة، التكامل الهجين يتفوق دائماً على الحلول المنفردة." },
+        { num: 12, cat: "الأنواع والتصنيفات", title: `مصفوفة المقارنة التصنيفية الشاملة بين الأنواع`, subtitle: "جدول دعم القرار للمهندس المعماري لاختيار النظام الأنسب", visualType: "comparison_matrix", buildingName: "جدول المقارنة المعيارية للأنظمة والبدائل التصميمية", metrics: m.keyMetrics, bullets: ["مقارنة الأنواع من حيث: الكفاءة الحرارية، توفير الطاقة، التكلفة الأولية، وسهولة الصيانة.", m.types[0], m.types[2]], canvaAnim: "Table Row Sweep (إضاءة صفوف الجدول بالتتابع)", notes: "يستخدم الطلاب هذا الجدول لتبرير اختيارهم للنظام في مشروع الاستوديو." },
+        { num: 13, cat: "المميزات والعيوب", title: `المحور الثالث: المميزات البيئية والطاقية والمعمارية`, subtitle: "العوائد الكمية والنوعية لتطبيق الاستراتيجيات الصحيحة", visualType: "pros_panel", buildingName: "مكاسب الاستدامة والراحة الحرارية وجودة البيئة الداخلية", metrics: m.keyMetrics, bullets: [m.prosCons[0], `تحقيق مؤشرات راحة قياسية (${m.keyMetrics[2].val}) ورفع تركيز وإنتاجية الطلاب.`, `خفض البصمة الكربونية واستهلاك الكهرباء السنوي كما ثبت في ${cs1.name} و${cs2.name}.`], canvaAnim: "Checkmark Bounce (ظهور علامات التميز الخضراء)", notes: "ركز على الفوائد المزدوجة: توفير المال والطاقة للجامعة + تحسين صحة وتحصيل الطلاب." },
+        { num: 14, cat: "المميزات والعيوب", title: `العيوب، التحديات التنفيذية، والمحاذير الفيزيائية`, subtitle: "التقييم النقدي والمخاطر التي يجب على المعماري تجنبها", visualType: "cons_panel", buildingName: "تحليل المخاطر والقيود المناخية والتشغيلية", metrics: m.keyMetrics, bullets: [m.prosCons[1] || m.prosCons[0], "تحديات المناخ الحار الجاف والرطب، الغبار العالق (PM2.5)، والضوضاء الحضرية المحيطة بالحرم الجامعي.", "معوقات التكلفة الاستثمارية الأولية والحاجة إلى الصيانة والمعايرة الدورية."], canvaAnim: "Alert Pulse (تنبيه بصري للمحاذير الهندسية)", notes: "التفكير النقدي يحمي الطالب من الوقوع في أخطاء النقل الحرفي غير المدروس." },
+        { num: 15, cat: "المميزات والعيوب", title: `تحليل SWOT ومنحنى التكلفة المثلى (Cost-Optimal Analysis)`, subtitle: "الموازنة بين تكلفة الاستثمار الأولية والوفر على مدار 30 عاماً", visualType: "pareto_Cost_Curve", buildingName: "منحنى باريتو للتكلفة الشاملة (Global Cost) مقابل الطاقة", metrics: m.keyMetrics, bullets: ["ترك المبنى القائم دون تطوير هو الخيار الأعلى تكلفة على مدى 30 عاماً بسبب فواتير الكهرباء.", "نقطة التكلفة المثلى تتحقق عند دمج معالجات الغلاف الذكية مع الأنظمة الكفؤة والطاقة الشمسية.", m.prosCons[0]], canvaAnim: "Curve Path Trace (رسم منحنى التكلفة المثلى)", notes: "اربط التحليل الفني بالجدوى الاقتصادية لإقناع متخذي القرار." },
+        { num: 16, cat: "التطبيقات المعمارية", title: `المحور الرابع: التطبيقات المعمارية في المساقط والقطاعات`, subtitle: "ترجمة الأسس الفيزيائية إلى خطوط وكتل معمارية", visualType: "arch_plan_section", buildingName: "إرشادات تصميم المسقط الأفقي والقطاع الرأسي للقاعة", metrics: m.keyMetrics, bullets: [m.archApps[0], m.archApps[1], "توزيع المناطق الحرارية (Thermal Zoning) وفصل الفراغات عالية الكثافة عن المكاتب الإدارية."], canvaAnim: "Blueprint Reveal (ظهور تدريجي لخطوط المسقط والقطاع)", notes: "اشرح كيف ينعكس هذا المفهوم مباشرة في رسومات المساقط والقطاعات." },
+        { num: 17, cat: "التطبيقات المعمارية", title: `التفصيلة المعمارية التنفيذية بمقياس رسم (1:20)`, subtitle: "ترتيب الطبقات، السمك القياسي، وطريقة التثبيت المعماري", visualType: "architectural_Section_nZEB", buildingName: "قطاع تفصيلي 1:20 لطبقات الغلاف والأنظمة الذكية", metrics: m.keyMetrics, bullets: ["تفصيل الطبقات من الخارج إلى الداخل مع بيان سمك وموصلية كل طبقة (k, d, R-value).", "معالجة الجسور الحرارية (Thermal Bridges) عند التقاء البلاطات الخرسانية بالحوائط والنوافذ.", m.archApps[0]], canvaAnim: "Exploded Axonometric (تفكيك وتركيب طبقات التفصيلة)", notes: "هذه الشريحة أساسية لرسومات التنفيذ (Working Drawings) الخاصة بالطلاب." },
+        { num: 18, cat: "التطبيقات المعمارية", title: `التكامل مع الإضاءة الطبيعية، الصوتيات، وأنظمة المبنى`, subtitle: "التنسيق الهندسي الشامل (Architectural-MEP Integration)", visualType: "mep_integration", buildingName: "مخطط التنسيق بين الغلاف، الإضاءة، الصوتيات، والتكييف", metrics: m.keyMetrics, bullets: ["ضمان عدم تعارض استراتيجيات التهوية والتبريد الإشعاعي مع الراحة الصوتية (LA90 ≤ 45 dBA) والبصرية (400-500 lux).", m.archApps[1], "ربط الأنظمة بحساسات الإشغال وثاني أكسيد الكربون (CO2 Demand-Controlled Ventilation)."], canvaAnim: "System Sync (تناغم حركي بين الأنظمة الأربعة)", notes: "المبنى الناجح هو الذي يحقق الراحة الحرارية والبصرية والصوتية معاً دون تعارض." },
+        { num: 19, cat: "التطبيقات المعمارية", title: `متطلبات الكود المصري (ECP 306) والمعايير الدولية (ASHRAE)`, subtitle: "القيم المرجعية الإلزامية لتصميم وترخيص المباني التعليمية", visualType: "codes_table", buildingName: "جدول المطابقة القياسية مع الكود المصري و ASHRAE 55 / 90.1 / 62.1", metrics: m.keyMetrics, bullets: ["الحدود القصوى لمعاملات الانتقال الحراري (U-values) ومعامل الكسب الشمسي (SHGC) حسب الإقليم المناخي.", "معدلات التهوية النقية الإلزامية لكل طالب (7.5–10 L/s/person) وكثافة قدرة الإضاءة (LPD ≤ 8-10 W/m²).", `تحقيق معايير الأداء القياسية: ${m.coreEquation}.`], canvaAnim: "Badge Stamp (ختم المطابقة القياسية للكود)", notes: "عود الطلاب على مراجعة جداول الكود المصري لتحسين كفاءة الطاقة ECP 306." },
+        { num: 20, cat: "الحالات الدراسية والمباني", title: `المحور الخامس: الحالة الدراسية الأولى — ${cs1.name}`, subtitle: "السياق المعماري، المناخ، ومنهجية القياس والمحاكاة", visualType: n === 8 ? "building_Suez_Canal" : (n === 9 ? "building_Cairo_Uni" : "case_study_1"), buildingName: cs1.name, metrics: m.keyMetrics, bullets: [`المبنى والسياق المعماري: ${cs1.name}.`, `النتيجة القياسية الأبرز: ${cs1.stat}.`, cs1.detail], canvaAnim: "Building 3D Reveal (استعراض ثلاثي الأبعاد للمبنى الأول)", notes: `اشرح بالتفصيل سياق دراسة ${cs1.name} وكيف تم رصد المشكلة ميدانياً.` },
+        { num: 21, cat: "الحالات الدراسية والمباني", title: `نتائج الحالة الدراسية الأولى والتدخلات المعمارية المطبقة`, subtitle: `تحليل الأداء قبل وبعد التطوير في ${cs1.name}`, visualType: n === 9 ? "building_Cairo_Results" : "case_study_1_results", buildingName: `نتائج وتوصيات: ${cs1.name}`, metrics: m.keyMetrics, bullets: [cs1.detail, `الأثر الكمي المحقق: ${cs1.stat}.`, "الدروس التصميمية المستخلصة وإمكانية تعميمها على كليات الهندسة والجامعات المماثلة."], canvaAnim: "Before/After Slider (مقارنة قبل وبعد التدخل)", notes: "اعرض الأرقام والمنحنيات التي تثبت فاعلية الحلول المطبقة في هذه الحالة." },
+        { num: 22, cat: "الحالات الدراسية والمباني", title: `الحالة الدراسية الثانية — ${cs2.name}`, subtitle: "المنهجية البحثية، الأدوات المستخدمة، وخصائص الفراغات", visualType: n === 9 ? "building_Energis_FLIR" : "case_study_2", buildingName: cs2.name, metrics: m.keyMetrics, bullets: [`المبنى المدروس: ${cs2.name}.`, `المؤشر الرئيسي: ${cs2.stat}.`, cs2.detail], canvaAnim: "Thermal & Visual Scan (فحص بصري وحراري للمبنى الثاني)", notes: `انتقل إلى الحالة الدراسية الثانية (${cs2.name}) وقارن سياقها بالحالة الأولى.` },
+        { num: 23, cat: "الحالات الدراسية والمباني", title: `نتائج الحالة الدراسية الثانية — الأرقام والمنحنيات المقارنة`, subtitle: `تقييم الأداء الحراري والطاقي في ${cs2.name}`, visualType: "case_study_2_results", buildingName: `مخرجات الأداء: ${cs2.name} (${cs2.stat})`, metrics: m.keyMetrics, bullets: [cs2.detail, m.archApps[0], "كيف أثبتت هذه الحالة جدوى دمج الحلول المعمارية مع أنظمة الرصد والمحاكاة؟"], canvaAnim: "Data Bar Growth (نمو مؤشرات الكفاءة والوفر)", notes: "ركز على الأرقام الموثقة وكيف تدعم الفرضية العلمية للمحاضرة." },
+        { num: 24, cat: "الحالات الدراسية والمباني", title: `الحالة الدراسية الثالثة والمقارنة التركيبية — ${cs3.name}`, subtitle: "مصفوفة مقارنة الحالات الدراسية الثلاث واستخلاص القواعد التصميمية", visualType: n === 9 ? "building_Basque_NZEB" : "case_study_3", buildingName: cs3.name, metrics: m.keyMetrics, bullets: [`الحالة الدراسية الثالثة: ${cs3.name} (${cs3.stat}).`, cs3.detail, `مقارنة شاملة بين (${cs1.name}) و(${cs2.name}) و(${cs3.name}).`], canvaAnim: "Triple Card Flip (مقارنة البطاقات الثلاث)", notes: "لخص أوجه التشابه والاختلاف بين الحالات الثلاث في جدول مقارن واضح." },
+        { num: 25, cat: "التنفيذ والتقييم", title: `الأخطاء الشائعة في التصميم والتنفيذ + سؤال تفاعلي للطلاب`, subtitle: "قائمة التحقق النقدية للمهندس المعماري (Design Checklist)", visualType: "mistakes_quiz", buildingName: `قائمة فحص الأخطاء الشائعة في ${m.shortTitle}`, metrics: m.keyMetrics, bullets: [`خطأ شائع 1: تجاهل ${m.concepts[0].substring(0, 50)}... والاعتماد على التكييف فقط.`, `خطأ شائع 2: إغفال المحاذير الفيزيائية مثل (${m.prosCons[1] ? m.prosCons[1].substring(0, 60) : 'الاحتباس الحراري والجسور الحرارية'}).`, "خطأ شائع 3: عدم معايرة قرارات التصميم بالقياسات الميدانية وبرامج المحاكاة."], canvaAnim: "Interactive Quiz Reveal (تفاعل ومراجعة سريعة)", notes: "اطرح السؤال التفاعلي على الطلاب في القاعة لقياس مدى استيعابهم." },
+        { num: 26, cat: "الخلاصة والتمرين", title: `الخلاصة التنفيذية، تمرين الاستوديو (Assignment ${n})، والمراجع`, subtitle: `تطبيق عملي على مشروع الطالب في ${m.shortTitle}`, visualType: "summary_assignment", buildingName: `تمرين الاستوديو الأسبوعي رقم (${n}) والمراجع العلمية`, metrics: m.keyMetrics, bullets: [`الخلاصة: تطبيق منهجية ${m.shortTitle} يحقق (${m.keyMetrics[0].val}) و(${m.keyMetrics[1].val}) و(${m.keyMetrics[2].val}).`, `تمرين الاستوديو (Assignment ${n}): طبق معايير وتفصيلة 1:20 الخاصة بهذه المحاضرة على مشروع الكلية الخاص بك مع حساب المؤشرات.`, `المراجع المعتمدة: ${cs1.name} | ${cs2.name} | ${cs3.name}.`], canvaAnim: "Summary Finale (خاتمة العرض التقديمي)", notes: "اختتم المحاضرة بتوضيح المطلوب تسليمه في تمرين الاستوديو الأسبوعي." }
+      ];
+    }
+
+    // Keep the ultra-custom 26 slides for Lecture 9 and build all 10 lectures array
+    const allTenLecturesSlides = lecturesMeta.map((_, idx) => build26SlidesForLecture(idx));
+
+    let currentLectureIndex = 0; // Default to Lecture 9 (index 8) as requested, user can switch 1..10
+    let currentSlideIndex = 0;
+    let autoPlayInterval = null;
+
+    // ============================================================================
+    // LIGHT-THEME ARCHITECTURAL SVG VISUALIZATION GENERATOR FOR WEB STAGE
+    // ============================================================================
+    function getLightSlideVisualHTML(slide, lecIdx) {
+      const media = slideMediaHTML(slide, lecIdx + 1);
+      if (media) return media;
+      const base = baseSlideVisualHTML(slide, lecIdx);
+      if ([1, 20, 22, 24].includes(slide.num)) {
+        return base + `<p class="text-[11px] text-amber-800 font-bold mt-1.5">رسم تخطيطي توضيحي، وليس صورة للمبنى المذكور.</p>`;
+      }
+      return base;
+    }
+
+    function baseSlideVisualHTML(slide, lecIdx) {
+      const lecNum = lecIdx + 1;
+      const m = lecturesMeta[lecIdx];
+
+      // Specific Architectural Building Drawings in Crisp Light Theme
+      if (slide.num === 20 || slide.num === 21 || slide.num === 1 || slide.num === 3) {
+        return `
+          <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col justify-between h-full shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-extrabold text-emerald-800 flex items-center gap-1.5">
+                <i data-lucide="building-2" class="w-4 h-4 text-emerald-600"></i>
+                <span>${slide.buildingName}</span>
+              </span>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">محاضرة ${lecNum} • لوحة معمارية</span>
+            </div>
+
+            <svg viewBox="0 0 600 265" class="w-full h-52 rounded-xl bg-gradient-to-b from-sky-50 via-white to-emerald-50/40 border border-slate-200">
+              <!-- Bright Sun & Solar Rays -->
+              <circle cx="535" cy="42" r="22" fill="#F59E0B" stroke="#FEF3C7" stroke-width="4" />
+              <line x1="505" y1="52" x2="395" y2="95" stroke="#D97706" stroke-width="2" stroke-dasharray="5,5" />
+
+              <!-- Rooftop Solar PV Canopy (Light Theme Architectural Rendering) -->
+              <polygon points="110,42 390,26 402,36 122,52" fill="#0284C7" stroke="#0369A1" stroke-width="1.5" />
+              <line x1="140" y1="50" x2="140" y2="68" stroke="#475569" stroke-width="3" />
+              <line x1="260" y1="43" x2="260" y2="68" stroke="#475569" stroke-width="3" />
+              <line x1="375" y1="36" x2="375" y2="68" stroke="#475569" stroke-width="3" />
+              <text x="255" y="20" fill="#0F172A" font-size="10.5" font-weight="bold" text-anchor="middle">مظلة خلايا شمسية وعزل سقف (${m.shortTitle})</text>
+
+              <!-- University Building Elevation (Light Limestone & Low-E Glass Facade) -->
+              <rect x="120" y="68" width="270" height="162" fill="#F8FAFC" stroke="#334155" stroke-width="2" />
+              <!-- 40mm PCM & Insulated Wall Side Strip -->
+              <rect x="120" y="68" width="12" height="162" fill="#06B6D4" />
+              
+              <!-- Floors & Glazing with 45 deg Shading Louvers -->
+              ${[0,1,2,3].map(f => {
+                const y = 76 + f * 38;
+                const flNum = 4 - f;
+                return `
+                  <g>
+                    <rect x="136" y="${y}" width="244" height="32" fill="${flNum===3 ? '#ECFDF5' : '#F1F5F9'}" stroke="#CBD5E1" stroke-width="1"/>
+                    ${[0,1,2,3].map(w => `
+                      <rect x="${146 + w*52}" y="${y+5}" width="38" height="22" fill="#BAE6FD" stroke="#0284C7" stroke-width="1.2"/>
+                      <line x1="${144 + w*52}" y1="${y+5}" x2="${186 + w*52}" y2="${y+9}" stroke="#D97706" stroke-width="2.5"/>
+                    `).join('')}
+                    <text x="364" y="${y+20}" fill="#0F172A" font-size="9.5" font-weight="bold">ط ${flNum}</text>
+                  </g>
+                `;
+              }).join('')}
+
+              <!-- Courtyard Hybrid Pergola & Trees on Left -->
+              <line x1="20" y1="125" x2="115" y2="125" stroke="#B45309" stroke-width="4" stroke-dasharray="10,4" />
+              <circle cx="55" cy="185" r="24" fill="#10B981" opacity="0.85" />
+              <rect x="52" y="205" width="6" height="25" fill="#78350F" />
+              <text x="65" y="116" fill="#065F46" font-size="9.5" font-weight="bold" text-anchor="middle">فناء هجين H/W=1.2</text>
+
+              <!-- Performance Callout Card on Right (Light Mode) -->
+              <rect x="405" y="75" width="180" height="148" rx="10" fill="#FFFFFF" stroke="#10B981" stroke-width="2" />
+              <rect x="405" y="75" width="180" height="30" rx="8" fill="#059669" />
+              <text x="495" y="95" fill="#FFFFFF" font-size="10" font-weight="bold" text-anchor="middle">مؤشرات الأداء الموثقة</text>
+              
+              <text x="495" y="125" fill="#0F172A" font-size="10.5" font-weight="bold" text-anchor="middle">${m.keyMetrics[0].label}</text>
+              <text x="495" y="143" fill="#059669" font-size="13" font-weight="black" text-anchor="middle">${m.keyMetrics[0].val}</text>
+
+              <text x="495" y="170" fill="#0F172A" font-size="10.5" font-weight="bold" text-anchor="middle">${m.keyMetrics[1].label}</text>
+              <text x="495" y="188" fill="#D97706" font-size="13" font-weight="black" text-anchor="middle">${m.keyMetrics[1].val}</text>
+
+              <text x="495" y="212" fill="#0284C7" font-size="9.5" font-weight="bold" text-anchor="middle">${m.keyMetrics[2].val}</text>
+
+              <!-- Ground Line -->
+              <line x1="10" y1="230" x2="590" y2="230" stroke="#059669" stroke-width="3" />
+              <text x="300" y="252" fill="#334155" font-size="10" font-weight="bold" text-anchor="middle">${m.coreEquation}</text>
+            </svg>
+
+            <div class="grid grid-cols-3 gap-2 mt-2 text-[11px] text-center font-bold">
+              <div class="bg-slate-50 p-1.5 rounded-lg border border-slate-200 text-slate-700">${m.caseStudies[0].stat}</div>
+              <div class="bg-emerald-50 p-1.5 rounded-lg border border-emerald-200 text-emerald-800">${m.caseStudies[1].stat}</div>
+              <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-200 text-amber-900">كود: ECP 306 & ASHRAE</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Architectural Section 1:20 / Hybrid System Diagram (Light Mode)
+      return `
+        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 flex flex-col justify-between h-full shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="compass" class="w-4 h-4 text-emerald-600"></i>
+              <span>${slide.buildingName}</span>
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-300">مخطط تفصيلي (Light Mode)</span>
+          </div>
+
+          <svg viewBox="0 0 600 260" class="w-full h-52 rounded-xl bg-slate-50 border border-slate-200">
+            <!-- Three Crisp White Architectural Process Pillars -->
+            <g transform="translate(22, 25)">
+              <rect x="0" y="0" width="170" height="175" rx="12" fill="#FFFFFF" stroke="#059669" stroke-width="2" />
+              <rect x="0" y="0" width="170" height="34" rx="10" fill="#ECFDF5" />
+              <text x="85" y="22" fill="#065F46" font-size="11" font-weight="black" text-anchor="middle">1. التصميم السلبي والغلاف</text>
+              <text x="85" y="62" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle">${m.keyMetrics[0].label}</text>
+              <text x="85" y="88" fill="#059669" font-size="15" font-weight="black" text-anchor="middle">${m.keyMetrics[0].val}</text>
+              <text x="85" y="118" fill="#475569" font-size="9.5" text-anchor="middle">فناء H/W=1.2 + عزل</text>
+              <text x="85" y="136" fill="#475569" font-size="9.5" text-anchor="middle">طبقة 40mm RT25HC PCM</text>
+              <text x="85" y="156" fill="#047857" font-size="9.5" font-weight="bold" text-anchor="middle">كاسرات شمس بزاوية 45°</text>
+            </g>
+
+            <g transform="translate(215, 25)">
+              <rect x="0" y="0" width="170" height="175" rx="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="2" />
+              <rect x="0" y="0" width="170" height="34" rx="10" fill="#E0F2FE" />
+              <text x="85" y="22" fill="#075985" font-size="11" font-weight="black" text-anchor="middle">2. الأنظمة الهجينة والنشطة</text>
+              <text x="85" y="62" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle">${m.keyMetrics[1].label}</text>
+              <text x="85" y="88" fill="#0284C7" font-size="15" font-weight="black" text-anchor="middle">${m.keyMetrics[1].val}</text>
+              <text x="85" y="118" fill="#475569" font-size="9.5" text-anchor="middle">تهوية متقاطعة DISO (9.6%)</text>
+              <text x="85" y="136" fill="#475569" font-size="9.5" text-anchor="middle">بلاطات TABS + DOAS/ERV</text>
+              <text x="85" y="156" fill="#0369A1" font-size="9.5" font-weight="bold" text-anchor="middle">إضاءة LED بتعتيم VeLux</text>
+            </g>
+
+            <g transform="translate(408, 25)">
+              <rect x="0" y="0" width="170" height="175" rx="12" fill="#FFFFFF" stroke="#D97706" stroke-width="2" />
+              <rect x="0" y="0" width="170" height="34" rx="10" fill="#FEF3C7" />
+              <text x="85" y="22" fill="#92400E" font-size="11" font-weight="black" text-anchor="middle">3. المحاكاة والطاقة الصفرية</text>
+              <text x="85" y="62" fill="#0F172A" font-size="10" font-weight="bold" text-anchor="middle">${m.keyMetrics[2].label}</text>
+              <text x="85" y="88" fill="#D97706" font-size="15" font-weight="black" text-anchor="middle">${m.keyMetrics[2].val}</text>
+              <text x="85" y="118" fill="#475569" font-size="9.5" text-anchor="middle">Revit + DesignBuilder v7</text>
+              <text x="85" y="136" fill="#475569" font-size="9.5" text-anchor="middle">محطة PV/BIPV للـ nZEB</text>
+              <text x="85" y="156" fill="#B45309" font-size="9.5" font-weight="bold" text-anchor="middle">تقييم GPRS/LEED & AI</text>
+            </g>
+
+            <!-- Bottom Formula Banner -->
+            <rect x="22" y="212" width="556" height="34" rx="8" fill="#ECFDF5" stroke="#10B981" />
+            <text x="300" y="233" fill="#065F46" font-size="10.5" font-weight="bold" text-anchor="middle">${m.coreEquation}</text>
+          </svg>
+
+          <div class="text-[11px] text-slate-600 font-bold text-center mt-1">
+            الحالة المرجعية: ${m.caseStudies[0].name} | ${m.caseStudies[1].name}
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================================
+    // RENDER CURRENT SLIDE & LECTURE PILLS IN LIGHT THEME
+    // ============================================================================
+    function renderLecturePills() {
+      const bar = document.getElementById("lecturePillsBar");
+      bar.innerHTML = lecturesMeta.map((m, idx) => {
+        const active = idx === currentLectureIndex;
+        return `
+          <button onclick="switchLecture(${idx})" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold shrink-0 transition border ${active ? 'bg-emerald-600 text-white border-emerald-700 shadow-sm' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-emerald-50 hover:text-emerald-800'}">
+            <span>م ${m.id}: ${m.shortTitle.replace(`المحاضرة ${m.id}: `, '')}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchLecture(lecIdx) {
+      currentLectureIndex = lecIdx;
+      currentSlideIndex = 0;
+      document.getElementById("lectureSelectDropdown").value = lecIdx;
+      renderLecturePills();
+      renderCurrentSlide();
+    }
+
+    function renderCurrentSlide() {
+      const currentDeck = allTenLecturesSlides[currentLectureIndex];
+      const slide = currentDeck[currentSlideIndex];
+      const lecMeta = lecturesMeta[currentLectureIndex];
+      const stageBox = document.getElementById("slideContentBox");
+
+      // Update Header & Progress
+      document.getElementById("slideLectureBadge").textContent = `المحاضرة ${lecMeta.id} من 10`;
+      document.getElementById("slideBadgeNumber").textContent = `شريحة ${slide.num} / 26`;
+      document.getElementById("slideCategoryBadge").textContent = slide.cat;
+      document.getElementById("sidebarLectureTitle").innerHTML = `<i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i><span>شرائح المحاضرة ${lecMeta.id} (26 شريحة)</span>`;
+      document.getElementById("slideFooterRef").textContent = `المباني المرجعية: ${lecMeta.caseStudies.map(c => c.name.split('(')[0]).join(' • ')}`;
+
+      const pct = Math.round(((currentSlideIndex + 1) / currentDeck.length) * 100);
+      document.getElementById("progressLabelText").textContent = `تقدم المحاضرة ${lecMeta.id} (${slide.num} من 26)`;
+      document.getElementById("progressPercentText").textContent = `${pct}%`;
+      document.getElementById("progressBarFill").style.width = `${pct}%`;
+
+      // Update Speaker Notes & Canva Anim
+      document.getElementById("speakerNotesText").textContent = slide.notes;
+      document.getElementById("canvaTransitionTag").textContent = `حركة Canva: ${slide.canvaAnim}`;
+      document.getElementById("canvaVisualTag").textContent = `اللوحة: ${slide.buildingName}`;
+
+      // Light-Theme Metric Card Colors
+      const lightColorMap = {
+        emerald: "bg-emerald-50 border-emerald-300 text-emerald-900",
+        amber: "bg-amber-50 border-amber-300 text-amber-900",
+        cyan: "bg-sky-50 border-sky-300 text-sky-900",
+        rose: "bg-rose-50 border-rose-300 text-rose-900",
+        slate: "bg-slate-100 border-slate-300 text-slate-800"
+      };
+
+      stageBox.className = "relative z-10 flex-1 flex flex-col justify-center slide-enter";
+      stageBox.innerHTML = `
+        <div class="space-y-4">
+          <!-- Title & Subtitle (Crisp Dark Slate on Light Background) -->
+          <div class="stagger-1">
+            <h2 class="text-xl md:text-2xl lg:text-3xl font-black text-slate-900 leading-snug">${slide.title}</h2>
+            <p class="text-xs md:text-sm text-emerald-700 font-bold mt-1">${slide.subtitle}</p>
+          </div>
+
+          <!-- Key Quantitative Metrics Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 stagger-2">
+            ${slide.metrics.map(m => `
+              <div class="p-3 rounded-2xl border-2 ${lightColorMap[m.color] || lightColorMap.emerald} flex flex-col justify-center shadow-sm">
+                <span class="text-[11px] font-bold opacity-80">${m.label}</span>
+                <span class="text-base md:text-lg font-black mt-0.5">${m.val}</span>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- Two-Column Content: Bullets & Light-Theme Architectural Building Visual -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch pt-1">
+            <!-- Right Column: Architectural Content Bullets -->
+            <div class="lg:col-span-6 bg-white/95 border-2 border-slate-200 rounded-2xl p-4 flex flex-col justify-between space-y-2.5 shadow-sm stagger-3">
+              <div class="space-y-3">
+                ${slide.bullets.map((b, idx) => `
+                  <div class="flex items-start gap-2.5 text-xs md:text-sm text-slate-800 font-semibold leading-relaxed">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 font-black text-xs flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                    <p>${b}</p>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-bold">
+                <span>المعادلة/المعيار: <code class="text-emerald-700">${lecMeta.coreEquation.substring(0, 38)}</code></span>
+                <span class="text-amber-700">شريحة ${slide.num}/26</span>
+              </div>
+            </div>
+
+            <!-- Left Column: Interactive Light-Theme Building Visualization -->
+            <div class="lg:col-span-6 stagger-4">
+              ${getLightSlideVisualHTML(slide, currentLectureIndex)}
+            </div>
+          </div>
+        </div>
+      `;
+
+      renderSlideSidebar();
+      lucide.createIcons();
+    }
+
+    function renderSlideSidebar() {
+      const currentDeck = allTenLecturesSlides[currentLectureIndex];
+      const container = document.getElementById("slideListContainer");
+      container.innerHTML = currentDeck.map((s, idx) => {
+        const active = idx === currentSlideIndex;
+        return `
+          <button onclick="jumpToSlide(${idx})" class="w-full text-right p-2 rounded-xl border transition flex items-start gap-2.5 ${active ? 'bg-emerald-50 border-emerald-500 text-slate-900 shadow-sm' : 'bg-slate-50/70 border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'}">
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-black ${active ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${s.num}</span>
+            <div class="flex-1 truncate">
+              <div class="text-xs font-extrabold truncate">${s.title}</div>
+              <div class="text-[10px] text-emerald-700 font-semibold truncate">${s.cat} • ${s.buildingName}</div>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function jumpToSlide(idx) { currentSlideIndex = idx; renderCurrentSlide(); }
+    function nextSlide() {
+      const deck = allTenLecturesSlides[currentLectureIndex];
+      currentSlideIndex = (currentSlideIndex + 1) % deck.length;
+      renderCurrentSlide();
+    }
+    function prevSlide() {
+      const deck = allTenLecturesSlides[currentLectureIndex];
+      currentSlideIndex = (currentSlideIndex - 1 + deck.length) % deck.length;
+      renderCurrentSlide();
+    }
+    function toggleSpeakerNotes() {
+      document.getElementById("speakerNotesDrawer").classList.toggle("hidden");
+    }
+    function toggleAutoPlay() {
+      const btn = document.getElementById("autoPlayBtn");
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        btn.innerHTML = `<i data-lucide="play" class="w-3 h-3"></i><span>تلقائي</span>`;
+      } else {
+        autoPlayInterval = setInterval(nextSlide, 5000);
+        btn.innerHTML = `<i data-lucide="pause" class="w-3 h-3"></i><span>إيقاف</span>`;
+      }
+      lucide.createIcons();
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") nextSlide();
+      if (e.key === "ArrowRight") prevSlide();
+    });
+
+    // ============================================================================
+    // RENDER LIGHT-THEME ARCHITECTURAL GRAPHIC ON CANVAS FOR NATIVE .PPTX SLIDES
+    // ============================================================================
+    function renderLightSlideGraphicToDataURL(slide, lecMeta) {
+      return mediaCache[`${lecMeta.id}_${slide.num}`] || baseSlideGraphicToDataURL(slide, lecMeta);
+    }
+
+    function baseSlideGraphicToDataURL(slide, lecMeta) {
+      const canvas = document.getElementById("pptxRenderCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Light-Theme Crisp White & Mint Surface
+      const grad = ctx.createLinearGradient(0, 0, 1200, 675);
+      grad.addColorStop(0, "#FFFFFF");
+      grad.addColorStop(1, "#F0FDF4");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1200, 675);
+
+      // Outer Frame Border
+      ctx.strokeStyle = "#10B981";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(12, 12, 1176, 651);
+
+      // Top Header Banner inside Graphic (Light Emerald Tint)
+      ctx.fillStyle = "#ECFDF5";
+      ctx.fillRect(30, 30, 1140, 72);
+      ctx.strokeStyle = "#A7F3D0";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(30, 30, 1140, 72);
+
+      ctx.fillStyle = "#065F46";
+      ctx.font = "bold 26px Cairo, Arial";
+      ctx.textAlign = "right";
+      ctx.fillText(`اللوحة المعمارية (م${lecMeta.id} - ش${slide.num}): ${slide.buildingName.substring(0, 58)}`, 1145, 76);
+
+      // Draw Architectural Building Section & Metrics in Light Theme
+      // Left Box: Architectural Building Elevation & Smart Layers
+      ctx.fillStyle = "#F8FAFC";
+      ctx.fillRect(45, 125, 540, 495);
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(45, 125, 540, 495);
+
+      // Sun
+      ctx.fillStyle = "#F59E0B";
+      ctx.beginPath();
+      ctx.arc(110, 180, 28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Rooftop PV Canopy
+      ctx.fillStyle = "#0284C7";
+      ctx.fillRect(180, 165, 360, 20);
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 20px Cairo, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Rooftop PV Canopy + Cool Roof (U=0.30)", 360, 152);
+
+      // Building Mass (5 Floors)
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(195, 195, 330, 360);
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(195, 195, 330, 360);
+
+      // 40mm PCM Layer Strip on Exterior
+      ctx.fillStyle = "#06B6D4";
+      ctx.fillRect(195, 195, 16, 360);
+
+      for (let f = 0; f < 5; f++) {
+        const fy = 208 + f * 68;
+        ctx.fillStyle = f === 1 ? "#ECFDF5" : "#F1F5F9";
+        ctx.fillRect(218, fy, 295, 54);
+        // Windows with 45 deg shading louvers
+        for (let w = 0; w < 4; w++) {
+          ctx.fillStyle = "#BAE6FD";
+          ctx.fillRect(230 + w * 68, fy + 10, 48, 34);
+          ctx.fillStyle = "#D97706";
+          ctx.fillRect(228 + w * 68, fy + 6, 52, 6);
+        }
+      }
+
+      ctx.fillStyle = "#065F46";
+      ctx.font = "bold 20px Cairo, Arial";
+      ctx.fillText(lecMeta.coreEquation.substring(0, 48), 315, 595);
+
+      // Right Side: 3 Quantitative KPI Cards in Light Theme
+      slide.metrics.forEach((m, idx) => {
+        const cy = 125 + idx * 168;
+        ctx.fillStyle = idx === 0 ? "#ECFDF5" : (idx === 1 ? "#FFFBEB" : "#F0F9FF");
+        ctx.fillRect(615, cy, 550, 145);
+        ctx.strokeStyle = idx === 0 ? "#10B981" : (idx === 1 ? "#F59E0B" : "#0284C7");
+        ctx.lineWidth = 3;
+        ctx.strokeRect(615, cy, 550, 145);
+
+        ctx.fillStyle = "#334155";
+        ctx.font = "bold 24px Cairo, Arial";
+        ctx.textAlign = "right";
+        ctx.fillText(m.label, 1135, cy + 52);
+
+        ctx.fillStyle = "#0F172A";
+        ctx.font = "bold 38px Cairo, Arial";
+        ctx.fillText(m.val, 1135, cy + 112);
+      });
+
+      return canvas.toDataURL("image/png");
+    }
+
+    // ============================================================================
+    // BUILD LIGHT-THEME PPTX FOR ANY LECTURE (RETURNS PPTX INSTANCE)
+    // ============================================================================
+    function createLightPptxInstanceForLecture(lecIdx) {
+      const lecMeta = lecturesMeta[lecIdx];
+      const slides = allTenLecturesSlides[lecIdx];
+
+      const pptx = new PptxGenJS();
+      pptx.layout = "LAYOUT_WIDE"; // 16:9 (13.33 x 7.5 inches)
+      pptx.author = "برنامج بكالوريوس الهندسة المعمارية - التصميم البيئي";
+      pptx.company = "كليات الهندسة المعمارية";
+      pptx.subject = lecMeta.fullTitle;
+      pptx.title = `${lecMeta.code}_Light_Theme`;
+      pptx.rtlMode = true;
+
+      slides.forEach((s) => {
+        const slide = pptx.addSlide();
+        // CRISP LIGHT THEME BACKGROUND
+        slide.background = { color: "F8FAFC" };
+
+        // Top Header Bar (Soft Mint/Emerald Light Banner)
+        slide.addShape(pptx.ShapeType.rect, {
+          x: 0, y: 0, w: 13.33, h: 0.65,
+          fill: { color: "ECFDF5" },
+          line: { color: "A7F3D0", width: 1 }
+        });
+
+        slide.addText(`المحاضرة ${lecMeta.id} من 10 | شريحة ${s.num} من 26 — ${s.cat}`, {
+          x: 0.4, y: 0.12, w: 6.5, h: 0.4,
+          fontSize: 12.5, bold: true, color: "065F46", fontFace: "Arial", align: "left"
+        });
+
+        slide.addText("بكالوريوس الهندسة المعمارية | الراحة الحرارية وكفاءة الطاقة (Light Theme)", {
+          x: 6.8, y: 0.12, w: 6.1, h: 0.4,
+          fontSize: 12.5, bold: true, color: "B45309", fontFace: "Arial", align: "right", rtlMode: true
+        });
+
+        // Slide Title & Subtitle (Dark Slate Text on Light Background)
+        slide.addText(s.title, {
+          x: 0.5, y: 0.78, w: 12.33, h: 0.62,
+          fontSize: 21, bold: true, color: "0F172A", fontFace: "Arial", align: "right", rtlMode: true
+        });
+
+        slide.addText(s.subtitle, {
+          x: 0.5, y: 1.4, w: 12.33, h: 0.38,
+          fontSize: 13.5, bold: true, color: "047857", fontFace: "Arial", align: "right", rtlMode: true
+        });
+
+        // Key Metrics Cards Row (Crisp White Cards with Emerald/Amber Borders)
+        s.metrics.forEach((m, idx) => {
+          const cardW = 3.85;
+          const cardX = 12.83 - (idx + 1) * (cardW + 0.22);
+          slide.addShape(pptx.ShapeType.roundRect, {
+            x: Math.max(0.5, cardX), y: 1.9, w: cardW, h: 0.92,
+            fill: { color: "FFFFFF" },
+            line: { color: "10B981", width: 1.5 }
+          });
+          slide.addText(`${m.label}: ${m.val}`, {
+            x: Math.max(0.5, cardX), y: 2.05, w: cardW, h: 0.62,
+            fontSize: 13.5, bold: true, color: "0F172A", fontFace: "Arial", align: "center", rtlMode: true
+          });
+        });
+
+        // Right Column: Bullets Box (White Card with Dark Slate Text)
+        slide.addShape(pptx.ShapeType.roundRect, {
+          x: 6.7, y: 3.02, w: 6.13, h: 3.75,
+          fill: { color: "FFFFFF" },
+          line: { color: "CBD5E1", width: 1.5 }
+        });
+
+        const bulletTextObjs = s.bullets.map((b, i) => ({
+          text: `${i + 1}. ${b}\n\n`,
+          options: { fontSize: 13.5, color: "1E293B", bold: false, breakLine: true }
+        }));
+
+        slide.addText(bulletTextObjs, {
+          x: 6.85, y: 3.18, w: 5.8, h: 3.45,
+          fontFace: "Arial", align: "right", valign: "top", rtlMode: true
+        });
+
+        // Left Column: High-Res Light-Theme Architectural Diagram PNG
+        const imgDataUrl = renderLightSlideGraphicToDataURL(s, lecMeta);
+        slide.addImage({
+          data: imgDataUrl,
+          x: 0.5, y: 3.02, w: 5.95, h: 3.75
+        });
+
+        // Bottom Footer Bar (Light Slate)
+        slide.addShape(pptx.ShapeType.rect, {
+          x: 0, y: 6.95, w: 13.33, h: 0.55,
+          fill: { color: "E2E8F0" }
+        });
+        slide.addText(`المبنى/النموذج: ${s.buildingName}  |  حركة Canva: ${s.canvaAnim}`, {
+          x: 0.5, y: 7.05, w: 12.33, h: 0.35,
+          fontSize: 11, bold: true, color: "334155", fontFace: "Arial", align: "right", rtlMode: true
+        });
+
+        slide.addNotes(`ملاحظات المحاضر (المحاضرة ${lecMeta.id} - شريحة ${s.num}): ${s.notes}\nإعدادات التحريك في Canva: ${s.canvaAnim}`);
+      });
+
+      return { pptx, fileName: `${lecMeta.code}_Light_Canva.pptx` };
+    }
+
+    // Generate Single Lecture PPTX
+    async function generateSingleLecturePPTX(targetIndex = currentLectureIndex) {
+      const btnText = document.getElementById("pptxSingleBtnText");
+      const orig = btnText.textContent;
+      btnText.textContent = "جاري بناء الـ PPTX الفاتح...";
+
+      try {
+        await prepareLectureMedia(targetIndex);
+        const { pptx, fileName } = createLightPptxInstanceForLecture(targetIndex);
+        await pptx.writeFile({ fileName });
+        btnText.textContent = "✅ تم التحميل!";
+        setTimeout(() => { btnText.textContent = orig; }, 2500);
+      } catch (e) {
+        console.error(e);
+        btnText.textContent = orig;
+      }
+    }
+
+    // ============================================================================
+    // BATCH GENERATE ALL 10 LECTURES PPTX & SAVE TO GOOGLE DRIVE FOLDER
+    // ============================================================================
+    function renderTenLecturesModalGrid() {
+      const grid = document.getElementById("tenLecturesGrid");
+      grid.innerHTML = lecturesMeta.map((m, idx) => `
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 hover:border-emerald-400 transition">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-black text-[11px]">محاضرة ${m.id}</span>
+              <span class="text-xs font-black text-slate-900">${m.shortTitle.replace(`المحاضرة ${m.id}: `, '')}</span>
+            </div>
+            <p class="text-[11px] text-slate-600 truncate max-w-xs">${m.caseStudies[0].name}</p>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="switchLecture(${idx}); closeModal('batchDriveModal');" class="px-2.5 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px]">معاينة (26 ش)</button>
+            <button onclick="generateSingleLecturePPTX(${idx})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] flex items-center gap-1">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>.PPTX</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    // Save all 10 PPTX files directly into a selected Local / Google Drive Desktop Folder or Browser Downloads
+    async function saveAll10ToLocalDriveFolder() {
+      const progBox = document.getElementById("batchProgressBox");
+      const statusTxt = document.getElementById("batchStatusText");
+      const pctTxt = document.getElementById("batchPercentText");
+      const barFill = document.getElementById("batchProgressFill");
+      progBox.classList.remove("hidden");
+
+      let dirHandle = null;
+      if ('showDirectoryPicker' in window) {
+        try {
+          dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        } catch (err) {
+          dirHandle = null; // Fallback to standard browser downloads if user cancels picker or iframe blocks it
+        }
+      }
+
+      for (let i = 0; i < lecturesMeta.length; i++) {
+        const pct = Math.round(((i + 1) / lecturesMeta.length) * 100);
+        statusTxt.textContent = `جاري بناء وحفظ المحاضرة (${i + 1} من 10): ${lecturesMeta[i].shortTitle}...`;
+        pctTxt.textContent = `${pct}%`;
+        barFill.style.width = `${pct}%`;
+
+        await prepareLectureMedia(i);
+        const { pptx, fileName } = createLightPptxInstanceForLecture(i);
+        if (dirHandle) {
+          const blob = await pptx.write({ outputType: "blob" });
+          const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
+          const writable = await fileHandle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+        } else {
+          await pptx.writeFile({ fileName });
+        }
+        await new Promise(r => setTimeout(r, 350));
+      }
+
+      statusTxt.textContent = "✅ تم توليد وحفظ جميع المحاضرات العشر (10 ملفات .PPTX بالوضع الفاتح - 260 شريحة) بنجاح!";
+    }
+
+    // Generate Single Unified Master Course PPTX (All 260 Slides in One File)
+    async function generateMasterCoursePPTX() {
+      const progBox = document.getElementById("batchProgressBox");
+      const statusTxt = document.getElementById("batchStatusText");
+      const pctTxt = document.getElementById("batchPercentText");
+      const barFill = document.getElementById("batchProgressFill");
+      progBox.classList.remove("hidden");
+
+      const masterPptx = new PptxGenJS();
+      masterPptx.layout = "LAYOUT_WIDE";
+      masterPptx.rtlMode = true;
+      masterPptx.title = "Complete_10_Lectures_Thermal_Comfort_Course_260_Slides_Light";
+
+      for (let l = 0; l < lecturesMeta.length; l++) {
+        await prepareLectureMedia(l);
+        const lecMeta = lecturesMeta[l];
+        const slides = allTenLecturesSlides[l];
+        const pct = Math.round(((l + 1) / lecturesMeta.length) * 100);
+        statusTxt.textContent = `جاري دمج المحاضرة (${l + 1} من 10) في الملف الموحد...`;
+        pctTxt.textContent = `${pct}%`;
+        barFill.style.width = `${pct}%`;
+
+        slides.forEach((s) => {
+          const slide = masterPptx.addSlide();
+          slide.background = { color: "F8FAFC" };
+          slide.addShape(masterPptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.65, fill: { color: "ECFDF5" } });
+          slide.addText(`المحاضرة ${lecMeta.id} | شريحة ${s.num}/26 — ${s.cat}`, { x: 0.4, y: 0.12, w: 6.5, h: 0.4, fontSize: 12, bold: true, color: "065F46", fontFace: "Arial" });
+          slide.addText(s.title, { x: 0.5, y: 0.8, w: 12.33, h: 0.6, fontSize: 20, bold: true, color: "0F172A", fontFace: "Arial", align: "right", rtlMode: true });
+          slide.addText(s.subtitle, { x: 0.5, y: 1.4, w: 12.33, h: 0.38, fontSize: 13, bold: true, color: "047857", fontFace: "Arial", align: "right", rtlMode: true });
+
+          const bulletTextObjs = s.bullets.map((b, idx) => ({
+            text: `${idx + 1}. ${b}\n\n`,
+            options: { fontSize: 13, color: "1E293B", breakLine: true }
+          }));
+          slide.addShape(masterPptx.ShapeType.roundRect, { x: 6.7, y: 2.1, w: 6.13, h: 4.6, fill: { color: "FFFFFF" }, line: { color: "CBD5E1", width: 1.5 } });
+          slide.addText(bulletTextObjs, { x: 6.85, y: 2.25, w: 5.8, h: 4.3, fontFace: "Arial", align: "right", valign: "top", rtlMode: true });
+
+          const imgDataUrl = renderLightSlideGraphicToDataURL(s, lecMeta);
+          slide.addImage({ data: imgDataUrl, x: 0.5, y: 2.1, w: 5.95, h: 4.6 });
+        });
+        await new Promise(r => setTimeout(r, 120));
+      }
+
+      await masterPptx.writeFile({ fileName: "Master_Course_Lectures_01_to_10_Light_Canva_260_Slides.pptx" });
+      statusTxt.textContent = "✅ تم تحميل الملف الموحد للمحاضرات العشر (260 شريحة بالوضع الفاتح) بنجاح!";
+    }
+
+    // ============================================================================
+    // @CANVA BULK CREATE CSV & DOCS TO DECK EXPORTERS (ALL 10 LECTURES OR SINGLE)
+    // ============================================================================
+    function downloadCanvaCSV(allLectures = false) {
+      const headers = ["Lecture_Num", "Slide_Number", "Category", "Title", "Subtitle", "Building_Case_Study", "Key_Points", "Canva_Animation"];
+      const rows = [];
+
+      const indices = allLectures ? lecturesMeta.map((_, i) => i) : [currentLectureIndex];
+      indices.forEach(lIdx => {
+        const lNum = lecturesMeta[lIdx].id;
+        allTenLecturesSlides[lIdx].forEach(s => {
+          rows.push([
+            lNum,
+            s.num,
+            `"${s.cat}"`,
+            `"${s.title.replace(/"/g, '""')}"`,
+            `"${s.subtitle.replace(/"/g, '""')}"`,
+            `"${s.buildingName.replace(/"/g, '""')}"`,
+            `"${s.bullets.join(' | ').replace(/"/g, '""')}"`,
+            `"${s.canvaAnim.replace(/"/g, '""')}"`
+          ]);
+        });
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = allLectures ? "Canva_Bulk_All_10_Lectures_260_Slides.csv" : `Canva_Bulk_Lecture_${lecturesMeta[currentLectureIndex].id}.csv`;
+      a.click();
+    }
+
+    function copyCanvaDocText() {
+      const currentDeck = allTenLecturesSlides[currentLectureIndex];
+      const docText = currentDeck.map(s =>
+        `# شريحة ${s.num}: ${s.title}\n## ${s.subtitle}\n* **المبنى / اللوحة:** ${s.buildingName}\n` +
+        s.bullets.map(b => `* ${b}`).join("\n") +
+        `\n* **حركة Canva:** ${s.canvaAnim}\n`
+      ).join("\n---\n\n");
+
+      navigator.clipboard.writeText(docText);
+      const btn = document.getElementById("copyCanvaBtn");
+      btn.textContent = "✅ تم النسخ! الصقه في Canva Doc";
+      setTimeout(() => { btn.textContent = "نسخ نص المحاضرة لـ Canva"; }, 2500);
+    }
+
+    // Lab Modal Logic
+    function openModal(id) {
+      document.getElementById(id).classList.remove("hidden");
+      if (id === 'batchDriveModal') renderTenLecturesModalGrid();
+      if (id === 'labModal') updateNZEBCalc();
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+
+    function updateNZEBCalc() {
+      const area = parseFloat(document.getElementById("calcAreaInput").value);
+      const eui = parseFloat(document.getElementById("calcEuiInput").value);
+      const savePct = parseFloat(document.getElementById("calcSaveInput").value);
+
+      document.getElementById("calcAreaVal").textContent = `${area.toLocaleString()} m²`;
+      document.getElementById("calcEuiVal").textContent = `${eui} kWh/m²/yr`;
+      document.getElementById("calcSaveVal").textContent = `${savePct}%`;
+
+      const baselineEnergy = area * eui;
+      const targetEnergy = baselineEnergy * (1 - savePct / 100);
+      const pvKwp = targetEnergy / 1750;
+      const pvArea = pvKwp * 7.5;
+      const co2Saved = baselineEnergy * 0.0005;
+
+      document.getElementById("outTargetEnergy").textContent = `${Math.round(targetEnergy).toLocaleString()} kWh/yr`;
+      document.getElementById("outPvKwp").textContent = `${pvKwp.toFixed(1)} kWp`;
+      document.getElementById("outPvArea").textContent = `${Math.round(pvArea).toLocaleString()} m²`;
+      document.getElementById("outCo2Saved").textContent = `${co2Saved.toFixed(1)} Tons CO₂`;
+    }
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      renderLecturePills();
+      renderCurrentSlide();
+      lucide.createIcons();
+      document.getElementById("photoCredits").innerHTML = Object.values(COURSE_PHOTOS).map(p =>
+        `<li><a href="${p.page}" target="_blank" rel="noopener">${p.alt}</a>: ${p.credit}, ${p.lic}</li>`).join("");
+    });
+  </script>
+</body>
+</html>
