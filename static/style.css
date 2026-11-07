@@ -324,7 +324,7 @@ html[dir="rtl"] #ss-list li[aria-selected="true"] a,html[dir="rtl"] #ss-list li 
 .ss-kind{grid-row:span 2;font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--brass-soft);color:var(--text);min-width:52px;text-align:center}
 .ss-paper{background:var(--primary);color:var(--primary-ink)}
 .ss-video{background:#c4302b;color:#fff}
-.ss-tool{background:var(--brass);color:#fff}
+.ss-tool,.ss-course{background:var(--brass);color:#fff}
 .ss-title{font-weight:600;font-size:.93rem;line-height:1.4;text-align:start}
 .ss-sub{font-size:.76rem;color:var(--muted);text-align:start}
 .ss-empty{padding:14px 10px;color:var(--muted)}

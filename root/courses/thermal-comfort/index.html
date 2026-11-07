@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>مقرر الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية | د. سيد مرعي</title>
-  <meta name="description" content="عشر محاضرات تفاعلية (260 شريحة) عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، مع صور المباني ورسوم بيانية من الدراسات وتحميل بصيغة PowerPoint. Ten interactive Arabic lectures on thermal comfort and energy efficiency in classrooms.">
+  <meta name="description" content="عشر محاضرات تفاعلية (260 شريحة) عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، مع صور المباني ورسوم بيانية من الدراسات. Ten interactive Arabic lectures on thermal comfort and energy efficiency in classrooms.">
   <meta name="keywords" content="الراحة الحرارية, كفاءة الطاقة, القاعات التعليمية, محاضرات عمارة, PMV, جودة البيئة الداخلية IEQ, العزل الحراري, المواد متغيرة الطور PCM, التهوية الطبيعية, BIM, nZEB, thermal comfort, energy efficiency, classrooms, architecture lectures">
   <link rel="canonical" href="https://sayednagy81.github.io/courses/thermal-comfort/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -19,8 +19,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Cairo & Tajawal -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <!-- PptxGenJS for Native .PPTX Generation -->
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.bundle.js"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 
@@ -82,7 +80,7 @@
 <body class="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900">
 
   <div class="site-strip bg-emerald-50 border-b border-emerald-200 text-xs px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 justify-between">
-    <span><a href="/">د. سيد مرعي</a> &nbsp;/&nbsp; <a href="/tools/">الأدوات والمقررات</a> &nbsp;/&nbsp; مقرر الراحة الحرارية</span>
+    <span><a href="/">د. سيد مرعي</a> &nbsp;/&nbsp; <a href="/courses/">المقررات</a> &nbsp;/&nbsp; مقرر الراحة الحرارية</span>
     <a href="#course-notes">مصادر الصور والأرقام</a>
   </div>
 
@@ -122,23 +120,6 @@
           </select>
         </div>
 
-        <!-- Download Current Lecture PPTX -->
-        <button id="pptxSingleBtn" onclick="generateSingleLecturePPTX()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition shadow-sm cursor-pointer">
-          <i data-lucide="file-down" class="w-4 h-4"></i>
-          <span id="pptxSingleBtnText">تحميل محاضرة (.PPTX)</span>
-        </button>
-
-        <!-- Batch Generate All 10 Lectures PPTX + Save to Google Drive -->
-        <button onclick="openModal('batchDriveModal')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black transition shadow-sm cursor-pointer">
-          <i data-lucide="folder-up" class="w-4 h-4"></i>
-          <span>تحميل المحاضرات العشر (.PPTX)</span>
-        </button>
-
-        <!-- Canva Integration Hub -->
-        <button onclick="openModal('canvaModal')" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl canva-gradient hover:opacity-95 text-white text-xs font-extrabold transition shadow-sm">
-          <i data-lucide="sparkles" class="w-4 h-4"></i>
-          <span>بوابة @Canva</span>
-        </button>
       </div>
     </div>
 
@@ -200,7 +181,7 @@
           <div class="flex items-center gap-2 text-xs text-slate-600 font-bold">
             <span>بكالوريوس الهندسة المعمارية</span>
             <span>•</span>
-            <span id="slideHeaderRightTag" class="text-emerald-700 font-extrabold">تصميم @Canva الفاتح</span>
+            <span id="slideHeaderRightTag" class="text-emerald-700 font-extrabold">الراحة الحرارية وكفاءة الطاقة</span>
           </div>
         </div>
 
@@ -222,7 +203,7 @@
             </button>
             <button onclick="toggleSpeakerNotes()" class="px-3 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold flex items-center gap-1 transition">
               <i data-lucide="message-square-quote" class="w-3.5 h-3.5"></i>
-              <span>ملاحظات المحاضر وحركة Canva</span>
+              <span>ملاحظات المحاضر</span>
             </button>
           </div>
         </div>
@@ -275,104 +256,6 @@
 
     </section>
   </main>
-
-  <!-- MODAL 1: BATCH 10 LECTURES PPTX GENERATOR & GOOGLE DRIVE FOLDER SAVER -->
-  <div id="batchDriveModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-slate-200 rounded-3xl max-w-5xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-slate-900">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-amber-100 border border-amber-300 text-amber-700 flex items-center justify-center">
-            <i data-lucide="folder-git-2" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-black text-slate-900">تحميل المحاضرات العشر بصيغة PowerPoint</h3>
-            <p class="text-xs text-slate-600">حمّل أي محاضرة منفردة أو المحاضرات العشر كلها (260 شريحة)، مع صور المباني والرسوم البيانية.</p>
-          </div>
-        </div>
-        <button onclick="closeModal('batchDriveModal')" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-
-      <!-- Download options -->
-      <div class="bg-emerald-50/90 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
-        <p class="text-xs text-slate-700 font-bold">اختر طريقة التحميل:</p>
-        <div class="flex flex-wrap items-center gap-2">
-          <button onclick="saveAll10ToLocalDriveFolder()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black flex items-center gap-1.5 shadow-sm transition cursor-pointer">
-            <i data-lucide="hard-drive-download" class="w-4 h-4"></i>
-            <span>عشرة ملفات منفصلة (.PPTX)</span>
-          </button>
-          <button onclick="generateMasterCoursePPTX()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-black flex items-center gap-1.5 shadow-sm transition cursor-pointer">
-            <i data-lucide="book-marked" class="w-4 h-4"></i>
-            <span>ملف موحد للمقرر بالكامل (260 شريحة .PPTX)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Batch Progress Status Bar -->
-      <div id="batchProgressBox" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 space-y-2">
-        <div class="flex justify-between text-xs font-extrabold text-amber-900">
-          <span id="batchStatusText">جاري توليد ملفات العروض التقديمية بالوضع الفاتح...</span>
-          <span id="batchPercentText">0%</span>
-        </div>
-        <div class="w-full h-3 bg-white rounded-full overflow-hidden border border-amber-200">
-          <div id="batchProgressFill" class="h-full bg-gradient-to-r from-emerald-500 to-amber-500 transition-all duration-300" style="width: 0%;"></div>
-        </div>
-      </div>
-
-      <!-- Grid of All 10 Lectures with Individual PPTX Download & Preview -->
-      <div id="tenLecturesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <!-- Populated dynamically by JS -->
-      </div>
-
-          </div>
-  </div>
-
-  <!-- MODAL 2: @CANVA INTEGRATION HUB (LIGHT THEME) -->
-  <div id="canvaModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white border border-purple-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl text-slate-900">
-      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl canva-gradient flex items-center justify-center text-white font-black text-lg">C</div>
-          <div>
-            <h3 class="text-lg font-black text-slate-900">بوابة الربط المباشر مع منصة @Canva (للمحاضرات 1 إلى 10 بالوضع الفاتح)</h3>
-            <p class="text-xs text-slate-600">استورد ملفات الـ PPTX الفاتحة مباشرة إلى Canva أو استخدم أداة Bulk Create و Docs to Deck</p>
-          </div>
-        </div>
-        <button onclick="closeModal('canvaModal')" class="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-        <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
-          <div class="space-y-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-bold text-[11px]">الطريقة الأسرع (PPTX إلى Canva)</span>
-            <h4 class="text-sm font-black text-slate-900">1. استيراد ملف PPTX الفاتح في Canva</h4>
-            <p class="text-slate-600 leading-relaxed">حمّل ملف الـ <code>.PPTX</code> لأي محاضرة (مصمم بخلفية فاتحة ورسومات عالية الدقة)، واسحبه داخل <strong>Canva.com</strong> ليُفتح كعرض تقديمي قابل للتعديل والتحريك بالكامل.</p>
-          </div>
-          <button onclick="generateSingleLecturePPTX()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black transition">تحميل PPTX المحاضرة الحالية</button>
-        </div>
-
-        <div class="bg-cyan-50/70 border border-cyan-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
-          <div class="space-y-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-cyan-600 text-white font-bold text-[11px]">Canva Bulk Create</span>
-            <h4 class="text-sm font-black text-slate-900">2. جدول CSV للمحاضرات العشر (260 شريحة)</h4>
-            <p class="text-slate-600 leading-relaxed">حمّل ملف <code>CSV</code> الشامل لجميع المحاضرات العشر أو المحاضرة الحالية لربطه بأداة <strong>Bulk Create</strong> في Canva.</p>
-          </div>
-          <div class="flex flex-col gap-1.5">
-            <button onclick="downloadCanvaCSV(false)" class="w-full py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-black transition">CSV المحاضرة الحالية (26 شريحة)</button>
-            <button onclick="downloadCanvaCSV(true)" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-black transition">CSV المقرر الكامل (260 شريحة)</button>
-          </div>
-        </div>
-
-        <div class="bg-purple-50/70 border border-purple-200 rounded-2xl p-4 flex flex-col justify-between space-y-3">
-          <div class="space-y-2">
-            <span class="px-2.5 py-0.5 rounded-full bg-purple-600 text-white font-bold text-[11px]">Canva Docs to Deck</span>
-            <h4 class="text-sm font-black text-slate-900">3. نسخ نص العرض لـ Canva Doc</h4>
-            <p class="text-slate-600 leading-relaxed">انسخ محتوى الشرائح الـ 26 للمحاضرة الحالية والصقه في مستند <strong>Canva Doc</strong> ثم اختر <em>Convert to Presentation</em>.</p>
-          </div>
-          <button onclick="copyCanvaDocText()" id="copyCanvaBtn" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black transition">نسخ نص المحاضرة لـ Canva</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL 3: INTERACTIVE ARCHITECTURAL SIMULATION LAB (LIGHT THEME) -->
   <div id="labModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
@@ -438,17 +321,14 @@
 
   <section id="course-notes" class="course-notes max-w-7xl mx-auto w-full px-4 py-8 text-sm leading-7 text-slate-800 bg-white border-t border-slate-200">
     <h2 class="text-lg font-black text-slate-900 mb-2">عن هذا المقرر</h2>
-    <p>عشر محاضرات تفاعلية لطلاب العمارة عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، من أسس الراحة الحرارية إلى الأفنية والغلاف والمواد متغيرة الطور والفتحات والتهوية وأنظمة التكييف والنمذجة وإعادة التأهيل وأنظمة التقييم. يمكن تحميل كل محاضرة بصيغة PowerPoint مع صورها ورسومها.</p>
-    <p class="mt-2" dir="ltr" lang="en">Ten interactive lectures in Arabic on thermal comfort and energy efficiency in classrooms. Each lecture can be downloaded as PowerPoint, with its photos and charts.</p>
+    <p>عشر محاضرات تفاعلية لطلاب العمارة عن الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية، من أسس الراحة الحرارية إلى الأفنية والغلاف والمواد متغيرة الطور والفتحات والتهوية وأنظمة التكييف والنمذجة وإعادة التأهيل وأنظمة التقييم.</p>
+    <p class="mt-2" dir="ltr" lang="en">Ten interactive lectures in Arabic on thermal comfort and energy efficiency in classrooms. Each lecture includes building photos and charts.</p>
     <h3 class="font-black text-slate-900 mt-5 mb-1">الرسوم البيانية</h3>
     <p>الرسوم مبنية من الأرقام المذكورة في نص المحاضرات، واسم المصدر مكتوب أسفل كل رسم. الرسوم التي تعتمد على حساب بسيط مكتوب ذلك عليها. والأرقام منقولة كما وردت في المحاضرات، فارجع إلى الدراسة الأصلية قبل الاستشهاد بها.</p>
     <h3 class="font-black text-slate-900 mt-5 mb-1">الصور</h3>
     <p>الصور من Wikimedia Commons بتراخيص حرة. إذا لم تتوفر صورة حرة للمبنى المذكور بقي الرسم التخطيطي مع تنبيه بذلك، وإذا كانت الصورة لجزء آخر من الجامعة ذُكر ذلك تحتها.</p>
     <ul id="photoCredits" class="list-disc pl-5 mt-2" dir="ltr" style="text-align:left"></ul>
   </section>
-
-  <!-- Hidden High-Res Canvas for rendering Light-Theme Architectural Illustrations into the .PPTX files -->
-  <canvas id="pptxRenderCanvas" width="1200" height="675" class="hidden"></canvas>
 
   <script src="media.js"></script>
   <script>
@@ -1175,399 +1055,9 @@
       if (e.key === "ArrowRight") prevSlide();
     });
 
-    // ============================================================================
-    // RENDER LIGHT-THEME ARCHITECTURAL GRAPHIC ON CANVAS FOR NATIVE .PPTX SLIDES
-    // ============================================================================
-    function renderLightSlideGraphicToDataURL(slide, lecMeta) {
-      return mediaCache[`${lecMeta.id}_${slide.num}`] || baseSlideGraphicToDataURL(slide, lecMeta);
-    }
-
-    function baseSlideGraphicToDataURL(slide, lecMeta) {
-      const canvas = document.getElementById("pptxRenderCanvas");
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Light-Theme Crisp White & Mint Surface
-      const grad = ctx.createLinearGradient(0, 0, 1200, 675);
-      grad.addColorStop(0, "#FFFFFF");
-      grad.addColorStop(1, "#F0FDF4");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 1200, 675);
-
-      // Outer Frame Border
-      ctx.strokeStyle = "#10B981";
-      ctx.lineWidth = 5;
-      ctx.strokeRect(12, 12, 1176, 651);
-
-      // Top Header Banner inside Graphic (Light Emerald Tint)
-      ctx.fillStyle = "#ECFDF5";
-      ctx.fillRect(30, 30, 1140, 72);
-      ctx.strokeStyle = "#A7F3D0";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(30, 30, 1140, 72);
-
-      ctx.fillStyle = "#065F46";
-      ctx.font = "bold 26px Cairo, Arial";
-      ctx.textAlign = "right";
-      ctx.fillText(`اللوحة المعمارية (م${lecMeta.id} - ش${slide.num}): ${slide.buildingName.substring(0, 58)}`, 1145, 76);
-
-      // Draw Architectural Building Section & Metrics in Light Theme
-      // Left Box: Architectural Building Elevation & Smart Layers
-      ctx.fillStyle = "#F8FAFC";
-      ctx.fillRect(45, 125, 540, 495);
-      ctx.strokeStyle = "#CBD5E1";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(45, 125, 540, 495);
-
-      // Sun
-      ctx.fillStyle = "#F59E0B";
-      ctx.beginPath();
-      ctx.arc(110, 180, 28, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Rooftop PV Canopy
-      ctx.fillStyle = "#0284C7";
-      ctx.fillRect(180, 165, 360, 20);
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "bold 20px Cairo, Arial";
-      ctx.textAlign = "center";
-      ctx.fillText("Rooftop PV Canopy + Cool Roof (U=0.30)", 360, 152);
-
-      // Building Mass (5 Floors)
-      ctx.fillStyle = "#FFFFFF";
-      ctx.fillRect(195, 195, 330, 360);
-      ctx.strokeStyle = "#334155";
-      ctx.lineWidth = 3;
-      ctx.strokeRect(195, 195, 330, 360);
-
-      // 40mm PCM Layer Strip on Exterior
-      ctx.fillStyle = "#06B6D4";
-      ctx.fillRect(195, 195, 16, 360);
-
-      for (let f = 0; f < 5; f++) {
-        const fy = 208 + f * 68;
-        ctx.fillStyle = f === 1 ? "#ECFDF5" : "#F1F5F9";
-        ctx.fillRect(218, fy, 295, 54);
-        // Windows with 45 deg shading louvers
-        for (let w = 0; w < 4; w++) {
-          ctx.fillStyle = "#BAE6FD";
-          ctx.fillRect(230 + w * 68, fy + 10, 48, 34);
-          ctx.fillStyle = "#D97706";
-          ctx.fillRect(228 + w * 68, fy + 6, 52, 6);
-        }
-      }
-
-      ctx.fillStyle = "#065F46";
-      ctx.font = "bold 20px Cairo, Arial";
-      ctx.fillText(lecMeta.coreEquation.substring(0, 48), 315, 595);
-
-      // Right Side: 3 Quantitative KPI Cards in Light Theme
-      slide.metrics.forEach((m, idx) => {
-        const cy = 125 + idx * 168;
-        ctx.fillStyle = idx === 0 ? "#ECFDF5" : (idx === 1 ? "#FFFBEB" : "#F0F9FF");
-        ctx.fillRect(615, cy, 550, 145);
-        ctx.strokeStyle = idx === 0 ? "#10B981" : (idx === 1 ? "#F59E0B" : "#0284C7");
-        ctx.lineWidth = 3;
-        ctx.strokeRect(615, cy, 550, 145);
-
-        ctx.fillStyle = "#334155";
-        ctx.font = "bold 24px Cairo, Arial";
-        ctx.textAlign = "right";
-        ctx.fillText(m.label, 1135, cy + 52);
-
-        ctx.fillStyle = "#0F172A";
-        ctx.font = "bold 38px Cairo, Arial";
-        ctx.fillText(m.val, 1135, cy + 112);
-      });
-
-      return canvas.toDataURL("image/png");
-    }
-
-    // ============================================================================
-    // BUILD LIGHT-THEME PPTX FOR ANY LECTURE (RETURNS PPTX INSTANCE)
-    // ============================================================================
-    function createLightPptxInstanceForLecture(lecIdx) {
-      const lecMeta = lecturesMeta[lecIdx];
-      const slides = allTenLecturesSlides[lecIdx];
-
-      const pptx = new PptxGenJS();
-      pptx.layout = "LAYOUT_WIDE"; // 16:9 (13.33 x 7.5 inches)
-      pptx.author = "برنامج بكالوريوس الهندسة المعمارية - التصميم البيئي";
-      pptx.company = "كليات الهندسة المعمارية";
-      pptx.subject = lecMeta.fullTitle;
-      pptx.title = `${lecMeta.code}_Light_Theme`;
-      pptx.rtlMode = true;
-
-      slides.forEach((s) => {
-        const slide = pptx.addSlide();
-        // CRISP LIGHT THEME BACKGROUND
-        slide.background = { color: "F8FAFC" };
-
-        // Top Header Bar (Soft Mint/Emerald Light Banner)
-        slide.addShape(pptx.ShapeType.rect, {
-          x: 0, y: 0, w: 13.33, h: 0.65,
-          fill: { color: "ECFDF5" },
-          line: { color: "A7F3D0", width: 1 }
-        });
-
-        slide.addText(`المحاضرة ${lecMeta.id} من 10 | شريحة ${s.num} من 26 — ${s.cat}`, {
-          x: 0.4, y: 0.12, w: 6.5, h: 0.4,
-          fontSize: 12.5, bold: true, color: "065F46", fontFace: "Arial", align: "left"
-        });
-
-        slide.addText("بكالوريوس الهندسة المعمارية | الراحة الحرارية وكفاءة الطاقة (Light Theme)", {
-          x: 6.8, y: 0.12, w: 6.1, h: 0.4,
-          fontSize: 12.5, bold: true, color: "B45309", fontFace: "Arial", align: "right", rtlMode: true
-        });
-
-        // Slide Title & Subtitle (Dark Slate Text on Light Background)
-        slide.addText(s.title, {
-          x: 0.5, y: 0.78, w: 12.33, h: 0.62,
-          fontSize: 21, bold: true, color: "0F172A", fontFace: "Arial", align: "right", rtlMode: true
-        });
-
-        slide.addText(s.subtitle, {
-          x: 0.5, y: 1.4, w: 12.33, h: 0.38,
-          fontSize: 13.5, bold: true, color: "047857", fontFace: "Arial", align: "right", rtlMode: true
-        });
-
-        // Key Metrics Cards Row (Crisp White Cards with Emerald/Amber Borders)
-        s.metrics.forEach((m, idx) => {
-          const cardW = 3.85;
-          const cardX = 12.83 - (idx + 1) * (cardW + 0.22);
-          slide.addShape(pptx.ShapeType.roundRect, {
-            x: Math.max(0.5, cardX), y: 1.9, w: cardW, h: 0.92,
-            fill: { color: "FFFFFF" },
-            line: { color: "10B981", width: 1.5 }
-          });
-          slide.addText(`${m.label}: ${m.val}`, {
-            x: Math.max(0.5, cardX), y: 2.05, w: cardW, h: 0.62,
-            fontSize: 13.5, bold: true, color: "0F172A", fontFace: "Arial", align: "center", rtlMode: true
-          });
-        });
-
-        // Right Column: Bullets Box (White Card with Dark Slate Text)
-        slide.addShape(pptx.ShapeType.roundRect, {
-          x: 6.7, y: 3.02, w: 6.13, h: 3.75,
-          fill: { color: "FFFFFF" },
-          line: { color: "CBD5E1", width: 1.5 }
-        });
-
-        const bulletTextObjs = s.bullets.map((b, i) => ({
-          text: `${i + 1}. ${b}\n\n`,
-          options: { fontSize: 13.5, color: "1E293B", bold: false, breakLine: true }
-        }));
-
-        slide.addText(bulletTextObjs, {
-          x: 6.85, y: 3.18, w: 5.8, h: 3.45,
-          fontFace: "Arial", align: "right", valign: "top", rtlMode: true
-        });
-
-        // Left Column: High-Res Light-Theme Architectural Diagram PNG
-        const imgDataUrl = renderLightSlideGraphicToDataURL(s, lecMeta);
-        slide.addImage({
-          data: imgDataUrl,
-          x: 0.5, y: 3.02, w: 5.95, h: 3.75
-        });
-
-        // Bottom Footer Bar (Light Slate)
-        slide.addShape(pptx.ShapeType.rect, {
-          x: 0, y: 6.95, w: 13.33, h: 0.55,
-          fill: { color: "E2E8F0" }
-        });
-        slide.addText(`المبنى/النموذج: ${s.buildingName}  |  حركة Canva: ${s.canvaAnim}`, {
-          x: 0.5, y: 7.05, w: 12.33, h: 0.35,
-          fontSize: 11, bold: true, color: "334155", fontFace: "Arial", align: "right", rtlMode: true
-        });
-
-        slide.addNotes(`ملاحظات المحاضر (المحاضرة ${lecMeta.id} - شريحة ${s.num}): ${s.notes}\nإعدادات التحريك في Canva: ${s.canvaAnim}`);
-      });
-
-      return { pptx, fileName: `${lecMeta.code}_Light_Canva.pptx` };
-    }
-
-    // Generate Single Lecture PPTX
-    async function generateSingleLecturePPTX(targetIndex = currentLectureIndex) {
-      const btnText = document.getElementById("pptxSingleBtnText");
-      const orig = btnText.textContent;
-      btnText.textContent = "جاري بناء الـ PPTX الفاتح...";
-
-      try {
-        await prepareLectureMedia(targetIndex);
-        const { pptx, fileName } = createLightPptxInstanceForLecture(targetIndex);
-        await pptx.writeFile({ fileName });
-        btnText.textContent = "✅ تم التحميل!";
-        setTimeout(() => { btnText.textContent = orig; }, 2500);
-      } catch (e) {
-        console.error(e);
-        btnText.textContent = orig;
-      }
-    }
-
-    // ============================================================================
-    // BATCH GENERATE ALL 10 LECTURES PPTX & SAVE TO GOOGLE DRIVE FOLDER
-    // ============================================================================
-    function renderTenLecturesModalGrid() {
-      const grid = document.getElementById("tenLecturesGrid");
-      grid.innerHTML = lecturesMeta.map((m, idx) => `
-        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 hover:border-emerald-400 transition">
-          <div class="space-y-0.5">
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-black text-[11px]">محاضرة ${m.id}</span>
-              <span class="text-xs font-black text-slate-900">${m.shortTitle.replace(`المحاضرة ${m.id}: `, '')}</span>
-            </div>
-            <p class="text-[11px] text-slate-600 truncate max-w-xs">${m.caseStudies[0].name}</p>
-          </div>
-          <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick="switchLecture(${idx}); closeModal('batchDriveModal');" class="px-2.5 py-1.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold text-[11px]">معاينة (26 ش)</button>
-            <button onclick="generateSingleLecturePPTX(${idx})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] flex items-center gap-1">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>.PPTX</span>
-            </button>
-          </div>
-        </div>
-      `).join('');
-      lucide.createIcons();
-    }
-
-    // Save all 10 PPTX files directly into a selected Local / Google Drive Desktop Folder or Browser Downloads
-    async function saveAll10ToLocalDriveFolder() {
-      const progBox = document.getElementById("batchProgressBox");
-      const statusTxt = document.getElementById("batchStatusText");
-      const pctTxt = document.getElementById("batchPercentText");
-      const barFill = document.getElementById("batchProgressFill");
-      progBox.classList.remove("hidden");
-
-      let dirHandle = null;
-      if ('showDirectoryPicker' in window) {
-        try {
-          dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-        } catch (err) {
-          dirHandle = null; // Fallback to standard browser downloads if user cancels picker or iframe blocks it
-        }
-      }
-
-      for (let i = 0; i < lecturesMeta.length; i++) {
-        const pct = Math.round(((i + 1) / lecturesMeta.length) * 100);
-        statusTxt.textContent = `جاري بناء وحفظ المحاضرة (${i + 1} من 10): ${lecturesMeta[i].shortTitle}...`;
-        pctTxt.textContent = `${pct}%`;
-        barFill.style.width = `${pct}%`;
-
-        await prepareLectureMedia(i);
-        const { pptx, fileName } = createLightPptxInstanceForLecture(i);
-        if (dirHandle) {
-          const blob = await pptx.write({ outputType: "blob" });
-          const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
-          const writable = await fileHandle.createWritable();
-          await writable.write(blob);
-          await writable.close();
-        } else {
-          await pptx.writeFile({ fileName });
-        }
-        await new Promise(r => setTimeout(r, 350));
-      }
-
-      statusTxt.textContent = "✅ تم توليد وحفظ جميع المحاضرات العشر (10 ملفات .PPTX بالوضع الفاتح - 260 شريحة) بنجاح!";
-    }
-
-    // Generate Single Unified Master Course PPTX (All 260 Slides in One File)
-    async function generateMasterCoursePPTX() {
-      const progBox = document.getElementById("batchProgressBox");
-      const statusTxt = document.getElementById("batchStatusText");
-      const pctTxt = document.getElementById("batchPercentText");
-      const barFill = document.getElementById("batchProgressFill");
-      progBox.classList.remove("hidden");
-
-      const masterPptx = new PptxGenJS();
-      masterPptx.layout = "LAYOUT_WIDE";
-      masterPptx.rtlMode = true;
-      masterPptx.title = "Complete_10_Lectures_Thermal_Comfort_Course_260_Slides_Light";
-
-      for (let l = 0; l < lecturesMeta.length; l++) {
-        await prepareLectureMedia(l);
-        const lecMeta = lecturesMeta[l];
-        const slides = allTenLecturesSlides[l];
-        const pct = Math.round(((l + 1) / lecturesMeta.length) * 100);
-        statusTxt.textContent = `جاري دمج المحاضرة (${l + 1} من 10) في الملف الموحد...`;
-        pctTxt.textContent = `${pct}%`;
-        barFill.style.width = `${pct}%`;
-
-        slides.forEach((s) => {
-          const slide = masterPptx.addSlide();
-          slide.background = { color: "F8FAFC" };
-          slide.addShape(masterPptx.ShapeType.rect, { x: 0, y: 0, w: 13.33, h: 0.65, fill: { color: "ECFDF5" } });
-          slide.addText(`المحاضرة ${lecMeta.id} | شريحة ${s.num}/26 — ${s.cat}`, { x: 0.4, y: 0.12, w: 6.5, h: 0.4, fontSize: 12, bold: true, color: "065F46", fontFace: "Arial" });
-          slide.addText(s.title, { x: 0.5, y: 0.8, w: 12.33, h: 0.6, fontSize: 20, bold: true, color: "0F172A", fontFace: "Arial", align: "right", rtlMode: true });
-          slide.addText(s.subtitle, { x: 0.5, y: 1.4, w: 12.33, h: 0.38, fontSize: 13, bold: true, color: "047857", fontFace: "Arial", align: "right", rtlMode: true });
-
-          const bulletTextObjs = s.bullets.map((b, idx) => ({
-            text: `${idx + 1}. ${b}\n\n`,
-            options: { fontSize: 13, color: "1E293B", breakLine: true }
-          }));
-          slide.addShape(masterPptx.ShapeType.roundRect, { x: 6.7, y: 2.1, w: 6.13, h: 4.6, fill: { color: "FFFFFF" }, line: { color: "CBD5E1", width: 1.5 } });
-          slide.addText(bulletTextObjs, { x: 6.85, y: 2.25, w: 5.8, h: 4.3, fontFace: "Arial", align: "right", valign: "top", rtlMode: true });
-
-          const imgDataUrl = renderLightSlideGraphicToDataURL(s, lecMeta);
-          slide.addImage({ data: imgDataUrl, x: 0.5, y: 2.1, w: 5.95, h: 4.6 });
-        });
-        await new Promise(r => setTimeout(r, 120));
-      }
-
-      await masterPptx.writeFile({ fileName: "Master_Course_Lectures_01_to_10_Light_Canva_260_Slides.pptx" });
-      statusTxt.textContent = "✅ تم تحميل الملف الموحد للمحاضرات العشر (260 شريحة بالوضع الفاتح) بنجاح!";
-    }
-
-    // ============================================================================
-    // @CANVA BULK CREATE CSV & DOCS TO DECK EXPORTERS (ALL 10 LECTURES OR SINGLE)
-    // ============================================================================
-    function downloadCanvaCSV(allLectures = false) {
-      const headers = ["Lecture_Num", "Slide_Number", "Category", "Title", "Subtitle", "Building_Case_Study", "Key_Points", "Canva_Animation"];
-      const rows = [];
-
-      const indices = allLectures ? lecturesMeta.map((_, i) => i) : [currentLectureIndex];
-      indices.forEach(lIdx => {
-        const lNum = lecturesMeta[lIdx].id;
-        allTenLecturesSlides[lIdx].forEach(s => {
-          rows.push([
-            lNum,
-            s.num,
-            `"${s.cat}"`,
-            `"${s.title.replace(/"/g, '""')}"`,
-            `"${s.subtitle.replace(/"/g, '""')}"`,
-            `"${s.buildingName.replace(/"/g, '""')}"`,
-            `"${s.bullets.join(' | ').replace(/"/g, '""')}"`,
-            `"${s.canvaAnim.replace(/"/g, '""')}"`
-          ]);
-        });
-      });
-
-      const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = allLectures ? "Canva_Bulk_All_10_Lectures_260_Slides.csv" : `Canva_Bulk_Lecture_${lecturesMeta[currentLectureIndex].id}.csv`;
-      a.click();
-    }
-
-    function copyCanvaDocText() {
-      const currentDeck = allTenLecturesSlides[currentLectureIndex];
-      const docText = currentDeck.map(s =>
-        `# شريحة ${s.num}: ${s.title}\n## ${s.subtitle}\n* **المبنى / اللوحة:** ${s.buildingName}\n` +
-        s.bullets.map(b => `* ${b}`).join("\n") +
-        `\n* **حركة Canva:** ${s.canvaAnim}\n`
-      ).join("\n---\n\n");
-
-      navigator.clipboard.writeText(docText);
-      const btn = document.getElementById("copyCanvaBtn");
-      btn.textContent = "✅ تم النسخ! الصقه في Canva Doc";
-      setTimeout(() => { btn.textContent = "نسخ نص المحاضرة لـ Canva"; }, 2500);
-    }
-
     // Lab Modal Logic
     function openModal(id) {
       document.getElementById(id).classList.remove("hidden");
-      if (id === 'batchDriveModal') renderTenLecturesModalGrid();
       if (id === 'labModal') updateNZEBCalc();
     }
     function closeModal(id) {

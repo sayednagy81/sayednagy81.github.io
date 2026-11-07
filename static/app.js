@@ -138,7 +138,7 @@
     if (!index) return;
     var l = lang(), words = normalize(ssQ.value.trim()).split(/\s+/).filter(Boolean);
     if (!words.length) {
-      hits = index.items.filter(function (it) { return it.k === "page" || it.k === "tool"; });
+      hits = index.items.filter(function (it) { return it.k === "page" || it.k === "tool" || it.k === "course"; });
     } else {
       hits = index.items.map(function (it) {
         var title = normalize(it.en + " " + it.ar), score = 0;

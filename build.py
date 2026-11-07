@@ -47,6 +47,7 @@ UI = {
     "search_ph": ("Search papers, videos, articles…", "ابحث في الأبحاث والفيديوهات والمقالات…"),
     "search_hint": ("↑↓ to move · Enter to open · Esc to close", "↑↓ للتنقل · Enter للفتح · Esc للإغلاق"),
     "tools": ("Tools", "أدوات"),
+    "courses": ("Courses", "المقررات"),
     "quiz": ("Test yourself", "اختبر نفسك"),
     "questions": ("questions", "أسئلة"),
     "quiz_lead": ("Lessons with a quiz button have a short test built from the video, with the answer explained after each question.",
@@ -560,7 +561,7 @@ def cite_block(p, base):
 
 # ---------- page shell ----------
 PAGES = [("home", ""), ("about", "about/"), ("publications", "publications/"), ("videos", "videos/"),
-         ("articles", "articles/"), ("tools", "tools/"), ("contact", "contact/")]
+         ("articles", "articles/"), ("courses", "courses/"), ("tools", "tools/"), ("contact", "contact/")]
 NAV = list(PAGES)  # main() drops Videos/Articles when they are not configured
 
 
@@ -702,12 +703,13 @@ def write_page(rel, html_text):
     (d / "index.html").write_text(html_text, encoding="utf-8")
 
 
+COURSE_TITLE = {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"}
+
+
 def home_tools():
     if "tools" not in [k for k, _ in NAV]:
         return ""
-    cards = [("courses/thermal-comfort/", "10", "#047857", {"en": "Thermal comfort course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
-              {"en": "Ten interactive lectures with building photos and charts", "ar": "عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية"}),
-             ("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
+    cards = [("tools/u-value/", "U", "#2c6a96", {"en": "Wall U-value calculator", "ar": "حاسبة معامل U والعزل الحراري"},
               {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
              ("tools/sun-path/", "☀", "#a35a10", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
               {"en": "Solar angles and shadow length for any place and time", "ar": "زوايا الشمس وطول الظل لأي مكان ووقت"}),
@@ -715,7 +717,10 @@ def home_tools():
               {"en": "Risers, treads, flights and a scaled section", "ar": "القوائم والنوائم والقلبات وقطاع بمقياس رسم"})]
     items = "".join(f'<a class="card pcard" href="{h}"><span class="pbadge" style="background:{c}">{s}</span>'
                     f'<span><b>{bi(t)}</b><small>{bi(d)}</small></span></a>' for h, s, c, t, d in cards)
-    return f'<section class="wrap"><h2>{bi({"en": "Free tools for students", "ar": "أدوات مجانية للطلاب"})}</h2><div class="pgrid">{items}</div></section>'
+    course = ('<a class="card pcard" href="courses/thermal-comfort/"><span class="pbadge" style="background:#047857">10</span>'
+              f'<span><b>{bi(COURSE_TITLE)}</b><small>{bi({"en": "Ten interactive lectures with building photos and charts", "ar": "عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية"})}</small></span></a>')
+    return (f'<section class="wrap"><h2>{ui("courses")}</h2><div class="pgrid">{course}</div></section>'
+            f'<section class="wrap"><h2>{bi({"en": "Free tools for students", "ar": "أدوات مجانية للطلاب"})}</h2><div class="pgrid">{items}</div></section>')
 
 
 def build_pages(profile, papers, cards):
@@ -831,7 +836,7 @@ def build_pages(profile, papers, cards):
 </main>'''
     write_page("contact", layout(profile, f'{ui_en("contact")} | {name_en}', desc, contact, "../", site + "/contact/", ld, image, "contact"))
 
-    return [site + "/" + path for key, path in NAV if key not in ("videos", "articles", "tools")]
+    return [site + "/" + path for key, path in NAV if key not in ("videos", "articles", "tools", "courses")]
 
 
 def ui_en(key):
@@ -1607,12 +1612,7 @@ def build_tools(profile):
     table = ('<span class="tool-art tool-table" aria-hidden="true">' + "".join("<i></i>" for _ in range(12)) + '</span>')
     sun = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M8 74 A42 42 0 0 1 92 74"/>'
            '<circle cx="68" cy="42" r="9"/><path d="M6 80H94" class="ta-floor"/></svg></span>')
-    course = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 18H86V70H14Z"/><path d="M26 58V44M42 58V34M58 58V48M74 58V28"/>'
-              '<path d="M50 70V84M34 84H66" class="ta-floor"/></svg></span>')
     tools = [
-        ("../courses/thermal-comfort/", course, {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
-         {"en": "Ten interactive Arabic lectures on classrooms, with building photos, charts and PowerPoint download.",
-          "ar": "عشر محاضرات تفاعلية عن القاعات التعليمية، مع صور المباني ورسوم بيانية وتحميل بصيغة PowerPoint."}),
         ("sun-path/", sun, {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
          {"en": "Solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram.",
           "ar": "ارتفاع الشمس وسمتها وطول الظل واتجاهه لأي مكان ووقت، مع مخطط في المسقط."}),
@@ -1650,13 +1650,43 @@ def build_tools(profile):
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
     write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", site + "/courses/thermal-comfort/", p_url, s_url, u_url]
+    return [site + "/tools/", p_url, s_url, u_url]
+
+
+def build_courses(profile):
+    """Courses index. Each course page lives in root/courses/<slug>/ and is copied to dist as it is."""
+    if "courses" not in [k for k, _ in NAV]:
+        return []
+    site = profile.get("site_url", "").rstrip("/")
+    name_en = pick(profile["name"], "en")
+    lead = {"en": "Interactive courses for architecture students.",
+            "ar": "مقررات تفاعلية لطلاب العمارة."}
+    course = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M14 18H86V70H14Z"/><path d="M26 58V44M42 58V34M58 58V48M74 58V28"/>'
+              '<path d="M50 70V84M34 84H66" class="ta-floor"/></svg></span>')
+    desc_c = {"en": "Ten interactive Arabic lectures on classrooms, with building photos and charts.",
+              "ar": "عشر محاضرات تفاعلية عن القاعات التعليمية، مع صور المباني ورسوم بيانية."}
+    body = f"""
+{page_hero("courses")}
+<section class="wrap"><p class="lead">{bi(lead)}</p>
+<div class="tool-grid"><a class="card tool-card" href="thermal-comfort/">{course}<span><b>{bi(COURSE_TITLE)}</b><small>{bi(desc_c)}</small>
+<span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a></div></section>"""
+    url = site + "/courses/thermal-comfort/"
+    ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Courses for architecture students",
+          "itemListElement": [{"@type": "ListItem", "position": 1, "url": url, "name": COURSE_TITLE["en"]}]}
+    head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
+    desc = ("Interactive courses for architecture students: thermal comfort and energy efficiency in classrooms. | "
+            "مقررات تفاعلية لطلاب العمارة: الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية.")
+    kws = ["architecture courses", "thermal comfort course", "energy efficiency", "architecture lectures",
+           "مقررات العمارة", "محاضرات عمارة", "الراحة الحرارية", "كفاءة الطاقة", "طلاب العمارة"]
+    write_page("courses", layout(profile, f"Courses for Architecture Students | {name_en}", desc, body, "../",
+                                 site + "/courses/", head, "", "courses", kws))
+    return [site + "/courses/", url]
 
 
 def write_search_index(profile, papers):
     """dist/search.json: one small entry per page, paper, video, article and tool for the Ctrl+K search box."""
     kinds = {"page": ("Page", "صفحة"), "paper": ("Paper", "بحث"), "video": ("Video", "فيديو"),
-             "article": ("Article", "مقال"), "tool": ("Tool", "أداة")}
+             "article": ("Article", "مقال"), "tool": ("Tool", "أداة"), "course": ("Course", "مقرر")}
     items = []
 
     def add(kind, url, title, extra, sub=""):
@@ -1679,7 +1709,7 @@ def write_search_index(profile, papers):
     for a in ARTICLES:
         add("article", f'articles/{a["slug"]}/', a["title"], [a["text"][:1500]] + a["tags"], a["date"])
     if "tools" in [k for k, _ in NAV]:
-        add("tool", "courses/thermal-comfort/", {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"},
+        add("course", "courses/thermal-comfort/", COURSE_TITLE,
             ["thermal comfort", "energy efficiency", "classrooms", "lectures", "PMV", "IEQ", "PCM", "BIM", "nZEB", "الراحة الحرارية",
              "كفاءة الطاقة", "محاضرات", "القاعات التعليمية", "التهوية", "العزل", "الأفنية"])
         add("tool", "tools/sun-path/", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
@@ -1822,6 +1852,7 @@ def main():
     urls += [build_paper(profile, p, p["id"] in cards) for p in papers]
 
     urls += build_tools(profile)
+    urls += build_courses(profile)
     write_search_index(profile, papers)
 
     site = profile.get("site_url", "").rstrip("/")
