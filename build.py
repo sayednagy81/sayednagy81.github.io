@@ -713,6 +713,8 @@ def home_tools():
               {"en": "Thermal insulation of walls, with a materials table", "ar": "العزل الحراري للحوائط مع جدول خصائص المواد"}),
              ("tools/sun-path/", "☀", "#a35a10", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
               {"en": "Solar angles and shadow length for any place and time", "ar": "زوايا الشمس وطول الظل لأي مكان ووقت"}),
+             ("tools/waffle-slab/", "▦", "#00627c", {"en": "Waffle Slab Calculator", "ar": "حاسبة البلاطة الوافل"},
+              {"en": "Mould layout, concrete quantities, plan and sections", "ar": "توزيع القوالب وحصر الخرسانة وعرض المسقط والقطاعات"}),
              ("tools/paneled-beam/", "#", "#2f5d50", {"en": "Paneled beam calculator", "ar": "حاسبة الكمرات المتقاطعة"},
               {"en": "Beam grid, slab, loads and perimeter columns", "ar": "شبكة الكمرات والبلاطة والأحمال والأعمدة المحيطية"}),
              ("tools/stairs/", "≡", "#a8822f", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
@@ -1607,6 +1609,7 @@ def build_tools(profile):
     u_url = build_uvalue_page(profile, mats)
     s_url = build_stairs_page(profile)
     pb_url = site + "/tools/paneled-beam/Paneled_Beam_Calculator_EN.html"  # static pages in root/tools/paneled-beam/
+    wf_url = site + "/tools/waffle-slab/Waffle_Slab_Calculator_EN.html"  # written by tools/make_waffle_pages.py
     p_url = build_sunpath_page(profile)
     wall = ('<span class="tool-art tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#b5583a;flex:12"></i>'
             '<i style="background:#9cc7e8;flex:5"></i><i style="background:#b5583a;flex:12"></i><i style="background:#cfc8bb;flex:2"></i></span>')
@@ -1617,6 +1620,9 @@ def build_tools(profile):
            '<circle cx="68" cy="42" r="9"/><path d="M6 80H94" class="ta-floor"/></svg></span>')
     beams = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M12 12H88V88H12Z"/>'
              '<path d="M31 12V88M50 12V88M69 12V88M12 31H88M12 50H88M12 69H88" style="stroke-width:1.6"/></svg></span>')
+    waffle = ('<span class="tool-art" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M12 12H88V88H12Z"/>'
+              + "".join(f'<path d="M{20 + i * 18} {20 + j * 18}h12v12h-12Z" style="stroke-width:1.6"/>' for i in range(4) for j in range(4))
+              + '</svg></span>')
     tools = [
         ("sun-path/", sun, {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
          {"en": "Solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram.",
@@ -1624,6 +1630,9 @@ def build_tools(profile):
         ("paneled-beam/", beams, {"en": "Paneled beam (crossed beam) calculator", "ar": "حاسبة الكمرات المتقاطعة Paneled Beam"},
          {"en": "Beam grid, slab and beam depths, loads, perimeter column sections, a plan and two movable sections.",
           "ar": "شبكة الكمرات وسمك البلاطة وأعماق الكمرات والأحمال وقطاعات الأعمدة المحيطية، مع مسقط وقطاعين متحركين."}),
+        ("waffle-slab/", waffle, {"en": "Waffle Slab Calculator", "ar": "حاسبة البلاطة الوافل"},
+         {"en": "Mould layout, concrete quantities, plan and sections.",
+          "ar": "توزيع القوالب وحصر الخرسانة وعرض المسقط والقطاعات."}),
         ("stairs/", stair, {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
          {"en": "Number of risers, riser and tread, 2R + T check, pitch, plan length with the landing and a scaled section.",
           "ar": "عدد القوائم، والقائمة والنائمة، وفحص 2ق + ن، وزاوية الميل، وطول السلم مع البسطة، وقطاع بمقياس رسم."}),
@@ -1647,18 +1656,18 @@ def build_tools(profile):
     author = {"@type": "Person", "name": name_en, "url": site + "/"}
     ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Free tools for architecture students",
           "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": u, "name": n} for i, (u, n) in enumerate(
-              [(p_url, "Sun path and shadow calculator"), (pb_url, "Paneled beam calculator"), (s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
+              [(p_url, "Sun path and shadow calculator"), (pb_url, "Paneled beam calculator"), (wf_url, "Waffle slab calculator"), (s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
                (u_url + "#materials", "Thermal properties of building materials")])], "author": author}
     head = redirect + f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
-    desc = ("Free sun path, paneled beam, stair design and wall U-value calculators for architecture students, with a table of the thermal "
+    desc = ("Free sun path, paneled beam, waffle slab, stair design and wall U-value calculators for architecture students, with a table of the thermal "
             "properties of building materials. | حاسبات مسار الشمس وتصميم السلالم والعزل الحراري ومعامل U، وجدول خصائص مواد البناء.")
     kws = ["sun path calculator", "shadow calculator", "حاسبة مسار الشمس", "stair design calculator", "staircase riser tread", "U-value calculator", "wall thermal insulation",
            "thermal conductivity of building materials", "building materials Egypt", "architecture students",
            "حاسبة تصميم السلالم", "القائمة والنائمة", "حساب معامل U", "العزل الحراري للحوائط", "معامل التوصيل الحراري",
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
-    write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Paneled Beam, Stair & U-value Calculators | {name_en}', desc,
+    write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Paneled Beam, Waffle Slab, Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", p_url, pb_url, pb_url.replace("_EN.html", "_AR.html"), s_url, u_url]
+    return [site + "/tools/", p_url, pb_url, pb_url.replace("_EN.html", "_AR.html"), wf_url, wf_url.replace("_EN.html", "_AR.html"), s_url, u_url]
 
 
 def build_courses(profile):
@@ -1726,6 +1735,9 @@ def write_search_index(profile, papers):
         add("tool", "tools/paneled-beam/Paneled_Beam_Calculator_EN.html", {"en": "Paneled beam (crossed beam) calculator", "ar": "حاسبة الكمرات المتقاطعة Paneled Beam"},
             ["paneled beam", "crossed beam", "grid slab", "beam grid", "slab thickness", "beam depth", "column sizing", "perimeter columns",
              "كمرات متقاطعة", "بلاطة", "شبكة الكمرات", "سمك البلاطة", "عمق الكمرة", "قطاع العمود", "أعمدة", "قاعة"])
+        add("tool", "tools/waffle-slab/Waffle_Slab_Calculator_EN.html", {"en": "Waffle Slab Calculator", "ar": "حاسبة البلاطة الوافل"},
+            ["waffle slab", "waffle mould", "ribbed slab", "two-way joist", "concrete quantities", "takeoff", "slab section",
+             "بلاطة وافل", "قوالب", "حصر الخرسانة", "كميات الخرسانة", "عصب", "بلاطة معصبة"])
         add("tool", "tools/stairs/", {"en": "Stair design calculator", "ar": "حاسبة تصميم السلالم"},
             ["stairs", "staircase", "riser", "tread", "سلم", "سلالم", "درج", "قائمة", "نائمة", "بسطة"])
         add("tool", "tools/u-value/", {"en": "Wall U-value calculator", "ar": "حاسبة العزل الحراري للحائط (معامل U)"},

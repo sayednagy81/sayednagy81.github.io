@@ -33,7 +33,7 @@ def main(out):
 
     sections = []
     pages = [("الرئيسية", "/"), ("نبذة", "/about/"), ("المنشورات", "/publications/"), ("الفيديو", "/videos/"),
-             ("المقالات", "/articles/"), ("أدوات (فهرس)", "/tools/"), ("المقررات (فهرس)", "/courses/"), ("مقرر الراحة الحرارية وكفاءة الطاقة", "/courses/thermal-comfort/"), ("أدوات: حاسبة مسار الشمس والظلال", "/tools/sun-path/"),("أدوات: حاسبة الكمرات المتقاطعة (عربي)", "/tools/paneled-beam/Paneled_Beam_Calculator_AR.html"), ("أدوات: حاسبة الكمرات المتقاطعة (English)", "/tools/paneled-beam/Paneled_Beam_Calculator_EN.html"),("أدوات: حاسبة تصميم السلالم", "/tools/stairs/"),
+             ("المقالات", "/articles/"), ("أدوات (فهرس)", "/tools/"), ("المقررات (فهرس)", "/courses/"), ("مقرر الراحة الحرارية وكفاءة الطاقة", "/courses/thermal-comfort/"), ("أدوات: حاسبة مسار الشمس والظلال", "/tools/sun-path/"),("أدوات: حاسبة الكمرات المتقاطعة (عربي)", "/tools/paneled-beam/Paneled_Beam_Calculator_AR.html"), ("أدوات: حاسبة الكمرات المتقاطعة (English)", "/tools/paneled-beam/Paneled_Beam_Calculator_EN.html"),("أدوات: حاسبة البلاطة الوافل (عربي)", "/tools/waffle-slab/Waffle_Slab_Calculator_AR.html"), ("أدوات: حاسبة البلاطة الوافل (English)", "/tools/waffle-slab/Waffle_Slab_Calculator_EN.html"),("أدوات: حاسبة تصميم السلالم", "/tools/stairs/"),
              ("أدوات: حاسبة العزل الحراري (معامل U)", "/tools/u-value/"), ("أدوات: جدول خصائص مواد البناء", "/tools/u-value/#materials"),
              ("صورة مشاركة حاسبة معامل U", "/cards/u-value.png"), ("صورة مشاركة حاسبة السلالم", "/cards/stairs.png"), ("تواصل", "/contact/"),
              ("خريطة الموقع sitemap.xml", "/sitemap.xml"), ("فهرس البحث search.json", "/search.json")]

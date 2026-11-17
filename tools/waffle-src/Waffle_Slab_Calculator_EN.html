@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waffle Slab Calculator</title>
+<style>
+:root{color-scheme:light;--ink:#163145;--muted:#486477;--paper:#fff;--bg:#edf3f6;--line:#c9d9e2;--deep:#103247;--blue:#00627c;--void:#a8dcec;--slate:#567588;font-family:Tahoma,Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65}header{background:var(--deep);color:#fff}header p{color:#d1e5ee;margin:0}h1{font-size:clamp(1.6rem,3vw,2.5rem);margin:.18em 0}h2,h3,p{margin:0 0 .55rem}h2{font-size:1.25rem}h3{font-size:1.05rem}.wrap{max-width:1320px;margin:auto;padding:1.35rem clamp(.85rem,3vw,2.35rem)}.mast{display:flex;align-items:center;justify-content:space-between;gap:1rem}.lang{border:1px solid #86acbf;border-radius:.6rem;color:white;text-decoration:none;padding:.35rem .8rem;white-space:nowrap}.lang:hover{background:#275468}main{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:1rem;align-items:start}.card{background:var(--paper);border:1px solid var(--line);border-radius:1rem;padding:1rem;box-shadow:0 2px 10px #16314509}.stack{display:grid;gap:1rem;min-width:0}fieldset{margin:0 0 .85rem;border:0;border-top:1px solid var(--line);padding:.55rem 0 0;min-width:0}legend{font-weight:bold;padding-inline-end:.55rem}label{display:block;font-size:.9rem;font-weight:bold}input,select,button{font:inherit}input,select{width:100%;border:1px solid #aabfcb;border-radius:.45rem;background:white;color:var(--ink);padding:.4rem .55rem;margin-top:.15rem}input{direction:ltr;text-align:start}input:disabled{background:#eef3f5;color:#3c596c;opacity:1}button{background:white;color:var(--blue);border:1px solid #9cbac8;border-radius:.5rem;padding:.36rem .7rem;cursor:pointer}button:hover{background:#e6f3f7}button:disabled{opacity:.45;cursor:default}button.primary{background:var(--blue);color:white;border-color:var(--blue)}:focus-visible{outline:3px solid #e19d38;outline-offset:2px}.row,.viewrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.55rem}.space{margin-top:.55rem}.hint{font-size:.83rem;color:var(--muted);line-height:1.5}.buttons,.toolbar,.legend{display:flex;flex-wrap:wrap;align-items:center;gap:.55rem}.toolbar{justify-content:space-between}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem}.metric{background:#eef5f7;border-radius:.6rem;padding:.65rem}.metric small{display:block;min-height:2.4em;color:var(--muted);line-height:1.35}.metric strong{font-size:1.15rem;display:block;text-align:start}.viewrow{grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.65rem}.drawing{border:1px solid var(--line);border-radius:.7rem;overflow:hidden;min-width:0;background:#f8fbfc}.drawing h3{padding:.6rem .65rem 0}.drawing canvas{display:block;width:100%;height:285px}.drawing .hint{padding:0 .65rem .55rem;margin:0}.legend{font-size:.83rem;margin-top:.55rem}.swatch{display:inline-block;width:14px;height:14px;vertical-align:middle;margin-inline-end:.2rem;border:1px solid #547382;border-radius:3px}.void{background:var(--void)}.solid{background:var(--slate)}.line{background:#e28b37}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:.91rem}th,td{padding:.4rem .55rem;border-bottom:1px solid var(--line);text-align:start}th{font-weight:normal}td{font-variant-numeric:tabular-nums}.cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem}summary{font-weight:bold;cursor:pointer}@media(max-width:950px){.viewrow{grid-template-columns:1fr}.drawing canvas{height:255px}}@media(max-width:690px){main,.cols{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}@media print{body{background:white}header{background:white;color:black}header p{color:#333}.wrap{padding:.4rem}main{display:block}.stack{display:block}.card{break-inside:avoid;box-shadow:none;margin-bottom:.5rem}.viewrow{grid-template-columns:1fr 1fr}.drawing canvas{height:240px}.hide-print{display:none!important}*{print-color-adjust:exact}}
+#error,#notice{padding:.65rem .8rem;border-radius:.5rem;margin:.55rem 0}#error{background:#fdeae5;color:#882e1b}#notice{background:#fff1d4;color:#694804}[hidden]{display:none!important}
+.drawing svg{display:block;width:100%;height:auto;aspect-ratio:420/300}.drawing svg text{font-family:Tahoma,Arial,sans-serif}.support{background:#f4c671}
+button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:white}td[dir=ltr],th[dir=ltr]{unicode-bidi:isolate}#supportHead th,#supportHead td{font-weight:bold}
+</style>
+</head>
+<body>
+<header><div class="wrap mast"><div><h1>Waffle Slab Calculator</h1><p>Mould layout, concrete quantities and preliminary gravity loads.</p></div><a class="lang hide-print" href="Waffle_Slab_Calculator_AR.html" lang="ar" hreflang="ar">العربية</a></div></header>
+<main class="wrap">
+<form class="card" id="form" novalidate>
+  <h2>Calculator inputs</h2>
+  <fieldset><legend>Slab dimensions</legend>
+    <div class="row"><label>Length X (m)<input id="length" type="number" step="any" min="0.01" value="12" required></label><label>Width Y (m)<input id="width" type="number" step="any" min="0.01" value="10" required></label></div>
+    <div class="row space"><label>Minimum edge band (cm)<input id="edge" type="number" min="0" step="any" value="20" required></label><label>Topping thickness (cm)<input id="topping" type="number" min="0.1" step="any" value="8" required></label></div>
+    <p class="hint space">Enter overall slab dimensions. Unused length is distributed equally at both ends of each axis.</p>
+  </fieldset>
+  <fieldset><legend>Mould and rib geometry</legend>
+    <label>Mould preset (base dimensions × depth)<select id="preset"><option value="60">60 × 60 × 20 cm</option><option value="75">75 × 75 × 25 cm</option><option value="90" selected>90 × 90 × 45 cm</option><option value="10550">105 × 105 × 50 cm</option><option value="10560">105 × 105 × 60 cm</option><option value="custom">Custom</option></select></label>
+    <div class="row space"><label>Mould base X (cm)<input id="baseX" type="number" min="0.1" step="any" value="90" disabled></label><label>Mould base Y (cm)<input id="baseY" type="number" min="0.1" step="any" value="90" disabled></label></div>
+    <div class="row space"><label>Mould depth (cm)<input id="depth" type="number" min="0.1" step="any" value="45" disabled></label><label>Bottom rib width (cm)<input id="rib" type="number" min="0.1" step="any" value="15" disabled></label></div>
+    <label class="space">Inward taper from vertical<select id="angle"><option value="5">5°</option><option value="7">7°</option></select></label>
+    <p class="hint space">Each mould face slopes inward going upward. The void narrows and the rib widens.</p>
+  </fieldset>
+  <fieldset><legend>Concrete quantities</legend>
+    <div class="row"><label>Concrete unit weight (kN/m³)<input id="density" type="number" min="0.1" step="any" value="25" required></label><label>Concrete waste (%)<input id="waste" type="number" min="0" step="any" value="5" required></label></div>
+  </fieldset>
+  <fieldset><legend>Gravity loads</legend>
+    <label>Illustrative occupancy<select id="use"><option value="2">Residential</option><option value="2.5">Office</option><option value="3">Classroom</option><option value="4">Retail</option><option value="custom">Custom</option></select></label>
+    <div class="row space"><label>Additional dead load (kN/m²)<input id="dead" type="number" min="0" step="any" value="1.5"></label><label>Live load (kN/m²)<input id="live" type="number" min="0" step="any" value="2"></label></div>
+    <p class="hint space">Occupancy values are illustrative. Enter the live load required for your project and governing code.</p>
+  </fieldset>
+  <fieldset><legend>Column grid</legend>
+    <div class="row"><label>Bays along X<input id="baysX" type="number" min="1" max="20" step="1" value="2"></label><label>Bays along Y<input id="baysY" type="number" min="1" max="20" step="1" value="2"></label></div>
+    <div class="row space"><label>Solid-zone side (cm)<input id="pad" type="number" min="0" step="any" value="150"></label><label>Identical supported floors<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label></div>
+    <label class="space">Assumed axial stress (MPa)<input id="stress" type="number" min="0.1" step="any" value="5"></label><p class="hint space">Solid zones are centred on the support grid. Any mould intersecting a zone is omitted in full. Enter zero to disable zones.</p>
+  </fieldset>
+  <div class="buttons hide-print"><button type="submit" class="primary">Calculate</button><button type="button" id="reset">Reset example</button></div>
+</form>
+<div class="stack">
+  <section class="card">
+    <div class="toolbar"><h2>Results</h2><div class="buttons hide-print"><button type="button" id="csv">Export CSV</button><button type="button" id="svg">Export SVG</button><button type="button" id="print">Print / PDF</button></div></div>
+    <p id="error" role="alert" hidden></p><p id="notice" role="status" hidden></p>
+    <div id="results">
+      <div class="metrics" id="metrics" aria-live="polite"></div>
+      <div class="viewrow">
+        <div class="drawing"><h3>Mould layout plan</h3><svg id="plan" viewBox="0 0 420 300" role="img" aria-label="Mould layout plan"></svg><p class="hint" id="planNote"></p></div>
+        <div class="drawing"><div class="toolbar"><h3>Slab section</h3><div class="buttons hide-print" style="padding:.45rem"><button type="button" id="cutA" aria-pressed="true">A–A</button><button type="button" id="cutB" aria-pressed="false">B–B</button></div></div><svg id="section" viewBox="0 0 420 300" role="img" aria-label="Slab section"></svg><p class="hint">H = total depth, h = mould depth, t = topping, and b₀ and b₁ = bottom and top rib widths.</p></div>
+      </div>
+      <div class="legend"><span><i class="swatch solid"></i>Concrete</span><span><i class="swatch void"></i>Mould void</span><span><i class="swatch line"></i>A–A / B–B</span><span><i class="swatch support"></i>Columns</span></div>
+    </div>
+  </section>
+  <section class="card" id="details"><h2>Geometry and quantities</h2><div class="cols"><div class="tablewrap"><table aria-label="Geometry"><thead><tr><th colspan="2"><strong>Geometry</strong></th></tr></thead><tbody id="geometry"></tbody></table></div><div class="tablewrap"><table aria-label="Concrete quantities"><thead><tr><th colspan="2"><strong>Concrete quantities</strong></th></tr></thead><tbody id="quantities"></tbody></table></div></div></section>
+  <section class="card" id="loadDetails"><h2>Loads and preliminary column sizes</h2><div class="cols"><div class="tablewrap"><table aria-label="Loads and preliminary column sizes"><tbody id="loadTable"></tbody></table></div><div class="tablewrap"><table aria-label="Column grid"><thead id="supportHead"></thead><tbody id="supportTable"></tbody></table></div></div><p class="hint space">Square-column estimates use tributary area under a uniform average load and round up to 5 cm. Structural analysis is required for actual loading, moments, slenderness, code dimensions and reinforcement.</p></section>
+  <section class="card"><details><summary>Calculation method and references</summary><p class="hint space">Pitch equals the mould base dimension plus bottom rib width. Voids have rectangular bases and straight faces. Presets are model inputs.</p><p class="hint" id="formula"></p><p class="hint">Void volume uses the base, midpoint and top areas in Simpson’s rule, which is exact for this geometry. Net concrete equals the gross envelope minus all voids. Self-weight is equivalent thickness times concrete unit weight.</p><p class="hint">Use for quantity takeoff and preliminary estimates of a rectangular slab. Factored gravity load is the greater of 1.4D and 1.2D + 1.6L. The ACI 318-19 §8.8 screening covers selected geometry criteria for removable forms. <a href="https://www.concrete.org/store/productdetail?ItemID=318U19&amp;Language=English&amp;Units=US_Units" target="_blank" rel="noopener">ACI 318-19</a></p><p class="hint">Formwork background <a href="https://www.renukafiberglass.com/latest-update/waffle-mould-slap/4" target="_blank" rel="noopener">Renuka Fibre Glass</a> · <a href="https://www.zoloformwork.com/zplastk/domex-waffle-slab-plastic-formwork.html" target="_blank" rel="noopener">Zolo Domex</a></p></details></section>
+</div>
+</main>
+<script>
+ 'use strict';
+const T = {"title": "Waffle Slab Calculator", "subtitle": "Mould layout, concrete quantities and preliminary gravity loads.", "language": "العربية", "inputs": "Calculator inputs", "panel": "Slab dimensions", "length": "Length X (m)", "width": "Width Y (m)", "edge": "Minimum edge band (cm)", "topping": "Topping thickness (cm)", "edgeHelp": "Enter overall slab dimensions. Unused length is distributed equally at both ends of each axis.", "mould": "Mould and rib geometry", "preset": "Mould preset (base dimensions × depth)", "cm": "cm", "m": "m", "m2": "m²", "m3": "m³", "kn": "kN", "kpa": "kN/m²", "custom": "Custom", "baseX": "Mould base X (cm)", "baseY": "Mould base Y (cm)", "depth": "Mould depth (cm)", "rib": "Bottom rib width (cm)", "angle": "Inward taper from vertical", "angleHelp": "Each mould face slopes inward going upward. The void narrows and the rib widens.", "quantity": "Concrete quantities", "density": "Concrete unit weight (kN/m³)", "waste": "Concrete waste (%)", "loads": "Gravity loads", "use": "Illustrative occupancy", "residential": "Residential", "office": "Office", "classroom": "Classroom", "retail": "Retail", "dead": "Additional dead load (kN/m²)", "live": "Live load (kN/m²)", "loadHelp": "Occupancy values are illustrative. Enter the live load required for your project and governing code.", "supports": "Column grid", "baysX": "Bays along X", "baysY": "Bays along Y", "pad": "Solid-zone side (cm)", "storeys": "Identical supported floors", "stress": "Assumed axial stress (MPa)", "supportHelp": "Solid zones are centred on the support grid. Any mould intersecting a zone is omitted in full. Enter zero to disable zones.", "calculate": "Calculate", "reset": "Reset example", "results": "Results", "csv": "Export CSV", "svg": "Export SVG", "print": "Print / PDF", "plan": "Mould layout plan", "section": "Slab section", "sectionHelp": "H = total depth, h = mould depth, t = topping, and b₀ and b₁ = bottom and top rib widths.", "concrete": "Concrete", "void": "Mould void", "support": "Columns", "details": "Geometry and quantities", "geometry": "Geometry", "loadResults": "Loads and preliminary column sizes", "columnScope": "Square-column estimates use tributary area under a uniform average load and round up to 5 cm. Structural analysis is required for actual loading, moments, slenderness, code dimensions and reinforcement.", "method": "Calculation method and references", "methodLayout": "Pitch equals the mould base dimension plus bottom rib width. Voids have rectangular bases and straight faces. Presets are model inputs.", "formula": "Inset per face Δ = h × tan θ. Top opening = base opening − 2Δ. Top rib width = bottom rib width + 2Δ.", "methodVolume": "Void volume uses the base, midpoint and top areas in Simpson’s rule, which is exact for this geometry. Net concrete equals the gross envelope minus all voids. Self-weight is equivalent thickness times concrete unit weight.", "methodScope": "Use for quantity takeoff and preliminary estimates of a rectangular slab. Factored gravity load is the greater of 1.4D and 1.2D + 1.6L. The ACI 318-19 §8.8 screening covers selected geometry criteria for removable forms.", "sourceLabel": "Formwork background", "planHelp": "Yellow squares mark column locations. Dashed yellow outlines mark the nominal solid zones. The cut passes through a mould row or column near the centre.", "verticalScale": "Vertical scale relative to horizontal", "grossArea": "Gross slab area", "baseSize": "Opening at soffit", "topSize": "Opening beneath topping", "inset": "Horizontal inset per face", "baseRib": "Bottom rib width", "topRib": "Top rib width", "pitch": "Pitch X × Y", "margins": "Actual edge band X × Y", "spans": "Bay spans X × Y", "totalDepth": "Total depth", "refTopping": "Topping, ACI reference minimum", "potential": "Grid before exclusions", "removed": "Moulds omitted at supports", "count": "Mould count", "oneVoid": "Void per mould", "voids": "Total void volume", "full": "Solid volume at equal depth", "topVolume": "Topping volume", "below": "Concrete below topping", "net": "Net concrete", "order": "Order quantity with waste", "reduction": "Concrete reduction vs. solid slab of equal depth", "equivalent": "Equivalent concrete thickness", "self": "Slab self-weight", "totalDead": "Total dead load D", "service": "Service load D + L", "ultimate": "Factored gravity load", "corner": "Corner", "edgeColumn": "Edge", "interior": "Interior", "number": "Count", "trib": "Tributary area", "axial": "Indicative axial load", "columnSize": "Indicative size", "badInput": "Enter a valid number within the field range for", "badTaper": "The taper and depth close the top opening. Increase the base dimensions or reduce depth.", "large": "The slab or mould grid is too large for this calculator. Divide the layout into smaller areas.", "noMould": "This layout has zero moulds and is calculated as solid.", "codeRib": "Bottom rib width is below the 10.16 cm reference threshold.", "codeDepth": "Overall depth exceeds 3.5 times the minimum rib width in the reference check.", "codeClear": "The largest clear gap exceeds the 76.2 cm reference threshold.", "codeTop": "Topping is thinner than the calculated reference minimum.", "punch": "Check punching shear at every column and the required extent of its solid zone using the project’s structural analysis."};
+const PRESETS = {60:[60,60,20,10],75:[75,75,25,12],90:[90,90,45,15],10550:[105,105,50,20],10560:[105,105,60,20]};
+const mouldFields = ['baseX','baseY','depth','rib'];
+const fields = ['length','width','edge','topping',...mouldFields,'angle','density','waste','dead','live','baysX','baysY','pad','storeys','stress'];
+const $ = id => document.getElementById(id);
+const fmt = (n, digits=2) => new Intl.NumberFormat('en-US',{maximumFractionDigits:digits,useGrouping:false}).format(n);
+const pairs = (a,b,digits=2) => fmt(a,digits)+' × '+fmt(b,digits);
+const EPS = 1e-8;
+let cut = 'A';
+let current = null;
+
+function layoutAxis(span, opening, rib, edge, bays, pad) {
+  const pitch = opening + rib;
+  const count = Math.max(0,Math.floor((span - 2*edge + rib + EPS)/pitch));
+  const margin = count ? (span - count*opening - (count-1)*rib)/2 : span/2;
+  const step = span/bays;
+  const supports = Array.from({length:bays+1},(_,i)=>i*step);
+  return {count,margin,pitch,step,supports,opening,openings:Array.from({length:count},(_,i)=>{
+    const start=margin+i*pitch;
+    const nearSupport = pad > 0 && supports.some(s=>start < s+pad/2-EPS && start+opening > s-pad/2+EPS);
+    return {start,nearSupport};
+  })};
+}
+
+function solve(raw) {
+  const L=raw.length, W=raw.width, h=raw.depth/100, t=raw.topping/100;
+  const a=raw.baseX/100, b=raw.baseY/100, r=raw.rib/100, edge=raw.edge/100, pad=raw.pad/100;
+  const inset=h*Math.tan(raw.angle*Math.PI/180);
+  const topX=a-2*inset, topY=b-2*inset;
+  if (topX<=EPS || topY<=EPS) throw new Error(T.badTaper);
+  if (L>200 || W>200 || Math.max(raw.baseX,raw.baseY,raw.depth,raw.rib,raw.topping,raw.edge,raw.pad,raw.waste,raw.dead,raw.live,raw.density,raw.stress)>20000 || (L/(a+r))*(W/(b+r))>30000) throw new Error(T.large);
+  const x=layoutAxis(L,a,r,edge,raw.baysX,pad), y=layoutAxis(W,b,r,edge,raw.baysY,pad);
+  if (x.count*y.count>30000) throw new Error(T.large);
+  const xReserved=x.openings.filter(o=>o.nearSupport).length;
+  const yReserved=y.openings.filter(o=>o.nearSupport).length;
+  const removed=xReserved*yReserved;
+  const count=x.count*y.count-removed;
+  // Simpson integration is exact because the rectangular area is quadratic in height.
+  const voidOne=h*(a*b+4*((a+topX)/2)*((b+topY)/2)+topX*topY)/6;
+  const area=L*W;
+  const full=area*(h+t), voids=count*voidOne;
+  const net=full-voids, toppingVolume=area*t, below=net-toppingVolume;
+  const eq=net/area, self=eq*raw.density, D=self+raw.dead, service=D+raw.live;
+  const ultimate=Math.max(1.4*D,1.2*D+1.6*raw.live);
+  const groups=[];
+  const boundaryCounts=[['corner',4,0.25],['edgeColumn',2*(raw.baysX+raw.baysY-2),0.5],['interior',(raw.baysX-1)*(raw.baysY-1),1]];
+  for(const [key,number,fraction] of boundaryCounts) {
+    if(!number) continue;
+    const trib=x.step*y.step*fraction;
+    const demand=ultimate*trib*raw.storeys;
+    const side=Math.ceil((Math.sqrt(demand/(1000*raw.stress))*100-EPS)/5)*5;
+    groups.push({key,number,trib,demand,side});
+  }
+  return {raw,L,W,a,b,h,t,r,pad,topX,topY,inset,x,y,removed,count,voidOne,voids,area,full,net,toppingVolume,below,eq,self,D,service,ultimate,groups,
+    heel:r+2*inset, order:net*(1+raw.waste/100), reduction:100*voids/full, toppingMin:Math.max(5.08,Math.max(raw.baseX,raw.baseY)/12)};
+}
+function units(val,unit,d=2) { return fmt(val,d)+' '+unit; }
+function numbersFor(v) {
+  const lengthCm=T.cm, volume=T.m3, area=T.m2, load=T.kpa;
+  return {
+    geom:[[T.grossArea,units(v.area,area)],[T.baseSize,pairs(v.raw.baseX,v.raw.baseY)+' '+lengthCm],
+      [T.topSize,pairs(v.topX*100,v.topY*100)+' '+lengthCm],[T.inset,units(v.inset*100,lengthCm)],
+      [T.baseRib,units(v.r*100,lengthCm)],[T.topRib,units(v.heel*100,lengthCm)],
+      [T.pitch,pairs(v.x.pitch*100,v.y.pitch*100)+' '+lengthCm],[T.margins,pairs(v.x.margin*100,v.y.margin*100)+' '+lengthCm],
+      [T.spans,pairs(v.x.step,v.y.step)+' '+T.m],[T.totalDepth,units((v.h+v.t)*100,lengthCm)],
+      [T.refTopping,units(v.toppingMin,lengthCm)]],
+    qty:[[T.potential,pairs(v.x.count,v.y.count)+' = '+(v.x.count*v.y.count)],[T.removed,String(v.removed)],[T.count,String(v.count)],
+      [T.oneVoid,units(v.voidOne,volume,4)],[T.voids,units(v.voids,volume,3)],[T.full,units(v.full,volume,3)],
+      [T.topVolume,units(v.toppingVolume,volume,3)],[T.below,units(v.below,volume,3)],[T.net,units(v.net,volume,3)],
+      [T.order,units(v.order,volume,3)],[T.reduction,units(v.reduction,'%')],[T.equivalent,units(v.eq*100,lengthCm)]],
+    load:[[T.self,units(v.self,load)],[T.totalDead,units(v.D,load)],[T.live,units(v.raw.live,load)],
+      [T.service,units(v.service,load)],[T.ultimate,units(v.ultimate,load)]],
+    groups:v.groups.map(g=>[T[g.key],String(g.number),units(g.trib,area),units(g.demand,T.kn),pairs(g.side,g.side)+' '+lengthCm])
+  };
+}
+function renderRows(id,rows) {
+  const body=$(id);
+  body.replaceChildren();
+  for(const row of rows) {
+    const tr=body.insertRow();
+    row.forEach((value,i)=>{
+      const cell=document.createElement(i?'td':'th');
+      if(!i) cell.scope='row';
+      cell.dir=i?'ltr':'auto';
+      cell.textContent=value;
+      tr.append(cell);
+    });
+  }
+}
+function renderMetric(label,value) {
+  const box=document.createElement('div'), title=document.createElement('small'), data=document.createElement('strong');
+  box.className='metric';title.textContent=label;data.textContent=value;data.dir='ltr';
+  box.append(title,data);
+  return box;
+}
+const color={slate:'#567588',void:'#a8dcec',line:'#e28b37',ink:'#163145',support:'#f4c671',light:'#f8fbfc'};
+const coord=n=>n.toFixed(3);
+function rect(x,y,w,h,fill,extra='') {
+  return '<rect x="'+coord(x)+'" y="'+coord(y)+'" width="'+coord(w)+'" height="'+coord(h)+'" fill="'+fill+'" '+extra+'/>';
+}
+function line(x1,y1,x2,y2,stroke,extra='') {
+  return '<line x1="'+coord(x1)+'" y1="'+coord(y1)+'" x2="'+coord(x2)+'" y2="'+coord(y2)+'" stroke="'+stroke+'" '+extra+'/>';
+}
+function label(x,y,caption,extra='') {
+  return '<text x="'+coord(x)+'" y="'+coord(y)+'" text-anchor="middle" font-family="Tahoma,Arial,sans-serif" font-size="12" fill="'+color.ink+'" '+extra+'>'+caption+'</text>';
+}
+function pathRect(x,y,w,h) {return 'M'+coord(x)+' '+coord(y)+'h'+coord(w)+'v'+coord(h)+'h-'+coord(w)+'z';}
+function sectionLine(axis,across) {
+  const mid=across/2;
+  return axis.openings.reduce((best,opening)=>{
+    const center=opening.start+axis.opening/2;
+    return best!==null && Math.abs(best-mid)<=Math.abs(center-mid) ? best : center;
+  },null) ?? mid;
+}
+function draw(v) {
+  const {L,W,a,b,h,t,x,y,topX,topY,pad}=v;
+  const scale=Math.min(333/L,210/W);
+  const ox=(420-L*scale)/2, oy=(266-W*scale)/2;
+  const ax=sectionLine(x,L), ay=sectionLine(y,W);
+  let plan=rect(0,0,420,300,color.light)+rect(ox,oy,L*scale,W*scale,color.slate,'stroke="'+color.ink+'"');
+  let bases='', caps='';
+  for (const row of y.openings) {
+    for (const col of x.openings) {
+      if(row.nearSupport && col.nearSupport) continue;
+      const px=ox+col.start*scale, py=oy+row.start*scale;
+      bases+=pathRect(px,py,a*scale,b*scale);
+      if(scale*Math.min(a,b)>10) {
+        caps+=pathRect(px+v.inset*scale,py+v.inset*scale,topX*scale,topY*scale);
+      }
+    }
+  }
+  plan+='<path fill="'+color.void+'" d="'+bases+'"/><path fill="none" stroke="#427f96" stroke-width=".55" d="'+caps+'"/>';
+  for(const sy of y.supports) for(const sx of x.supports) {
+    if(pad>0) {
+      const left=Math.max(0,sx-pad/2), top=Math.max(0,sy-pad/2);
+      const right=Math.min(L,sx+pad/2), bottom=Math.min(W,sy+pad/2);
+      plan+=rect(ox+left*scale,oy+top*scale,(right-left)*scale,(bottom-top)*scale,'none','stroke="#f4c671" stroke-opacity=".8" stroke-dasharray="3 3"');
+    }
+    plan+=rect(ox+sx*scale-2.75,oy+sy*scale-2.75,5.5,5.5,color.support,'stroke="'+color.ink+'" stroke-width=".5"');
+  }
+  const horizontal=cut==='A';
+  const clear=horizontal?L:W, along=horizontal?x:y, across=horizontal?y:x;
+  const opening=horizontal?a:b, crossOpening=horizontal?b:a, cross=horizontal?ay:ax;
+  const lineExtra='stroke-dasharray="6 3" stroke-width="2"';
+  if(horizontal) {
+    const py=oy+ay*scale;
+    plan+=line(ox-7,py,ox+L*scale+7,py,color.line,lineExtra)+label(ox-17,py+4,'A')+label(ox+L*scale+17,py+4,'A');
+  } else {
+    const px=ox+ax*scale;
+    plan+=line(px,oy-7,px,oy+W*scale+7,color.line,lineExtra)+label(px,oy-12,'B')+label(px,oy+W*scale+16,'B');
+  }
+  plan+=label(210,278,'X = '+units(L,T.m)) + label(210,294,'Y = '+units(W,T.m));
+  $('plan').innerHTML=plan;
+  const through=across.openings.find(o=>cross>=o.start-EPS && cross<=o.start+crossOpening+EPS);
+  const hs=333/clear, vs=Math.min(150/(h+t),hs*3.5);
+  const left=43.5, top=55+Math.max(0,(150-(h+t)*vs)/2), soffit=top+(h+t)*vs, intTop=top+t*vs;
+  let section=rect(0,0,420,300,color.light)+rect(left,top,333,(h+t)*vs,color.slate,'stroke="'+color.ink+'"');
+  if(through) {
+    const crossInset=Math.min(cross-through.start,through.start+crossOpening-cross);
+    const height=Math.min(h,Math.max(0,crossInset)*h/v.inset);
+    const insetAtCut=v.inset*height/h;
+    const z=soffit-height*vs;
+    for(const o of along.openings) {
+      if(through.nearSupport && o.nearSupport) continue;
+      const l=left+o.start*hs, r=l+opening*hs, d=insetAtCut*hs;
+      section+='<polygon points="'+[[l,soffit],[l+d,z],[r-d,z],[r,soffit]].map(p=>p.map(coord).join(',')).join(' ')+'" fill="'+color.void+'" stroke="'+color.ink+'" stroke-width=".75"/>';
+    }
+  }
+  section+=line(left,intTop,left+333,intTop,color.ink,'stroke-dasharray="3 3" opacity=".65"');
+  section+=label(210,32,cut+'–'+cut+' · '+units(clear,T.m));
+  section+=label(210,226,'H = '+units((h+t)*100,T.cm)+'   ·   h = '+units(h*100,T.cm)+'   ·   t = '+units(t*100,T.cm));
+  section+=label(210,247,'b₀ = '+units(v.r*100,T.cm)+'   →   b₁ = '+units(v.heel*100,T.cm)+'   ·   θ = '+v.raw.angle+'°');
+  section+=label(210,274,T.verticalScale+' '+fmt(vs/hs,2)+'×','direction="'+(document.documentElement.dir)+'"');
+  $('section').innerHTML=section;
+  $('cutA').setAttribute('aria-pressed',String(horizontal));
+  $('cutB').setAttribute('aria-pressed',String(!horizontal));
+}
+
+function readInputs() {
+  const params={};
+  for(const name of fields) {
+    const input=$(name), value=Number(input.value);
+    if(input.value==='' || !Number.isFinite(value) || (!input.disabled && !input.validity.valid)) {
+      throw new Error(T.badInput+' '+input.closest('label').firstChild.textContent.trim());
+    }
+    params[name]=value;
+  }
+  return params;
+}
+function update() {
+  try {
+    current=solve(readInputs());
+    $('error').hidden=true;
+  } catch(error) {
+    current=null;
+    $('error').hidden=false;
+    $('error').textContent=error.message;
+  }
+  for(const id of ['results','details','loadDetails']) $(id).hidden=!current;
+  for(const id of ['csv','svg','print']) $(id).disabled=!current;
+  $('notice').hidden=true;
+  if(!current) return;
+  const v=current;
+  const notes=[];
+  if(!v.count) notes.push(T.noMould);
+  if(v.raw.rib+EPS<10.16) notes.push(T.codeRib);
+  if((v.h+v.t)>3.5*v.r+EPS) notes.push(T.codeDepth);
+  if(Math.max(v.raw.baseX,v.raw.baseY)>76.2+EPS) notes.push(T.codeClear);
+  if(v.raw.topping+EPS<v.toppingMin) notes.push(T.codeTop);
+  notes.push(T.punch);
+  $('notice').textContent=notes.join(' ');
+  $('notice').hidden=false;
+  $('planNote').textContent=T.planHelp;
+  const rows=numbersFor(v);
+  $('metrics').replaceChildren(
+    renderMetric(T.net,units(v.net,T.m3,3)),
+    renderMetric(T.count,String(v.count)),
+    renderMetric(T.self,units(v.self,T.kpa)),
+    renderMetric(T.totalDepth,units((v.h+v.t)*100,T.cm))
+  );
+  renderRows('geometry',rows.geom);
+  renderRows('quantities',rows.qty);
+  renderRows('loadTable',rows.load);
+  renderRows('supportHead',[[T.support,T.number,T.trib,T.axial,T.columnSize]]);
+  renderRows('supportTable',rows.groups);
+  draw(v);
+}
+function applyPreset() {
+  const values=PRESETS[$('preset').value];
+  mouldFields.forEach((name,i)=>{
+    $(name).disabled=Boolean(values);
+    if(values) $(name).value=values[i];
+  });
+}
+function download(filename,body,type) {
+  const url=URL.createObjectURL(new Blob([body],{type}));
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function csvExport() {
+  if(!current) return;
+  const v=current, r=numbersFor(v);
+  const values=fields.map(key=>[$(key).closest('label').firstChild.textContent.trim(),v.raw[key]]);
+  const rows=[[T.inputs],...values,[T.geometry],...r.geom,[T.quantity],...r.qty,[T.loadResults],...r.load,
+    [T.support,T.number,T.trib,T.axial,T.columnSize],...r.groups,[T.methodScope],[T.columnScope],[T.punch]];
+  const csv=rows.map(row=>row.map(cell=>'"'+String(cell).replaceAll('"','""')+'"').join(',')).join('\r\n');
+  download('Waffle_Slab_Results_'+document.documentElement.lang.toUpperCase()+'.csv','\uFEFF'+csv,'text/csv;charset=utf-8');
+}
+function svgExport() {
+  const sketch=id=>$(id).innerHTML;
+  const content='<svg xmlns="http://www.w3.org/2000/svg" width="840" height="300" viewBox="0 0 840 300">'+
+    sketch('plan')+'<g transform="translate(420 0)">'+sketch('section')+'</g></svg>';
+  download('Waffle_Slab_Plan_'+cut+'.svg',content,'image/svg+xml;charset=utf-8');
+}
+function setCut(mode) {cut=mode;if(current) draw(current);}
+function applyUse() {if($('use').value!=='custom') $('live').value=$('use').value;}
+
+if(typeof document!=='undefined') {
+  $('formula').textContent=T.formula;
+  $('form').addEventListener('submit',e=>{e.preventDefault();update();});
+  $('form').addEventListener('input',e=>{
+    if(e.target.id==='preset') applyPreset();
+    if(e.target.id==='use') applyUse();
+    if(e.target.id==='live') $('use').value='custom';
+    update();
+  });
+  $('reset').addEventListener('click',()=>{$('form').reset();applyPreset();applyUse();cut='A';update();});
+  $('cutA').addEventListener('click',()=>setCut('A'));
+  $('cutB').addEventListener('click',()=>setCut('B'));
+  $('csv').addEventListener('click',csvExport);
+  $('svg').addEventListener('click',svgExport);
+  $('print').addEventListener('click',()=>window.print());
+  applyPreset();
+  update();
+}
+
+
+</script>
+</body>
+</html>
