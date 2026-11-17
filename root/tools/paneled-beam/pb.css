@@ -1,0 +1,55 @@
+/* Paneled beam calculator. Uses the site's colour tokens from /static/style.css */
+.pb-hero{background:var(--hero);color:#fff;padding:34px 0 28px;margin-bottom:22px}
+.pb-hero h1{margin:0 0 8px;font-size:clamp(1.5rem,3.4vw,2.1rem)}
+.pb-hero p{margin:0;max-width:820px;opacity:.9}
+.pb-hero .pb-lang{display:inline-block;margin-top:14px;color:#fff;border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:4px 14px;font-size:.88rem;text-decoration:none}
+.pb-crumbs{font-size:.85rem;opacity:.85;margin-bottom:10px}
+.pb-crumbs a{color:#fff}
+#pb-app{padding-bottom:40px}
+.pb-steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.pb-steps a{background:var(--brass-soft);color:var(--text);text-decoration:none;border-radius:999px;padding:5px 12px;font-size:.85rem;border:1px solid var(--line)}
+.pb-steps a b{color:var(--brass)}
+.pb-step{padding:20px 22px;margin-bottom:18px;overflow:visible}
+.pb-step h2{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:1.25rem}
+.pb-num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--primary);color:var(--primary-ink);font-size:.95rem;font-family:var(--sans)}
+.pb-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 16px;margin:12px 0}
+.pb-field{display:flex;flex-direction:column;gap:5px;font-size:.92rem;font-weight:600}
+.pb-field input,.pb-field select{font:inherit;font-weight:400;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);width:100%}
+.pb-field input[type=number]{direction:ltr;text-align:center}
+.pb-field input[type=range]{padding:0;accent-color:var(--cut,#b3263e)}
+.pb-field input[aria-invalid=true]{border-color:#b3263e;outline:2px solid #f1c3cb}
+.pb-field input:focus-visible,.pb-field select:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
+.pb-err{color:#b3263e;font-weight:600;min-height:1em;font-size:.8rem}
+.pb-note{background:var(--brass-soft);border-inline-start:4px solid var(--brass);padding:10px 14px;border-radius:8px;line-height:1.75;margin:10px 0}
+.pb-note.pb-warn{background:#fff3e0;border-color:#c77700;color:#3d2a00}
+.pb-note.pb-muted{background:transparent;border-color:var(--line);color:var(--muted);font-size:.9rem;padding:4px 12px}
+.pb-small{font-size:.85rem}
+.pb-muted{color:var(--muted)}
+.pb-warnings .pb-note{margin:0 0 10px}
+.pb-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}
+.pb-metric{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.pb-metric small{display:block;color:var(--muted);font-size:.8rem}
+.pb-metric strong{font-size:1.12rem;direction:ltr;unicode-bidi:isolate}
+.pb-table{overflow-x:auto;margin:10px 0}
+.pb-table table{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px}
+.pb-table th,.pb-table td{border:1px solid var(--line);padding:7px 8px;text-align:center}
+.pb-table thead th{background:var(--brass-soft)}
+.pb-table tbody th{text-align:start;font-weight:600}
+.pb-table tfoot th{background:var(--bg)}
+.pb-colcount{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-weight:600}
+.pb-colnum{font-size:1.6rem;min-width:44px;text-align:center}
+.pb-presets{display:flex;gap:6px;flex-wrap:wrap}
+.pb-adv summary{cursor:pointer;font-weight:600;margin:6px 0}
+.pb-svg{direction:ltr;overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:10px;background:#fff}
+.pb-svg svg{display:block;width:100%;min-width:680px;height:auto;touch-action:none}
+.pb-cut{cursor:grab}
+.pb-limits{margin-top:8px}
+@media (max-width:640px){.pb-step{padding:16px 14px}.pb-fields{grid-template-columns:1fr 1fr}}
+@media (max-width:420px){.pb-fields{grid-template-columns:1fr}}
+@media print{
+  .site-header,.pb-steps,.pb-noprint,.btn-row,.pb-colcount button,.pb-presets,.site-footer,.pb-hero .pb-lang{display:none!important}
+  .pb-hero{background:none;color:#000;padding:0}.pb-hero .pb-crumbs{display:none}
+  .pb-step{break-inside:avoid;box-shadow:none}
+  .pb-svg{border:0;overflow:visible}.pb-svg svg{min-width:0}
+  .pb-table{overflow:visible}.pb-table table{min-width:0}
+}
