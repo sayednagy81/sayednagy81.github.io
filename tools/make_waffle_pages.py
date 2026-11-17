@@ -215,7 +215,7 @@ EXT = {
         "support": "Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.",
         "cutLabel": "Section line position (you can also drag it on the plan)", "center": "Centre on a mould row",
         "colTitle": "Preliminary column sizes",
-        "builtIn": "This is an architectural sizing aid, so the loads are built in and not shown, as in the paneled beam calculator: slab self-weight, finishes 1.5 kN/m², live load 2 kN/m², factored 1.4D + 1.6L. Column capacity uses the short tied-column form of the Egyptian code, σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %).",
+        "builtIn": "This is an architectural sizing aid, so the loads are built in and not shown, as in the paneled beam calculator: slab self-weight, finishes 1.5 kN/m², live load 2 kN/m², factored 1.4D + 1.6L. Column loads are increased by 25 % for edge columns and 50 % for corner columns to allow for bending, and column capacity uses the short tied-column form of the Egyptian code, σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %).",
         "T": {"supports": "Perimeter columns", "spans": "Column spacing X × Y",
               "planHelp": "Columns stand on the perimeter only, drawn at their chosen size; dashed outlines mark their solid zones. Drag the section line or use the slider under the section; a cut through a rib shows solid concrete.",
               "hallArea": "The slab area is outside the 60–180 m² range used for one slab in the paneled beam calculator."},
@@ -227,7 +227,7 @@ EXT = {
         "support": "الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.",
         "cutLabel": "موضع خط القطاع (ويمكن سحبه على المسقط)", "center": "توسيط على صف القوالب",
         "colTitle": "التقدير الأولي لقطاعات الأعمدة",
-        "builtIn": "هذه أداة للتصميم المعماري، لذلك الأحمال ثابتة داخليًا ولا تظهر، كما في حاسبة الكمرات المتقاطعة: الوزن الذاتي للبلاطة، وتشطيبات 1.5 كيلونيوتن/م²، وحمل حي 2 كيلونيوتن/م²، والحمل المضاعف 1.4D + 1.6L. وقدرة العمود بصيغة الأعمدة القصيرة ذات الكانات في الكود المصري: σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%).",
+        "builtIn": "هذه أداة للتصميم المعماري، لذلك الأحمال ثابتة داخليًا ولا تظهر، كما في حاسبة الكمرات المتقاطعة: الوزن الذاتي للبلاطة، وتشطيبات 1.5 كيلونيوتن/م²، وحمل حي 2 كيلونيوتن/م²، والحمل المضاعف 1.4D + 1.6L. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لتمثيل أثر العزوم، وقدرة العمود بصيغة الأعمدة القصيرة ذات الكانات في الكود المصري: σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%).",
         "T": {"supports": "الأعمدة المحيطية", "spans": "التباعد بين الأعمدة X × Y",
               "planHelp": "الأعمدة على المحيط فقط ومرسومة بمقاسها المختار، والخطوط المتقطعة حدود مناطقها المصمتة. اسحب خط القطاع أو استخدم المؤشر أسفل القطاع؛ القطع داخل عصب يظهر خرسانة مصمتة.",
               "hallArea": "مساحة البلاطة خارج المدى 60–180 م² المعتمد للبلاطة الواحدة في حاسبة الكمرات المتقاطعة."},
@@ -356,6 +356,18 @@ def extend(s, lang):
     #    calculator; column capacity uses the short tied-column form of the Egyptian code,
     #    sigma = 0.35 fcu + 0.67 fy rho = 0.35*25 + 0.67*360*0.01 = 11.162 N/mm2 (same as the paneled beam tool)
     ar = lang == "ar"
+    # edge band: at least 25 cm, in steps of 5 cm (25, 30, 35 ...)
+    s = R(s, '<input id="edge" type="number" min="0" step="any" value="20" required>', '<input id="edge" type="number" min="25" step="5" value="25" required>')
+    # extra mould presets requested by the user: 60 and 75 cm moulds, 30 and 40 cm deep
+    # (bottom rib 12 cm for 30 cm depth and 15 cm for 40 cm depth, so the depth stays near 3.5 x the rib width)
+    s = R(s, "const PRESETS = {60:[60,60,20,10],75:[75,75,25,12],", "const PRESETS = {60:[60,60,20,10],6030:[60,60,30,12],6040:[60,60,40,15],75:[75,75,25,12],7530:[75,75,30,12],7540:[75,75,40,15],")
+    u = "سم" if ar else "cm"
+    s = R(s, '<option value="60">60 × 60 × 20 ' + u + '</option>', '<option value="60">60 × 60 × 20 ' + u + '</option><option value="6030">60 × 60 × 30 ' + u + '</option><option value="6040">60 × 60 × 40 ' + u + '</option>')
+    s = R(s, '<option value="75">75 × 75 × 25 ' + u + '</option>', '<option value="75">75 × 75 × 25 ' + u + '</option><option value="7530">75 × 75 × 30 ' + u + '</option><option value="7540">75 × 75 × 40 ' + u + '</option>')
+    # bug in the original: the button id "reset" hides form.reset(), so "Reset example" threw an error
+    s = R(s, "$('form').reset();", "HTMLFormElement.prototype.reset.call($('form'));")
+    # medium sections: perimeter columns carry bending, so their loads are increased (edge +25 %, corner +50 %)
+    s = R(s, "    const demand=ultimate*trib*raw.storeys;", "    const demand=ultimate*trib*raw.storeys*(key==='corner'?1.5:1.25);")
     s = R(s, f"<fieldset><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>", f"<fieldset hidden><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>")
     stress_label = "إجهاد محوري افتراضي (ميغاباسكال)" if ar else "Assumed axial stress (MPa)"
     s = R(s, f'<label class="space">{stress_label}<input id="stress" type="number" min="0.1" step="any" value="5"></label>',

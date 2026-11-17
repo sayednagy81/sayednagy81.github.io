@@ -13,7 +13,7 @@ const AR = load('Waffle_Slab_Calculator_AR.html'), EN = load('Waffle_Slab_Calcul
 let passed = 0;
 const test = (name, fn) => { fn(); passed++; console.log('ok -', name); };
 const near = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol, `${msg}: ${a} vs ${b}`);
-const base = { length: 12, width: 10, edge: 20, topping: 8, baseX: 90, baseY: 90, depth: 45, rib: 15, angle: 5, density: 25, waste: 5,
+const base = { length: 12, width: 10, edge: 25, topping: 8, baseX: 90, baseY: 90, depth: 45, rib: 15, angle: 5, density: 25, waste: 5,
   dead: 1.5, live: 2, colCount: 4, dist: 0, pad: 150, storeys: 1, stress: 11.162, combo: 1, colRatio: 1 };
 
 test('both languages run the same code', () => {
