@@ -8,7 +8,10 @@ Changes made here, the same way in both languages:
   2. drawing labels use Latin units (m, cm) in left-to-right text, so Arabic pages do not scramble them;
   3. the ACI 318 reference checks are shown as reference notes with their numbers, apart from real warnings;
   4. a load-combination choice: 1.4D + 1.6L (default, as in the paneled beam calculator) or the ACI combination;
-  5. site integration: description, keywords, canonical, hreflang, icon and a link back to the site.
+  5. site integration: description, keywords, canonical, hreflang, icon and a link back to the site;
+  6. perimeter columns only, with the paneled beam calculator's column rules, a movable section line and
+     drawings that scroll instead of shrinking on phones;
+  7. loads built in and hidden (architectural tool), column stress from the Egyptian short-column form (11.16 N/mm2).
 Run: python tools/make_waffle_pages.py
 """
 import json
@@ -31,7 +34,7 @@ TXT = {
         "colRatio": "Column side ratio (width : length)", "colOptions": "Column section options",
         "optNote": "Every option has at least the required area, with sides in multiples of 5 cm and at least 25 cm. ★ marks the option closest to the chosen ratio; a 30 cm wide option is always offered. Click an option to use it.",
         "oldColumnScope": "Square-column estimates use tributary area under a uniform average load and round up to 5 cm. Structural analysis is required for actual loading, moments, slenderness, code dimensions and reinforcement.",
-        "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ assumed stress. Both sides are multiples of 5 cm and at least 25 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.",
+        "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 25 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.",
         "oldScope": "Factored gravity load is the greater of 1.4D and 1.2D + 1.6L.",
         "scope": "Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L.",
         "T": {
@@ -52,7 +55,7 @@ TXT = {
         "colRatio": "نسبة ضلعي العمود (العرض : الطول)", "colOptions": "اختيارات قطاع العمود",
         "optNote": "كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 25 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة، ويظهر دائمًا اختيار بعرض 30 سم. اضغط أي اختيار لاستخدامه.",
         "oldColumnScope": "التقدير للأعمدة المربعة بطريقة مساحة التأثير تحت حمل موزّع متوسط، مع التقريب للأعلى إلى 5 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة ومتطلبات الكود والتسليح.",
-        "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ الإجهاد الافتراضي. ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 25 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.",
+        "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 25 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.",
         "oldScope": "الحمل الرأسي المضاعف هو الأكبر من 1.4D و1.2D + 1.6L.",
         "scope": "الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318.",
         "T": {
@@ -195,7 +198,173 @@ def build(lang):
     s = R(s, "$('reset').addEventListener('click',()=>{$('form').reset();", "$('reset').addEventListener('click',()=>{colChoice={};$('form').reset();")
     s = R(s, "  $('csv').addEventListener('click',csvExport);",
           "  $('colOptions').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;colChoice={...colChoice,[b.dataset.group]:b.dataset.sec};update();});\n  $('csv').addEventListener('click',csvExport);")
+    s = extend(s, lang)
     (OUT / FILE[lang]).write_text(s, encoding="utf-8", newline="\n")
+
+
+# ---------------------------------------------------------------------------------------------
+# 6. Same column rules as the paneled beam calculator: perimeter columns only (no columns inside
+#    the hall), 4 corner columns plus extra columns on the perimeter, tributary area shared along the
+#    perimeter, hall area 60-180 m2 note. Also a movable section line and readable drawings on phones.
+# ---------------------------------------------------------------------------------------------
+EXT = {
+    "en": {
+        "legend": "Perimeter columns", "colCount": "Perimeter columns (4–24)", "dist": "Extra columns go",
+        "dists": ["Balanced around the perimeter", "On the long sides first", "On the short sides first"],
+        "oldSupport": "Solid zones are centred on the support grid. Any mould intersecting a zone is omitted in full. Enter zero to disable zones.",
+        "support": "Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.",
+        "cutLabel": "Section line position (you can also drag it on the plan)", "center": "Centre on a mould row",
+        "colTitle": "Preliminary column sizes",
+        "builtIn": "This is an architectural sizing aid, so the loads are built in and not shown, as in the paneled beam calculator: slab self-weight, finishes 1.5 kN/m², live load 2 kN/m², factored 1.4D + 1.6L. Column capacity uses the short tied-column form of the Egyptian code, σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %).",
+        "T": {"supports": "Perimeter columns", "spans": "Column spacing X × Y",
+              "planHelp": "Columns stand on the perimeter only, drawn at their chosen size; dashed outlines mark their solid zones. Drag the section line or use the slider under the section; a cut through a rib shows solid concrete.",
+              "hallArea": "The slab area is outside the 60–180 m² range used for one slab in the paneled beam calculator."},
+    },
+    "ar": {
+        "legend": "الأعمدة المحيطية", "colCount": "عدد الأعمدة المحيطية (4–24)", "dist": "توزيع الأعمدة الإضافية",
+        "dists": ["متوازن على محيط القاعة", "على الضلعين الطويلين أولًا", "على الضلعين القصيرين أولًا"],
+        "oldSupport": "المناطق المصمتة متمركزة حول نقاط الأعمدة. يُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.",
+        "support": "الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.",
+        "cutLabel": "موضع خط القطاع (ويمكن سحبه على المسقط)", "center": "توسيط على صف القوالب",
+        "colTitle": "التقدير الأولي لقطاعات الأعمدة",
+        "builtIn": "هذه أداة للتصميم المعماري، لذلك الأحمال ثابتة داخليًا ولا تظهر، كما في حاسبة الكمرات المتقاطعة: الوزن الذاتي للبلاطة، وتشطيبات 1.5 كيلونيوتن/م²، وحمل حي 2 كيلونيوتن/م²، والحمل المضاعف 1.4D + 1.6L. وقدرة العمود بصيغة الأعمدة القصيرة ذات الكانات في الكود المصري: σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%).",
+        "T": {"supports": "الأعمدة المحيطية", "spans": "التباعد بين الأعمدة X × Y",
+              "planHelp": "الأعمدة على المحيط فقط ومرسومة بمقاسها المختار، والخطوط المتقطعة حدود مناطقها المصمتة. اسحب خط القطاع أو استخدم المؤشر أسفل القطاع؛ القطع داخل عصب يظهر خرسانة مصمتة.",
+              "hallArea": "مساحة البلاطة خارج المدى 60–180 م² المعتمد للبلاطة الواحدة في حاسبة الكمرات المتقاطعة."},
+    },
+}
+
+COLUMNS_JS = r"""
+// Perimeter columns as in the paneled beam calculator: four corners plus extra columns on the sides.
+// dist: 0 balanced, 1 long sides first, 2 short sides first. Tributary area: half the distance to each
+// neighbouring column along the perimeter (a teaching approximation, not beam reactions).
+function columnLayout(L,W,count,dist){
+  count=Math.max(4,Math.min(24,Math.round(count)));
+  const len=[L,W,L,W],k=[0,0,0,0],longX=L>=W;
+  const pref=j=>{const isX=j%2===0;if(dist===1)return isX===longX?1000:1;if(dist===2)return isX!==longX?1000:1;return 1;};
+  for(let e=count-4;e>0;e--){let best=-1,bs=-Infinity;for(let j=0;j<4;j++){let sc=len[j]/(k[j]+1)*pref(j);if(len[j]/(k[j]+2)<2-EPS)sc/=1e6;if(sc>bs+1e-9){bs=sc;best=j;}}k[best]++;}
+  let pts=[{x:0,y:0},{x:L,y:0},{x:L,y:W},{x:0,y:W}];
+  for(let j=0;j<4;j++)for(let i=1;i<=k[j];i++){const t=i/(k[j]+1);pts.push(j===0?{x:t*L,y:0}:j===1?{x:L,y:t*W}:j===2?{x:(1-t)*L,y:W}:{x:0,y:(1-t)*W});}
+  const per=2*(L+W),u=p=>p.y===0?p.x:p.x===L?L+p.y:p.y===W?L+W+(L-p.x):2*L+W+(W-p.y);
+  pts=pts.map(p=>({...p,u:u(p)})).sort((a,b)=>a.u-b.u);
+  return pts.map((p,i)=>{const prev=pts[(i+pts.length-1)%pts.length].u,next=pts[(i+1)%pts.length].u;
+    const zone=(((p.u-prev+per)%per)+((next-p.u+per)%per))/2,corner=(p.x===0||p.x===L)&&(p.y===0||p.y===W);
+    return {id:i+1,x:p.x,y:p.y,corner,side:corner?'corner':(p.y===0||p.y===W)?'X':'Y',At:L*W*zone/per};});
+}
+"""
+
+EXT_CSS = """
+.cutctl{display:flex;flex-wrap:wrap;align-items:end;gap:.5rem;padding:0 .65rem .55rem}.cutctl label{flex:1 1 200px;font-weight:normal;font-size:.85rem}.cutctl input{padding:0}
+#plan{touch-action:none}
+@media(max-width:690px){.drawing svg{min-width:520px}.drawing .svgscroll{overflow-x:auto;direction:ltr}}
+"""
+
+
+def extend(s, lang):
+    e = EXT[lang]
+    # unused canvas rules from the original stylesheet
+    for rule in (".drawing canvas{display:block;width:100%;height:285px}", ".drawing canvas{height:255px}", ".drawing canvas{height:240px}"):
+        s = R(s, rule, "")
+    s = R(s, "</style>", EXT_CSS + "</style>")
+    # inputs: perimeter column count and distribution instead of bays
+    s = R(s, f"<legend>{'Column grid' if lang == 'en' else 'شبكة الأعمدة'}</legend>", f"<legend>{e['legend']}</legend>")
+    a = s.index('<label>', s.index(f"<legend>{e['legend']}</legend>")); b = s.index('</label>', s.index('id="baysY"')) + len('</label>')
+    s = s[:a] + (f'<label>{e["colCount"]}<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label>'
+                 f'<label>{e["dist"]}<select id="dist">' + "".join(f'<option value="{i}">{t}</option>' for i, t in enumerate(e["dists"])) + '</select></label>') + s[b:]
+    s = R(s, e["oldSupport"], e["support"], 2)
+    s = R(s, "\nconst PRESETS", "\nObject.assign(T, " + json.dumps(e["T"], ensure_ascii=False) + ");\nconst PRESETS")
+    s = R(s, "'baysX','baysY','pad','storeys','stress','combo','colRatio'];", "'colCount','dist','pad','storeys','stress','combo','colRatio'];")
+    # engine: perimeter columns and per-mould exclusion around each column
+    s = R(s, "function sectionOptions(req) {", COLUMNS_JS + "function sectionOptions(req) {")
+    s = R(s, "const x=layoutAxis(L,a,r,edge,raw.baysX,pad), y=layoutAxis(W,b,r,edge,raw.baysY,pad);",
+          "const x=layoutAxis(L,a,r,edge,1,0), y=layoutAxis(W,b,r,edge,1,0);\n  x.openings.forEach((o,i)=>{o.i=i;});y.openings.forEach((o,i)=>{o.i=i;});")
+    s = R(s, """  const xReserved=x.openings.filter(o=>o.nearSupport).length;
+  const yReserved=y.openings.filter(o=>o.nearSupport).length;
+  const removed=xReserved*yReserved;""", """  // perimeter columns only (no columns inside the hall), as in the paneled beam calculator
+  const cols=columnLayout(L,W,raw.colCount,raw.dist);
+  const skip=new Set();
+  if(pad>0) for(const c of cols) {
+    const zx0=c.x-pad/2, zx1=c.x+pad/2, zy0=c.y-pad/2, zy1=c.y+pad/2;
+    for(const mx of x.openings) if(mx.start<zx1-EPS && mx.start+a>zx0+EPS)
+      for(const my of y.openings) if(my.start<zy1-EPS && my.start+b>zy0+EPS) skip.add(mx.i+','+my.i);
+  }
+  const removed=skip.size;""")
+    s = R(s, """  const boundaryCounts=[['corner',4,0.25],['edgeColumn',2*(raw.baysX+raw.baysY-2),0.5],['interior',(raw.baysX-1)*(raw.baysY-1),1]];
+  for(const [key,number,fraction] of boundaryCounts) {
+    if(!number) continue;
+    const trib=x.step*y.step*fraction;""", """  for(const key of ['corner','edgeColumn']) {
+    const members=cols.filter(c=>(key==='corner')===c.corner);
+    const number=members.length;
+    if(!number) continue;
+    const trib=Math.max(...members.map(c=>c.At));""")
+    s = R(s, "  return {raw,L,W,a,b,h,t,r,pad,topX,", """  for(const c of cols) c.sec=groups.find(g=>g.key===(c.corner?'corner':'edgeColumn')).chosen;
+  const gaps=arr=>{const v=[...arr].sort((p,q)=>p-q),d=[];for(let i=0;i+1<v.length;i++)d.push(v[i+1]-v[i]);return d;};
+  const spacing={x:gaps(cols.filter(c=>Math.abs(c.y)<EPS).map(c=>c.x)),y:gaps(cols.filter(c=>Math.abs(c.x)<EPS).map(c=>c.y))};
+  return {cols,skip,spacing,raw,L,W,a,b,h,t,r,pad,topX,""")
+    s = R(s, "[T.spans,pairs(v.x.step,v.y.step)+' '+T.m]",
+          "[T.spans,[...new Set(v.spacing.x.map(d=>fmt(d)))].join(' / ')+' × '+[...new Set(v.spacing.y.map(d=>fmt(d)))].join(' / ')+' '+T.m]")
+    s = R(s, "  if(!v.count) notes.push(T.noMould);", "  if(!v.count) notes.push(T.noMould);\n  if(v.area<60-EPS||v.area>180+EPS) notes.push(T.hallArea);")
+    # drawing: moulds skipped around columns, columns at their chosen size, movable section line
+    s = R(s, "      if(row.nearSupport && col.nearSupport) continue;", "      if(v.skip.has(col.i+','+row.i)) continue;")
+    a = s.index("  for(const sy of y.supports) for(const sx of x.supports) {"); b = s.index("  const horizontal=cut==='A';")
+    s = s[:a] + """  for(const c of v.cols) {
+    const sx=c.x, sy=c.y;
+    if(pad>0) {
+      const left=Math.max(0,sx-pad/2), top=Math.max(0,sy-pad/2);
+      const right=Math.min(L,sx+pad/2), bottom=Math.min(W,sy+pad/2);
+      plan+=rect(ox+left*scale,oy+top*scale,(right-left)*scale,(bottom-top)*scale,'none','stroke="#f4c671" stroke-opacity=".8" stroke-dasharray="3 3"');
+    }
+    const alongX=c.side==='X'||(c.corner&&L>=W);
+    const cw=Math.max(4,(alongX?c.sec.h:c.sec.b)/100*scale), ch=Math.max(4,(alongX?c.sec.b:c.sec.h)/100*scale);
+    plan+=rect(ox+sx*scale-cw/2,oy+sy*scale-ch/2,cw,ch,color.support,'stroke="'+color.ink+'" stroke-width=".5"');
+  }
+""" + s[b:]
+    s = R(s, "  const ax=sectionLine(x,L), ay=sectionLine(y,W);",
+          "  const ax=cutPos.B!==null?cutPos.B*L:sectionLine(x,L), ay=cutPos.A!==null?cutPos.A*W:sectionLine(y,W);\n  planGeo={ox,oy,scale,L,W};")
+    s = R(s, "plan+=line(ox-7,py,ox+L*scale+7,py,color.line,lineExtra)",
+          "plan+=line(ox-7,py,ox+L*scale+7,py,color.line,lineExtra)+line(ox-7,py,ox+L*scale+7,py,'transparent','stroke-width=\"16\" class=\"cuthit\" style=\"cursor:ns-resize\"')")
+    s = R(s, "plan+=line(px,oy-7,px,oy+W*scale+7,color.line,lineExtra)",
+          "plan+=line(px,oy-7,px,oy+W*scale+7,color.line,lineExtra)+line(px,oy-7,px,oy+W*scale+7,'transparent','stroke-width=\"16\" class=\"cuthit\" style=\"cursor:ew-resize\"')")
+    s = R(s, "      if(through.nearSupport && o.nearSupport) continue;", "      if(v.skip.has(horizontal?o.i+','+through.i:through.i+','+o.i)) continue;")
+    s = R(s, "section+=label(210,32,cut+'–'+cut+' · '+fmt(clear)+' m','direction=\"ltr\"');",
+          "section+=label(210,32,cut+'–'+cut+' · '+fmt(clear)+' m · @ '+fmt(cross)+' m','direction=\"ltr\"');")
+    s = R(s, "  $('cutA').setAttribute('aria-pressed',String(horizontal));",
+          "  $('cutPos').value=String(Math.round((horizontal?ay/W:ax/L)*1000)/10);\n  $('cutPosOut').textContent=fmt(horizontal?ay:ax)+' m';\n  $('cutA').setAttribute('aria-pressed',String(horizontal));")
+    s = R(s, "let colChoice = {};\n", "let colChoice = {};\nlet cutPos = {A:null,B:null};\nlet planGeo = null, dragCut = false;\n")
+    # markup: slider under the section, horizontal scrolling on phones
+    for sid in ("plan", "section"):
+        a = s.index(f'<svg id="{sid}"'); b = s.index('</svg>', a) + len('</svg>')
+        s = s[:a] + '<div class="svgscroll">' + s[a:b] + '</div>' + s[b:]
+    a = s.index('<div class="svgscroll"><svg id="section"'); b = s.index('</svg></div>', a) + len('</svg></div>')
+    s = s[:a + (b - a)] + (f'<div class="cutctl hide-print"><label>{e["cutLabel"]}: <output id="cutPosOut" dir="ltr"></output>'
+                           f'<input id="cutPos" type="range" min="0" max="100" step="0.5"></label><button type="button" id="cutCenter">{e["center"]}</button></div>') + s[b:]
+    # events
+    s = R(s, "  $('cutA').addEventListener('click',()=>setCut('A'));", """  $('cutPos').addEventListener('input',e=>{cutPos[cut]=Number(e.target.value)/100;if(current)draw(current);});
+  $('cutCenter').addEventListener('click',()=>{cutPos[cut]=null;if(current)draw(current);});
+  $('plan').addEventListener('pointerdown',e=>{if(!e.target.classList||!e.target.classList.contains('cuthit'))return;dragCut=true;$('plan').setPointerCapture(e.pointerId);e.preventDefault();});
+  $('plan').addEventListener('pointermove',e=>{
+    if(!dragCut||!planGeo||!current)return;
+    const pt=$('plan').createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+    const p=pt.matrixTransform($('plan').getScreenCTM().inverse());
+    const f=cut==='A'?(p.y-planGeo.oy)/(planGeo.W*planGeo.scale):(p.x-planGeo.ox)/(planGeo.L*planGeo.scale);
+    cutPos[cut]=Math.min(1,Math.max(0,Math.round(f*200)/200));draw(current);
+  });
+  for(const ev of ['pointerup','pointercancel']) $('plan').addEventListener(ev,()=>{dragCut=false;});
+  $('cutA').addEventListener('click',()=>setCut('A'));""")
+    s = R(s, "$('reset').addEventListener('click',()=>{colChoice={};", "$('reset').addEventListener('click',()=>{colChoice={};cutPos={A:null,B:null};")
+    # 7. architectural tool, not structural design: loads are built in and hidden, as in the paneled beam
+    #    calculator; column capacity uses the short tied-column form of the Egyptian code,
+    #    sigma = 0.35 fcu + 0.67 fy rho = 0.35*25 + 0.67*360*0.01 = 11.162 N/mm2 (same as the paneled beam tool)
+    ar = lang == "ar"
+    s = R(s, f"<fieldset><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>", f"<fieldset hidden><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>")
+    stress_label = "إجهاد محوري افتراضي (ميغاباسكال)" if ar else "Assumed axial stress (MPa)"
+    s = R(s, f'<label class="space">{stress_label}<input id="stress" type="number" min="0.1" step="any" value="5"></label>',
+          f'<label class="space" hidden>{stress_label}<input id="stress" type="number" min="0.1" step="any" value="11.162"></label>'
+          f'<p class="hint space">{e["builtIn"]}</p>')
+    loads_aria = "الأحمال والتقدير الأولي للأعمدة" if ar else "Loads and preliminary column sizes"
+    s = R(s, f'<div class="tablewrap"><table aria-label="{loads_aria}"><tbody id="loadTable">', f'<div class="tablewrap" hidden><table aria-label="{loads_aria}"><tbody id="loadTable">')
+    s = R(s, f'<section class="card" id="loadDetails"><h2>{loads_aria}</h2>', f'<section class="card" id="loadDetails"><h2>{e["colTitle"]}</h2>')
+    return s
 
 
 OUT.mkdir(parents=True, exist_ok=True)
