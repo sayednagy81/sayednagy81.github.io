@@ -39,6 +39,17 @@
 .pb-colcount{display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-weight:600}
 .pb-colnum{font-size:1.6rem;min-width:44px;text-align:center}
 .pb-presets{display:flex;gap:6px;flex-wrap:wrap}
+.pb-sub{display:flex;align-items:center;gap:8px;font-size:1.02rem;margin:18px 0 6px}
+.pb-sub b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brass);color:#fff;font-size:.8rem;font-family:var(--sans)}
+.pb-group{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0;background:var(--bg)}
+.pb-group p{margin:0 0 8px}
+.pb-chips{display:flex;flex-wrap:wrap;gap:8px}
+.pb-chip{font:inherit;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:6px 12px;display:flex;flex-direction:column;align-items:center;min-width:96px}
+.pb-chip b{direction:ltr;font-size:1.02rem}
+.pb-chip small{color:var(--muted);font-size:.74rem;direction:ltr}
+.pb-chip.on{border-color:var(--primary);background:var(--primary);color:var(--primary-ink)}
+.pb-chip.on small{color:inherit;opacity:.85}
+.pb-chip:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 .pb-adv summary{cursor:pointer;font-weight:600;margin:6px 0}
 .pb-svg{direction:ltr;overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:10px;background:#fff}
 .pb-svg svg{display:block;width:100%;min-width:680px;height:auto;touch-action:none}

@@ -29,7 +29,7 @@
     L: 14, Ls: 12, pw: 25, iw: 25, grid: 0,
     occupancy: 'school', D: 6, LL: 3, deadMode: 'superimposed', gc: 25, gD: 1.4, gL: 1.6, floors: 4,
     columns: 4, dist: 'balanced', fcu: 25, fy: 360, rho: 1, alpha: 0.35, beta: 0.67, maxRatio: 2,
-    ampEdge: 1, ampCorner: 1, aPos: 40, bPos: 60, slabs: 0, mode: 'continuous'
+    ampEdge: 1, ampCorner: 1, aPos: 40, bPos: 60, slabs: 0, mode: 'continuous', ratio: 1.5, choice: {}
   };
 
   /** Slab and beam depths from the hall width Ls (m). Results in cm. */
@@ -137,6 +137,27 @@
       .sort((p, q) => p.ratio - q.ratio || p.area - q.area)[0];
   }
 
+  /** Practical sections for a required area: b, h multiples of 5 cm, at least 25 cm, h/b up to 3,
+      area not more than 30 % above the smallest one. Sorted from square to elongated. */
+  function sectionOptions(req, lim = LIMITS) {
+    const step = lim.colStep, min = lim.colMin, out = [];
+    const bMax = Math.max(min, ceilTo(Math.sqrt(Math.max(req, 0)), step)) + 2 * step;
+    for (let b = min; b <= bMax; b += step) {
+      const h = Math.max(b, ceilTo(req / b, step));
+      if (h / b > 3 + EPS) continue;
+      out.push({ b, h, area: b * h, ratio: h / b });
+    }
+    const minA = Math.min(...out.map(c => c.area));
+    const seen = new Set(); // one option per side ratio (the smaller one)
+    return out.filter(c => c.area <= minA * 1.3 + EPS).sort((p, q) => p.ratio - q.ratio || p.area - q.area)
+      .filter(c => { const k = c.ratio.toFixed(3); if (seen.has(k)) return false; seen.add(k); return true; });
+  }
+
+  /** The option whose side ratio is closest to the target ratio (smaller area on a tie). */
+  function recommendSection(options, ratio) {
+    return options.slice().sort((p, q) => Math.abs(p.ratio - ratio) - Math.abs(q.ratio - ratio) || p.area - q.area)[0];
+  }
+
   /** Field ranges used for validation. */
   const RANGES = {
     L: [2, 60], Ls: [2, 60], floors: [1, 30], D: [0, 30], LL: [0, 20], gc: [18, 30], gD: [1, 2], gL: [1, 2],
@@ -242,19 +263,36 @@
     const onOuter = c => near(c.y, 0) || near(c.y, Ls) || near(c.x, 0) || near(c.x, L);
     const u = c => near(c.y, 0) ? c.x : near(c.x, L) ? L + c.y : near(c.y, Ls) ? L + Ls + (L - c.x) : near(c.x, 0) ? 2 * L + Ls + (Ls - c.y) : 10 * (L + Ls) + c.x * 100 + c.y;
     const cornerAlongX = (mode === 'separate' ? Li : L) >= Ls;
-    res.columns = [...merged.values()].sort((a, b) => u(a) - u(b)).map((c, i) => {
+    const base = [...merged.values()].sort((a, b) => u(a) - u(b)).map((c, i) => {
       const corner = mode === 'separate' ? c.slabCorner : (near(c.x, 0) || near(c.x, L)) && (near(c.y, 0) || near(c.y, Ls));
       const side = c.shared ? 'X' : corner ? 'corner' : c.side === 'corner' ? 'X' : c.side;
       const amp = corner ? inp.ampCorner : inp.ampEdge;
       const Ps = ws * c.At * inp.floors, Pu = wu * c.At * inp.floors * amp;
       const req = Pu * 1000 / sigma / 100; // cm2
-      const sec = chooseSection(req, inp.maxRatio);
-      // long side parallel to the edge it sits on; corners follow the longer side of their slab (or hall)
-      const alongX = side === 'X' || (corner && cornerAlongX);
       return { id: i + 1, x: c.x, y: c.y, corner, side, shared: c.shared, outer: onOuter(c), slabs: c.slabs, At: c.At, amp, Ps, Pu, req,
-        b: sec.b, h: sec.h, provided: sec.area, ratio: sec.ratio, util: req / sec.area,
+        group: c.shared ? 'shared' : corner ? 'corner' : 'edge' };
+    });
+    // one section per column type (corner, edge, shared), sized for the most loaded column of the type
+    const ratio = Number.isFinite(inp.ratio) && inp.ratio >= 1 ? inp.ratio : DEFAULTS.ratio;
+    const choice = inp.choice || {};
+    res.groups = ['corner', 'edge', 'shared'].map(key => {
+      const members = base.filter(c => c.group === key);
+      if (!members.length) return null;
+      const req = Math.max(...members.map(c => c.req));
+      const options = sectionOptions(req);
+      const rec = recommendSection(options, ratio);
+      const chosen = options.find(o => `${o.b}x${o.h}` === choice[key]) || rec;
+      return { key, ids: members.map(c => c.id), req, options, rec, chosen };
+    }).filter(Boolean);
+    res.columns = base.map(c => {
+      const sec = res.groups.find(gr => gr.key === c.group).chosen;
+      // long side parallel to the edge it sits on; corners follow the longer side of their slab (or hall)
+      const alongX = c.side === 'X' || (c.corner && cornerAlongX);
+      return { ...c, b: sec.b, h: sec.h, provided: sec.area, ratio: sec.ratio, util: c.req / sec.area,
         dx: (alongX ? sec.h : sec.b) / 100, dy: (alongX ? sec.b : sec.h) / 100 };
     });
+    const gaps = arr => { const v = [...arr].sort((a, b) => a - b), d = []; for (let i = 0; i + 1 < v.length; i++) d.push(v[i + 1] - v[i]); return d; };
+    res.spacing = { L: gaps(res.columns.filter(c => near(c.y, 0)).map(c => c.x)), Ls: gaps(res.columns.filter(c => near(c.x, 0)).map(c => c.y)) };
     if (res.columns.some(c => Math.max(c.b, c.h) > 100)) res.warnings.push('bigColumn');
     if (mode === 'separate' && depth < 5) {
       const atJoint = res.columns.filter(c => c.x > 1e-6 && c.x < L - 1e-6);
@@ -265,7 +303,7 @@
     }
   }
 
-  const engine = { LIMITS, PRESETS, DEFAULTS, RANGES, ceilTo, sizing, gridOptions, columnLayout, splitOptions, selfWeight, chooseSection, validate, calculate };
+  const engine = { LIMITS, PRESETS, DEFAULTS, RANGES, ceilTo, sizing, gridOptions, columnLayout, splitOptions, sectionOptions, recommendSection, selfWeight, chooseSection, validate, calculate };
   if (typeof module !== 'undefined' && module.exports) module.exports = engine;
   root.PaneledBeam = engine;
   if (typeof document === 'undefined') return;
@@ -283,7 +321,13 @@
       modeNote: 'Simple (separate) slabs: each slab is a hall of its own, with its own perimeter beams and four corner columns, and a joint between neighbouring slabs. Continuous slabs: neighbouring slabs share the dividing beam. It is treated as a perimeter beam with the perimeter-beam size of the larger slab, internal beams run continuously over it, and the columns at its ends carry load from both slabs. The Ls/45, Ls/16 and Ls/24 rules are for the simple case, so continuous sizing is only a rough preliminary estimate: continuity creates a negative moment over the shared beam, which needs top reinforcement.',
       eachSlab: 'Each slab', slabRuleSide: 'For split slabs the rules use the shorter side of each slab',
       colCountSlab: 'Perimeter columns per slab',
-      steps: ['Hall geometry', 'Beam grid and slab', 'Occupancy and loads', 'Column sizing', 'Structural plan', 'Sections A–A and B–B', 'Summary and exports'],
+      c1: 'Number of columns', c2: 'Ratio of column width to length', c3: 'Required cross-section area', c4: 'Column section options',
+      ratioLabel: 'Width : length', spacingL: 'Column spacing along L', spacingLs: 'Column spacing along Ls',
+      groupNames: { corner: 'Corner columns', edge: 'Edge columns', shared: 'Columns at the shared beam' },
+      reqArea: 'Required area', colSection: 'Section (cm)', okCheck: 'Provided ≥ required', recLabel: 'closest to the chosen ratio',
+      areaNote: 'The required area grows with the floors carried and with the distance between columns, and falls when you add columns. It comes from built-in teaching loads for an educational building (finishes 6 kN/m² plus the slab and beam self-weight, live load 3 kN/m²), which are not shown here.',
+      optNote: 'Every option has at least the required area, with both sides in multiples of 5 cm and at least 25 cm. ★ marks the option closest to the chosen ratio. Click any option to use it in the plan and sections.',
+      steps: ['Hall geometry', 'Beam grid and slab', 'Column sizing', 'Structural plan', 'Sections A–A and B–B', 'Summary and exports'],
       step: 'Step',
       L: 'Hall length L (m)', Ls: 'Hall width Ls (m)', example: 'Load example 12 × 14 m', reset: 'Reset',
       geoNote: 'L runs along X, Ls along Y. All dimensions are between beam axes. The slab and beam depths below are all taken from the width Ls.',
@@ -343,7 +387,13 @@
       modeNote: 'البلاطات البسيطة (المنفصلة): كل بلاطة قاعة مستقلة لها كمراتها المحيطية وأعمدتها الركنية الأربعة، وبين البلاطتين المتجاورتين فاصل. البلاطات المستمرة: تشترك البلاطتان المتجاورتان في الكمرة الفاصلة، وتُعامَل كمرة محيطية بمقاس الكمرة المحيطية للبلاطة الأكبر، وتمر الكمرات الداخلية فوقها مستمرة، والأعمدة عند طرفيها تحمل من البلاطتين. قواعد Ls/45 وLs/16 وLs/24 وُضعت للحالة البسيطة، لذلك يبقى تقدير الحالة المستمرة مبدئيًا تقريبيًا: الاستمرار يُحدث عزمًا سالبًا فوق الكمرة المشتركة يحتاج إلى تسليح علوي.',
       eachSlab: 'كل بلاطة', slabRuleSide: 'في البلاطات المقسَّمة تُطبَّق القواعد على الضلع الأقصر لكل بلاطة',
       colCountSlab: 'عدد الأعمدة المحيطية لكل بلاطة',
-      steps: ['أبعاد القاعة', 'شبكة الكمرات والبلاطة', 'نوع الاستخدام والأحمال', 'قطاعات الأعمدة', 'المسقط الإنشائي', 'القطاعان A–A وB–B', 'الملخص والتصدير'],
+      c1: 'عدد الأعمدة', c2: 'النسبة بين عرض العمود وطوله', c3: 'مساحة المقطع المطلوبة', c4: 'اختيارات قطاع العمود',
+      ratioLabel: 'العرض : الطول', spacingL: 'التباعد بين الأعمدة على الطول L', spacingLs: 'التباعد بين الأعمدة على العرض Ls',
+      groupNames: { corner: 'الأعمدة الركنية', edge: 'الأعمدة الطرفية', shared: 'أعمدة الكمرة المشتركة' },
+      reqArea: 'المساحة المطلوبة', colSection: 'القطاع (سم)', okCheck: 'المقترحة ≥ المطلوبة', recLabel: 'الأقرب للنسبة المختارة',
+      areaNote: 'تزيد المساحة المطلوبة مع عدد الأدوار المحمولة ومع المسافة بين الأعمدة، وتقل كلما زاد عدد الأعمدة. وهي محسوبة من أحمال تعليمية ثابتة لمبنى تعليمي (تشطيبات 6 كيلونيوتن/م² مع وزن البلاطة والكمرات، وحمل حي 3 كيلونيوتن/م²) لا تظهر هنا.',
+      optNote: 'كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 25 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة. اضغط أي اختيار لاستخدامه في المسقط والقطاعات.',
+      steps: ['أبعاد القاعة', 'شبكة الكمرات والبلاطة', 'قطاعات الأعمدة', 'المسقط الإنشائي', 'القطاعان A–A وB–B', 'الملخص والتصدير'],
       step: 'الخطوة',
       L: 'طول القاعة L (م)', Ls: 'عرض القاعة Ls (م)', example: 'مثال قاعة 12 × 14 م', reset: 'إعادة الضبط',
       geoNote: 'الطول L في اتجاه X، والعرض Ls في اتجاه Y. كل الأبعاد بين محاور الكمرات. أعماق البلاطة والكمرات كلها تُحسب من العرض Ls.',
@@ -607,30 +657,35 @@ ${step(1, 'pb-s1', `<p class="pb-note">${T.geoNote}</p>
 ${step(2, 'pb-s2', `<p class="pb-note">${T.gridRule}</p>
   <div class="pb-fields">${select('grid', T.gridChoice, [])}${select('pw', T.pw, [['25', '25'], ['30', '30']])}${select('iw', T.iw, [['25', '25'], ['30', '30']])}</div>
   <div class="pb-metrics" id="pb-gridres"></div><p class="pb-note pb-muted">${T.sizeRule}</p><div class="pb-table" id="pb-sizes"></div>`)}
-${step(3, 'pb-s3', `<div class="pb-fields">${select('occupancy', T.occupancy, Object.entries(T.occ))}${field('D', T.D, rng('D') + ' step="0.5"')}${field('LL', T.LL, rng('LL') + ' step="0.5"')}${select('deadMode', T.deadMode, Object.entries(T.deadModes))}${field('floors', T.floors, rng('floors') + ' step="1"')}${field('gc', T.gc, rng('gc') + ' step="0.5"')}${field('gD', T.gD, rng('gD') + ' step="0.05"')}${field('gL', T.gL, rng('gL') + ' step="0.05"')}</div>
-  <p class="pb-note pb-warn">${T.loadNote}</p><div class="pb-table" id="pb-loads"></div>`)}
-${step(4, 'pb-s4', `<div class="pb-colcount"><span id="pb-colcount-label">${T.colCount}</span><button type="button" class="btn" id="pb-minus" aria-label="−1">−</button><output id="pb-colnum" class="pb-colnum">4</output><button type="button" class="btn" id="pb-plus" aria-label="+1">+</button>
+<section id="pb-hidden" hidden>${select('occupancy', T.occupancy, Object.entries(T.occ))}${field('D', T.D, rng('D'))}${field('LL', T.LL, rng('LL'))}${select('deadMode', T.deadMode, Object.entries(T.deadModes))}${field('gc', T.gc, rng('gc'))}${field('gD', T.gD, rng('gD'))}${field('gL', T.gL, rng('gL'))}${field('fcu', T.fcu, rng('fcu'))}${field('fy', T.fy, rng('fy'))}${field('rho', T.rho, rng('rho'))}${field('maxRatio', T.maxRatio, rng('maxRatio'))}${field('alpha', T.alpha, rng('alpha'))}${field('beta', T.beta, rng('beta'))}${field('ampEdge', T.ampEdge, rng('ampEdge'))}${field('ampCorner', T.ampCorner, rng('ampCorner'))}</section>
+${step(3, 'pb-s3', `<h3 class="pb-sub"><b>1</b> ${T.c1}</h3>
+  <div class="pb-colcount"><span id="pb-colcount-label">${T.colCount}</span><button type="button" class="btn" id="pb-minus" aria-label="−1">−</button><output id="pb-colnum" class="pb-colnum">4</output><button type="button" class="btn" id="pb-plus" aria-label="+1">+</button>
     <span class="pb-presets">${[4, 6, 8, 12, 24].map(n => `<button type="button" class="btn btn-sm pb-preset" data-n="${n}">${n}</button>`).join('')}</span></div>
-  <div class="pb-fields">${select('dist', T.dist, Object.entries(T.dists))}${field('fcu', T.fcu, rng('fcu') + ' step="1"')}${field('fy', T.fy, rng('fy') + ' step="10"')}${field('rho', T.rho, rng('rho') + ' step="0.1"')}${field('maxRatio', T.maxRatio, rng('maxRatio') + ' step="0.1"')}</div>
-  <details class="pb-adv"><summary>${T.advanced}</summary><div class="pb-fields">${field('alpha', T.alpha, rng('alpha') + ' step="0.01"')}${field('beta', T.beta, rng('beta') + ' step="0.01"')}${field('ampEdge', T.ampEdge, rng('ampEdge') + ' step="0.05"')}${field('ampCorner', T.ampCorner, rng('ampCorner') + ' step="0.05"')}</div></details>
-  <p class="pb-note pb-muted">${T.capNote}</p><p class="pb-note pb-muted">${T.tribNote}</p><p class="pb-note pb-muted">${T.sizeNote}</p>
-  <div class="pb-metrics" id="pb-colsum"></div><div class="pb-table" id="pb-cols"></div>`)}
-${step(5, 'pb-s5', `<div class="pb-svg" id="pb-plan"></div><p class="pb-note pb-muted">${T.dragNote}</p>`)}
-${step(6, 'pb-s6', `<div class="pb-fields"><label class="pb-field"><span>${T.aPos}: <output id="pb-aOut"></output></span><input id="pb-aPos" type="range" min="0" max="100" step="0.25"></label><label class="pb-field"><span>${T.bPos}: <output id="pb-bOut"></output></span><input id="pb-bPos" type="range" min="0" max="100" step="0.25"></label></div>
+  <div class="pb-fields">${select('dist', T.dist, Object.entries(T.dists))}${field('floors', T.floors, rng('floors') + ' step="1"')}</div>
+  <div class="pb-metrics" id="pb-spacing"></div>
+  <h3 class="pb-sub"><b>2</b> ${T.c2}</h3>
+  <div class="pb-fields">${select('ratio', T.ratioLabel, [['1', '1 : 1'], ['1.25', '1 : 1.25'], ['1.5', '1 : 1.5'], ['2', '1 : 2'], ['2.5', '1 : 2.5'], ['3', '1 : 3']])}</div>
+  <h3 class="pb-sub"><b>3</b> ${T.c3}</h3>
+  <div class="pb-metrics" id="pb-areas"></div><p class="pb-note pb-muted">${T.areaNote}</p>
+  <h3 class="pb-sub"><b>4</b> ${T.c4}</h3>
+  <div id="pb-options"></div><p class="pb-note pb-muted">${T.optNote}</p>
+  <div class="pb-table" id="pb-cols"></div><p class="pb-note pb-muted">${T.tribNote}</p>`)}
+${step(4, 'pb-s4', `<div class="pb-svg" id="pb-plan"></div><p class="pb-note pb-muted">${T.dragNote}</p>`)}
+${step(5, 'pb-s5', `<div class="pb-fields"><label class="pb-field"><span>${T.aPos}: <output id="pb-aOut"></output></span><input id="pb-aPos" type="range" min="0" max="100" step="0.25"></label><label class="pb-field"><span>${T.bPos}: <output id="pb-bOut"></output></span><input id="pb-bPos" type="range" min="0" max="100" step="0.25"></label></div>
   <div class="pb-svg" id="pb-secA"></div><div class="pb-svg" id="pb-secB"></div>`)}
-${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-row pb-noprint"><button type="button" class="btn" id="pb-dlPlan">${T.dlPlan}</button><button type="button" class="btn" id="pb-dlA">${T.dlA}</button><button type="button" class="btn" id="pb-dlB">${T.dlB}</button><button type="button" class="btn btn-primary" onclick="window.print()">${T.print}</button></div>`)}
+${step(6, 'pb-s6', `<div class="pb-table" id="pb-summary"></div><div class="btn-row pb-noprint"><button type="button" class="btn" id="pb-dlPlan">${T.dlPlan}</button><button type="button" class="btn" id="pb-dlA">${T.dlA}</button><button type="button" class="btn" id="pb-dlB">${T.dlB}</button><button type="button" class="btn btn-primary" onclick="window.print()">${T.print}</button></div>`)}
 <p class="pb-note pb-warn pb-limits">${T.limits}</p>`);
 
   const $ = id => document.getElementById('pb-' + id);
   const numIds = ['L', 'Ls', 'D', 'LL', 'floors', 'gc', 'gD', 'gL', 'fcu', 'fy', 'rho', 'maxRatio', 'alpha', 'beta', 'ampEdge', 'ampCorner'];
-  const selIds = ['pw', 'iw', 'occupancy', 'deadMode', 'dist', 'mode'];
-  let columns = DEFAULTS.columns, gridIndex = 0, lastGridKey = '';
+  const selIds = ['pw', 'iw', 'occupancy', 'deadMode', 'dist', 'mode', 'ratio'];
+  let columns = DEFAULTS.columns, gridIndex = 0, lastGridKey = '', choice = {};
 
   function setInputs(v) {
     numIds.forEach(k => { $(k).value = v[k] === '' ? '' : v[k]; });
     selIds.forEach(k => { $(k).value = String(v[k]); });
     $('aPos').value = v.aPos; $('bPos').value = v.bPos;
-    columns = v.columns; gridIndex = 0; lastGridKey = '';
+    columns = v.columns; gridIndex = 0; lastGridKey = ''; choice = {};
   }
   function read() {
     const v = {};
@@ -638,6 +693,7 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
     v.pw = Number($('pw').value); v.iw = Number($('iw').value);
     v.occupancy = $('occupancy').value; v.deadMode = $('deadMode').value; v.dist = $('dist').value;
     v.columns = columns; v.grid = gridIndex; v.mode = $('mode').value; v.slabs = Number($('slabs').value) || 0;
+    v.ratio = Number($('ratio').value); v.choice = choice;
     return v;
   }
   const table = (head, rows, foot) => `<table><thead><tr>${head.map(h => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => i ? `<td>${c}</td>` : `<th scope="row">${c}</th>`).join('')}</tr>`).join('')}</tbody>${foot ? `<tfoot><tr>${foot.map(c => `<th>${c}</th>`).join('')}</tr></tfoot>` : ''}</table>`;
@@ -663,7 +719,7 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
     $('warnings').innerHTML = r.warnings.map(w => `<p class="pb-note pb-warn" role="status">${T.warn[w]}</p>`).join('');
     const geoOk = !r.errors.L && !r.errors.Ls;
     if (!geoOk) {
-      ['geo', 'gridres', 'sizes', 'loads', 'colsum', 'cols', 'plan', 'secA', 'secB', 'summary'].forEach(id => { $(id).innerHTML = ''; });
+      ['geo', 'gridres', 'sizes', 'spacing', 'areas', 'options', 'cols', 'plan', 'secA', 'secB', 'summary'].forEach(id => { $(id).innerHTML = ''; });
       $('grid').innerHTML = ''; return;
     }
     $('geo').innerHTML = metric(T.area, `${fmt(r.area)} m²`) + metric('L / Ls', fmt(r.inp.L / r.inp.Ls)) + `<p class="pb-muted pb-small">${T.areaRange}</p>`;
@@ -683,22 +739,20 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
       [T.intBeam, `Ls/24 = ${fmt(Ls)}/24`, `${fmt(sz.intRaw)} ${T.cm}`, `${sz.int} ${T.cm}`, `${iw} × ${sz.int}`, `${Math.max(0, sz.int - sz.slab)} ${T.cm}`]]
       .concat(sp.mode === 'continuous' ? [[T.sharedBeam, T.perBeam, T.none, `${sp.sharedDepth} ${T.cm}`, `${pw} × ${sp.sharedDepth}`, `${Math.max(0, sp.sharedDepth - sz.slab)} ${T.cm}`]] : []))
       + (sp.k > 1 ? `<p class="pb-muted pb-small">${T.eachSlab}: ${fmt(sp.Li)} × ${fmt(r.inp.Ls)} ${T.m}. ${T.slabRuleSide} = ${fmt(sp.short)} ${T.m}.</p>` : '');
-    const sw = r.sw;
     if (r.loads) {
-      const ld = r.loads, inp = r.inp;
-      $('loads').innerHTML = table([T.item, T.value], [
-        [T.selfSlab, `${fmt(sw.slab)} ${T.perM2}`], [T.selfBeams, `${fmt(sw.beams)} ${T.perM2}`], [T.selfTotal, `${fmt(sw.total)} ${T.perM2}`],
-        [T.dTotal, `${fmt(ld.Dtot)} ${T.perM2}`], [T.service, `${fmt(ld.Dtot)} + ${fmt(inp.LL)} = <b>${fmt(ld.ws)}</b> ${T.perM2}`],
-        [T.factored, `${fmt(inp.gD)} × ${fmt(ld.Dtot)} + ${fmt(inp.gL)} × ${fmt(inp.LL)} = <b>${fmt(ld.wu)}</b> ${T.perM2}`],
-        [T.serviceHall, `${fmt(ld.ws)} × ${fmt(r.loadArea)} × ${inp.floors} = ${fmt(ld.Ps, 0)} ${T.kN}`], [T.factoredHall, `${fmt(ld.wu)} × ${fmt(r.loadArea)} × ${inp.floors} = ${fmt(ld.Pu, 0)} ${T.kN}`]]);
-      const cs = r.columns;
-      const sizes = cs.map(c => `${c.b}×${c.h}`), uniq = [...new Set(sizes)];
-      $('colsum').innerHTML = metric(T.cols, cs.length) + metric(T.sigma, `${fmt(ld.sigma)} N/mm²`) + metric(T.sizes, uniq.length > 3 ? `${uniq[0]} … ${uniq[uniq.length - 1]}` : uniq.join(' / ')) + metric(T.maxUtil, fmt(Math.max(...cs.map(c => c.util)), 2));
-      $('cols').innerHTML = table([T.col, T.type, T.At, T.Ps, T.Pu, T.req, T.b, T.h, T.provided, 'h/b', T.util],
-        cs.map(c => [`C${c.id}`, (c.shared ? T.shared + ' · ' : '') + (c.corner ? T.corner : T.edge), fmt(c.At), fmt(c.Ps, 0), fmt(c.Pu, 0), fmt(c.req, 0), c.b, c.h, fmt(c.provided, 0), fmt(c.ratio), fmt(c.util)]),
-        [T.total, '', fmt(cs.reduce((a, c) => a + c.At, 0)), fmt(cs.reduce((a, c) => a + c.Ps, 0), 0), fmt(cs.reduce((a, c) => a + c.Pu, 0), 0), fmt(cs.reduce((a, c) => a + c.req, 0), 0), '', '', fmt(cs.reduce((a, c) => a + c.provided, 0), 0), '', '']);
+      const cs = r.columns, uniqGaps = arr => [...new Set(arr.map(d => fmt(d)))].join(' / ') || T.none;
+      $('spacing').innerHTML = metric(T.cols, cs.length) + metric(T.spacingL, `${uniqGaps(r.spacing.L)} ${T.m}`) + metric(T.spacingLs, `${uniqGaps(r.spacing.Ls)} ${T.m}`);
+      const names = ids => ids.map(i => `C${i}`).join('، ');
+      $('areas').innerHTML = r.groups.map(gr => metric(`${T.groupNames[gr.key]} (${gr.ids.length})`, `${fmt(gr.req, 0)} cm²`)).join('');
+      $('options').innerHTML = r.groups.map(gr => `<div class="pb-group"><p><b>${T.groupNames[gr.key]}</b> <span class="pb-muted">(${names(gr.ids)})</span> — ${T.reqArea}: <b>${fmt(gr.req, 0)} cm²</b></p>
+        <div class="pb-chips" role="group" aria-label="${T.groupNames[gr.key]}">${gr.options.map(o => {
+          const on = o === gr.chosen, rec = o === gr.rec;
+          return `<button type="button" class="pb-chip${on ? ' on' : ''}" data-group="${gr.key}" data-sec="${o.b}x${o.h}" aria-pressed="${on}"${rec ? ` title="${T.recLabel}"` : ''}><b>${o.b} × ${o.h}</b>${rec ? ' ★' : ''}<small>${fmt(o.area, 0)} cm² · 1 : ${fmt(o.ratio)}</small></button>`;
+        }).join('')}</div></div>`).join('');
+      $('cols').innerHTML = table([T.col, T.type, T.At, T.req, T.colSection, T.provided, T.okCheck],
+        cs.map(c => [`C${c.id}`, (c.shared ? T.shared + ' · ' : '') + (c.corner ? T.corner : T.edge), fmt(c.At), fmt(c.req, 0), `${c.b} × ${c.h}`, fmt(c.provided, 0), c.provided >= c.req ? '✓' : '✗']));
     } else {
-      $('loads').innerHTML = ''; $('colsum').innerHTML = ''; $('cols').innerHTML = '';
+      ['spacing', 'areas', 'options', 'cols'].forEach(id => { $(id).innerHTML = ''; });
     }
     const aF = Number($('aPos').value) / 100, bF = Number($('bPos').value) / 100;
     const plan = planSVG(r, T, aF, bF);
@@ -713,10 +767,8 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
       [T.gridChoice, g ? `${g.nx} × ${g.ny} (${fmt(g.a)} × ${fmt(g.b)} ${T.m})` : T.none],
       [T.slab, `${sz.slab} ${T.cm}`], [T.perBeam, `${pw} × ${sz.per} ${T.cm}`], [T.intBeam, `${iw} × ${sz.int} ${T.cm}`]);
     if (r.loads) {
-      rows.push([T.occupancy, T.occ[r.inp.occupancy]], [T.dTotal, `${fmt(r.loads.Dtot)} ${T.perM2}`], [T.LL, `${fmt(r.inp.LL)} ${T.perM2}`],
-        [T.service, `${fmt(r.loads.ws)} ${T.perM2}`], [T.factored, `${fmt(r.loads.wu)} ${T.perM2}`], [T.floors, r.inp.floors],
-        [T.sigma, `${fmt(r.loads.sigma)} N/mm²`], [T.cols, r.columns.length],
-        [T.sizes, [...new Set(r.columns.map(c => `${c.b}×${c.h}`))].join(' / ')], [T.maxUtil, fmt(Math.max(...r.columns.map(c => c.util)))]);
+      rows.push([T.floors, r.inp.floors], [T.cols, r.columns.length], [T.c2, `1 : ${fmt(r.inp.ratio)}`]);
+      r.groups.forEach(gr => rows.push([T.groupNames[gr.key], `${gr.chosen.b} × ${gr.chosen.h} ${T.cm} (${T.reqArea} ${fmt(gr.req, 0)} cm²)`]));
     }
     $('summary').innerHTML = table([T.item, T.value], rows);
   }
@@ -752,6 +804,13 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
     if (e.target.id === 'pb-grid') { gridIndex = Number(e.target.value) || 0; lastGridKey = `${$('L').value}x${$('Ls').value}`.replace(/^/, ''); }
     update();
   });
+  app.addEventListener('click', e => {
+    const chip = e.target.closest && e.target.closest('.pb-chip');
+    if (!chip) return;
+    choice = { ...choice, [chip.dataset.group]: chip.dataset.sec };
+    update();
+  });
+  $('ratio').addEventListener('change', () => { choice = {}; update(); });
   $('occupancy').addEventListener('change', () => {
     const p = PRESETS[$('occupancy').value];
     if (p) { $('D').value = p.D; $('LL').value = p.LL; }

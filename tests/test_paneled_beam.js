@@ -26,7 +26,10 @@ test('example loads and column by hand', () => {
   near(r.loads.sigma, 0.35 * 25 + 0.67 * 360 * 0.01);
   const Pu = (1.4 * D + 4.8) * 42 * 4, req = Pu * 1000 / 11.162 / 100;
   r.columns.forEach(c => { near(c.At, 42); near(c.Pu, Pu, 1e-6); near(c.req, req, 1e-6); });
-  assert.deepStrictEqual([r.columns[0].b, r.columns[0].h], [60, 65]); // 3767 cm2 -> 60 x 65 = 3900
+  // 3767 cm2: options from square to elongated; ratio 1:1.5 (default) -> 50 x 80, ratio 1:1 -> 65 x 65
+  assert.deepStrictEqual([r.columns[0].b, r.columns[0].h], [50, 80]);
+  const sq = E.calculate({ L: 14, Ls: 12, ratio: 1 }).columns[0];
+  assert.deepStrictEqual([sq.b, sq.h], [65, 65]);
 });
 
 test('total-dead-load mode and warning', () => {
@@ -65,7 +68,7 @@ test('columns: counts, perimeter only, areas, rounding, utilisation', () => {
       assert.ok(c.x === 0 || c.x === L || c.y === 0 || c.y === Ls, 'column on the perimeter');
       assert.ok(c.b % 5 === 0 && c.h % 5 === 0 && c.b >= 25 && c.h >= 25, 'multiples of 5, min 25');
       assert.ok(c.provided >= c.req - 1e-9, 'provided >= required');
-      assert.ok(c.h / c.b <= 2 + 1e-9 && c.util <= 1 + 1e-9);
+      assert.ok(c.h / c.b <= 3 + 1e-9 && c.util <= 1 + 1e-9);
     });
     // no two columns at the same point
     assert.strictEqual(new Set(cs.map(c => `${c.x.toFixed(4)},${c.y.toFixed(4)}`)).size, n);
@@ -82,6 +85,30 @@ test('distribution options change the layout', () => {
 test('more columns reduce the corner column section', () => {
   const a = E.calculate({ L: 14, Ls: 12, columns: 4 }).columns[0], b = E.calculate({ L: 14, Ls: 12, columns: 12 }).columns[0];
   assert.ok(b.provided < a.provided);
+});
+
+test('section options follow the area and the chosen ratio', () => {
+  // the example from the user: about 1,200 cm2 -> 35 x 35, 30 x 40 or 25 x 50
+  assert.deepStrictEqual(E.sectionOptions(1200).map(o => [o.b, o.h]), [[35, 35], [30, 40], [25, 50]]);
+  assert.deepStrictEqual([1, 1.5, 2].map(r => { const o = E.recommendSection(E.sectionOptions(1200), r); return [o.b, o.h]; }), [[35, 35], [30, 40], [25, 50]]);
+  for (let req = 1; req <= 20000; req += 53) E.sectionOptions(req).forEach(o => {
+    assert.ok(o.area >= req - 1e-9 && o.b % 5 === 0 && o.h % 5 === 0 && o.b >= 25 && o.h >= o.b && o.h / o.b <= 3 + 1e-9);
+  });
+  // a clicked option is used; an option that is no longer valid falls back to the recommended one
+  const r = E.calculate({ L: 14, Ls: 12, columns: 8, choice: { edge: '40x55' } });
+  const edge = r.groups.find(g => g.key === 'edge');
+  assert.deepStrictEqual([edge.chosen.b, edge.chosen.h], [40, 55]);
+  r.columns.filter(c => c.group === 'edge').forEach(c => assert.deepStrictEqual([c.b, c.h], [40, 55]));
+  const bad = E.calculate({ L: 14, Ls: 12, columns: 8, choice: { edge: '25x25' } }).groups.find(g => g.key === 'edge');
+  assert.strictEqual(bad.chosen, bad.rec);
+});
+
+test('loads and column spacing change the required area', () => {
+  const req = o => Math.max(...E.calculate({ L: 14, Ls: 12, ...o }).groups.map(g => g.req));
+  assert.ok(req({ floors: 1 }) < req({ floors: 4 }) && req({ floors: 4 }) < req({ floors: 8 }));
+  assert.ok(req({ columns: 4 }) > req({ columns: 8 }) && req({ columns: 8 }) > req({ columns: 12 }));
+  const sp = E.calculate({ L: 14, Ls: 12, columns: 8 }).spacing;
+  assert.deepStrictEqual(sp, { L: [7, 7], Ls: [6, 6] });
 });
 
 // 4. Grids and limits
