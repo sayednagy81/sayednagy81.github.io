@@ -92,8 +92,11 @@ test('section options follow the area and the chosen ratio', () => {
   assert.deepStrictEqual(E.sectionOptions(1200).map(o => [o.b, o.h]), [[35, 35], [30, 40], [25, 50]]);
   assert.deepStrictEqual([1, 1.5, 2].map(r => { const o = E.recommendSection(E.sectionOptions(1200), r); return [o.b, o.h]; }), [[35, 35], [30, 40], [25, 50]]);
   for (let req = 1; req <= 20000; req += 53) E.sectionOptions(req).forEach(o => {
-    assert.ok(o.area >= req - 1e-9 && o.b % 5 === 0 && o.h % 5 === 0 && o.b >= 25 && o.h >= o.b && o.h / o.b <= 3 + 1e-9);
+    assert.ok(o.area >= req - 1e-9 && o.b % 5 === 0 && o.h % 5 === 0 && o.b >= 25 && o.h >= o.b && (o.wall || o.h / o.b <= 3 + 1e-9));
   });
+  // a 30 cm wide option is always there
+  for (const req of [100, 900, 1200, 2079, 3767, 9000]) assert.ok(E.sectionOptions(req).some(o => o.b === 30 && o.area >= req), String(req));
+  assert.ok(E.sectionOptions(3767).some(o => o.b === 30 && o.h === 130));
   // a clicked option is used; an option that is no longer valid falls back to the recommended one
   const r = E.calculate({ L: 14, Ls: 12, columns: 8, choice: { edge: '40x55' } });
   const edge = r.groups.find(g => g.key === 'edge');

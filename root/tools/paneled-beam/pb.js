@@ -138,7 +138,8 @@
   }
 
   /** Practical sections for a required area: b, h multiples of 5 cm, at least 25 cm, h/b up to 3,
-      area not more than 30 % above the smallest one. Sorted from square to elongated. */
+      area not more than 30 % above the smallest one, plus one 30 cm wide section in every case.
+      Sorted from square to elongated. */
   function sectionOptions(req, lim = LIMITS) {
     const step = lim.colStep, min = lim.colMin, out = [];
     const bMax = Math.max(min, ceilTo(Math.sqrt(Math.max(req, 0)), step)) + 2 * step;
@@ -149,8 +150,14 @@
     }
     const minA = Math.min(...out.map(c => c.area));
     const seen = new Set(); // one option per side ratio (the smaller one)
-    return out.filter(c => c.area <= minA * 1.3 + EPS).sort((p, q) => p.ratio - q.ratio || p.area - q.area)
-      .filter(c => { const k = c.ratio.toFixed(3); if (seen.has(k)) return false; seen.add(k); return true; });
+    const opts = out.filter(c => c.area <= minA * 1.3 + EPS);
+    // a 30 cm wide column (to fit a 30 cm wall) is always offered, even when it is long or larger than needed
+    if (!opts.some(c => c.b === 30 || c.h === 30)) {
+      const h = Math.max(30, ceilTo(req / 30, step));
+      opts.push({ b: 30, h, area: 30 * h, ratio: h / 30, wall: true });
+    }
+    return opts.sort((p, q) => p.ratio - q.ratio || p.area - q.area)
+      .filter(c => { const k = c.ratio.toFixed(3); if (seen.has(k) && !c.wall) return false; seen.add(k); return true; });
   }
 
   /** The option whose side ratio is closest to the target ratio (smaller area on a tie). */
@@ -324,9 +331,9 @@
       c1: 'Number of columns', c2: 'Ratio of column width to length', c3: 'Required cross-section area', c4: 'Column section options',
       ratioLabel: 'Width : length', spacingL: 'Column spacing along L', spacingLs: 'Column spacing along Ls',
       groupNames: { corner: 'Corner columns', edge: 'Edge columns', shared: 'Columns at the shared beam' },
-      reqArea: 'Required area', colSection: 'Section (cm)', okCheck: 'Provided ≥ required', recLabel: 'closest to the chosen ratio',
+      wallOpt: 'width 30 cm (fits a 30 cm wall)', reqArea: 'Required area', colSection: 'Section (cm)', okCheck: 'Provided ≥ required', recLabel: 'closest to the chosen ratio',
       areaNote: 'The required area grows with the floors carried and with the distance between columns, and falls when you add columns. It comes from built-in teaching loads for an educational building (finishes 6 kN/m² plus the slab and beam self-weight, live load 3 kN/m²), which are not shown here.',
-      optNote: 'Every option has at least the required area, with both sides in multiples of 5 cm and at least 25 cm. ★ marks the option closest to the chosen ratio. Click any option to use it in the plan and sections.',
+      optNote: 'Every option has at least the required area, with both sides in multiples of 5 cm and at least 25 cm. A 30 cm wide option is always offered; when the load is high it becomes long. ★ marks the option closest to the chosen ratio. Click any option to use it in the plan and sections.',
       steps: ['Hall geometry', 'Beam grid and slab', 'Column sizing', 'Structural plan', 'Sections A–A and B–B', 'Summary and exports'],
       step: 'Step',
       L: 'Hall length L (m)', Ls: 'Hall width Ls (m)', example: 'Load example 12 × 14 m', reset: 'Reset',
@@ -390,9 +397,9 @@
       c1: 'عدد الأعمدة', c2: 'النسبة بين عرض العمود وطوله', c3: 'مساحة المقطع المطلوبة', c4: 'اختيارات قطاع العمود',
       ratioLabel: 'العرض : الطول', spacingL: 'التباعد بين الأعمدة على الطول L', spacingLs: 'التباعد بين الأعمدة على العرض Ls',
       groupNames: { corner: 'الأعمدة الركنية', edge: 'الأعمدة الطرفية', shared: 'أعمدة الكمرة المشتركة' },
-      reqArea: 'المساحة المطلوبة', colSection: 'القطاع (سم)', okCheck: 'المقترحة ≥ المطلوبة', recLabel: 'الأقرب للنسبة المختارة',
+      wallOpt: 'بعرض 30 سم (يناسب حائط 30 سم)', reqArea: 'المساحة المطلوبة', colSection: 'القطاع (سم)', okCheck: 'المقترحة ≥ المطلوبة', recLabel: 'الأقرب للنسبة المختارة',
       areaNote: 'تزيد المساحة المطلوبة مع عدد الأدوار المحمولة ومع المسافة بين الأعمدة، وتقل كلما زاد عدد الأعمدة. وهي محسوبة من أحمال تعليمية ثابتة لمبنى تعليمي (تشطيبات 6 كيلونيوتن/م² مع وزن البلاطة والكمرات، وحمل حي 3 كيلونيوتن/م²) لا تظهر هنا.',
-      optNote: 'كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 25 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة. اضغط أي اختيار لاستخدامه في المسقط والقطاعات.',
+      optNote: 'كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 25 سم. ويظهر دائمًا اختيار بعرض 30 سم، ويطول كلما زاد الحمل. العلامة ★ على الاختيار الأقرب للنسبة المختارة. اضغط أي اختيار لاستخدامه في المسقط والقطاعات.',
       steps: ['أبعاد القاعة', 'شبكة الكمرات والبلاطة', 'قطاعات الأعمدة', 'المسقط الإنشائي', 'القطاعان A–A وB–B', 'الملخص والتصدير'],
       step: 'الخطوة',
       L: 'طول القاعة L (م)', Ls: 'عرض القاعة Ls (م)', example: 'مثال قاعة 12 × 14 م', reset: 'إعادة الضبط',
@@ -747,7 +754,7 @@ ${step(6, 'pb-s6', `<div class="pb-table" id="pb-summary"></div><div class="btn-
       $('options').innerHTML = r.groups.map(gr => `<div class="pb-group"><p><b>${T.groupNames[gr.key]}</b> <span class="pb-muted">(${names(gr.ids)})</span> — ${T.reqArea}: <b>${fmt(gr.req, 0)} cm²</b></p>
         <div class="pb-chips" role="group" aria-label="${T.groupNames[gr.key]}">${gr.options.map(o => {
           const on = o === gr.chosen, rec = o === gr.rec;
-          return `<button type="button" class="pb-chip${on ? ' on' : ''}" data-group="${gr.key}" data-sec="${o.b}x${o.h}" aria-pressed="${on}"${rec ? ` title="${T.recLabel}"` : ''}><b>${o.b} × ${o.h}</b>${rec ? ' ★' : ''}<small>${fmt(o.area, 0)} cm² · 1 : ${fmt(o.ratio)}</small></button>`;
+          return `<button type="button" class="pb-chip${on ? ' on' : ''}" data-group="${gr.key}" data-sec="${o.b}x${o.h}" aria-pressed="${on}"${rec ? ` title="${T.recLabel}"` : ''}><b>${o.b} × ${o.h}</b>${rec ? ' ★' : ''}<small>${fmt(o.area, 0)} cm² · 1 : ${fmt(o.ratio)}</small>${o.wall ? `<small>${T.wallOpt}</small>` : ''}</button>`;
         }).join('')}</div></div>`).join('');
       $('cols').innerHTML = table([T.col, T.type, T.At, T.req, T.colSection, T.provided, T.okCheck],
         cs.map(c => [`C${c.id}`, (c.shared ? T.shared + ' · ' : '') + (c.corner ? T.corner : T.edge), fmt(c.At), fmt(c.req, 0), `${c.b} × ${c.h}`, fmt(c.provided, 0), c.provided >= c.req ? '✓' : '✗']));
