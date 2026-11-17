@@ -29,7 +29,7 @@
     L: 14, Ls: 12, pw: 25, iw: 25, grid: 0,
     occupancy: 'school', D: 6, LL: 3, deadMode: 'superimposed', gc: 25, gD: 1.4, gL: 1.6, floors: 4,
     columns: 4, dist: 'balanced', fcu: 25, fy: 360, rho: 1, alpha: 0.35, beta: 0.67, maxRatio: 2,
-    ampEdge: 1, ampCorner: 1, aPos: 40, bPos: 60
+    ampEdge: 1, ampCorner: 1, aPos: 40, bPos: 60, slabs: 0, mode: 'continuous'
   };
 
   /** Slab and beam depths from the hall width Ls (m). Results in cm. */
@@ -55,27 +55,28 @@
     return out.sort((p, q) => p.score - q.score || p.nx * p.ny - q.nx * q.ny);
   }
 
-  /** Perimeter columns: four corners plus extra columns spread over the sides. Never inside the hall.
-      Coordinates: x along L (0..L), y along Ls (0..Ls). Sides: 0 y=0, 1 x=L, 2 y=Ls, 3 x=0. */
-  function columnLayout(L, Ls, count, dist) {
+  /** Perimeter columns of one slab: four corners plus extra columns spread over the allowed sides.
+      Coordinates: x along L (0..L), y along Ls (0..Ls). Sides: 0 y=0, 1 x=L, 2 y=Ls, 3 x=0.
+      allowed[j] = false keeps extra columns off side j (used for a beam shared with a neighbouring slab). */
+  function columnLayout(L, Ls, count, dist, allowed = [true, true, true, true]) {
     count = Math.max(LIMITS.columnsMin, Math.min(LIMITS.columnsMax, Math.round(count)));
-    const k = [0, 0, 0, 0];
-    const spacing = p => p === 'X' ? L / (k[0] + 2) : Ls / (k[1] + 2); // spacing after one more column per side
-    const longPair = L >= Ls ? 'X' : 'Y', shortPair = longPair === 'X' ? 'Y' : 'X';
-    const pick = () => {
-      let p;
-      if (dist === 'long') p = longPair;
-      else if (dist === 'short') p = shortPair;
-      else p = L / (k[0] + 1) >= Ls / (k[1] + 1) ? 'X' : 'Y';
-      const other = p === 'X' ? 'Y' : 'X';
-      if (spacing(p) < LIMITS.spacingMin - EPS && spacing(other) >= spacing(p)) p = other;
-      return p;
+    const len = [L, Ls, L, Ls], k = [0, 0, 0, 0], longX = L >= Ls;
+    const pref = j => {
+      const isX = j % 2 === 0;
+      if (dist === 'long') return isX === longX ? 1000 : 1;
+      if (dist === 'short') return isX !== longX ? 1000 : 1;
+      return 1;
     };
-    let extra = count - 4;
-    while (extra > 0) {
-      const p = pick();
-      if (extra >= 2) { if (p === 'X') { k[0]++; k[2]++; } else { k[1]++; k[3]++; } extra -= 2; }
-      else { if (p === 'X') k[0]++; else k[1]++; extra -= 1; }
+    for (let e = count - 4; e > 0; e--) {
+      let best = -1, bestScore = -Infinity;
+      for (let j = 0; j < 4; j++) {
+        if (!allowed[j]) continue;
+        let score = len[j] / (k[j] + 1) * pref(j);
+        if (len[j] / (k[j] + 2) < LIMITS.spacingMin - EPS) score /= 1e6; // keep columns at least 2 m apart when possible
+        if (score > bestScore + 1e-9) { bestScore = score; best = j; }
+      }
+      if (best < 0) break;
+      k[best]++;
     }
     let pts = [{ x: 0, y: 0 }, { x: L, y: 0 }, { x: L, y: Ls }, { x: 0, y: Ls }];
     for (let j = 0; j < 4; j++) {
@@ -97,7 +98,19 @@
     });
   }
 
-  /** Self-weight of slab and downstand beams, averaged over the hall area (kN/m2). */
+  /** Ways to split a hall larger than 180 m2 into k equal slabs along L, each 60-180 m2. */
+  function splitOptions(L, Ls, lim = LIMITS) {
+    const out = [];
+    for (let k = 2; k <= 30; k++) {
+      const Li = L / k;
+      if (Li < lim.dimMin - EPS) break;
+      const a = Li * Ls;
+      if (a <= lim.hallAreaMax + EPS && a >= lim.hallAreaMin - EPS) out.push(k);
+    }
+    return out;
+  }
+
+  /** Self-weight of slab and downstand beams, averaged over the slab area (kN/m2). */
   function selfWeight(L, Ls, grid, sz, pw, iw, gc) {
     const A = L * Ls, t = sz.slab / 100;
     const perLen = 2 * (L + Ls);
@@ -142,46 +155,117 @@
     return errors;
   }
 
-  /** Full calculation. Returns null fields when inputs are invalid. */
+  /** Full calculation. A hall over 180 m2 is split into equal slabs along L:
+      'separate'  = each slab has its own perimeter beams and four corner columns (a joint between them);
+      'continuous' = neighbouring slabs share the dividing beam, treated as a perimeter beam with the
+                     perimeter-beam size of the larger slab, and share the columns at its ends. */
   function calculate(raw) {
     const inp = { ...DEFAULTS, ...raw };
     const errors = validate(inp);
     const res = { inp, errors, warnings: [] };
     if (errors.L || errors.Ls) return res;
-    const { L, Ls } = inp;
+    const { L, Ls, pw, iw } = inp;
     const area = L * Ls;
     res.area = area;
-    if (area < LIMITS.hallAreaMin - EPS || area > LIMITS.hallAreaMax + EPS) res.warnings.push('hallArea');
+    res.splitOptions = area > LIMITS.hallAreaMax + EPS ? splitOptions(L, Ls) : [];
+    let k = 1, mode = 'single';
+    if (res.splitOptions.length) {
+      k = res.splitOptions.includes(inp.slabs) ? inp.slabs : res.splitOptions[0];
+      mode = inp.mode === 'separate' ? 'separate' : 'continuous';
+      res.warnings.push('split');
+    } else if (area < LIMITS.hallAreaMin - EPS || area > LIMITS.hallAreaMax + EPS) res.warnings.push('hallArea');
     if (Ls > L + EPS) res.warnings.push('lsLonger');
-    res.sz = sizing(Ls);
-    res.grids = gridOptions(L, Ls);
+    const baseWarnings = [...res.warnings];
+    // separate slabs: the joint must be wide enough for the twin columns on each side of it
+    return build(mode === 'separate' ? pw / 100 : 0, 0);
+
+    function build(joint, depth) {
+    res.warnings = [...baseWarnings];
+    const Li = (L - (k - 1) * joint) / k;
+    const short = k > 1 ? Math.min(Li, Ls) : Ls; // for split slabs the rules use the shorter side of each slab
+    res.sz = sizing(short);
+    res.grids = gridOptions(Li, Ls);
     res.grid = res.grids[Math.min(inp.grid || 0, Math.max(0, res.grids.length - 1))] || null;
     if (!res.grid) res.warnings.push('noGrid');
-    res.sw = selfWeight(L, Ls, res.grid, res.sz, inp.pw, inp.iw, Number.isFinite(inp.gc) ? inp.gc : 25);
+    res.slabs = Array.from({ length: k }, (_, i) => ({ id: i + 1, x0: i * (Li + joint), L: Li, Ls, area: Li * Ls }));
+    // all slabs are equal, so the larger slab's perimeter beam is the same as every slab's
+    res.split = { k, mode, joint, Li, short, sharedDepth: res.sz.per };
+
+    // beam axes: beamsV run along Y at x, beamsH run along X at y (segments x0..x1)
+    const g = res.grid, pwm = pw / 100, iwm = iw / 100;
+    res.beamsV = []; res.beamsH = [];
+    res.slabs.forEach((sl, i) => {
+      const xs = g ? Array.from({ length: g.nx + 1 }, (_, j) => sl.x0 + j * Li / g.nx) : [sl.x0, sl.x0 + Li];
+      xs.forEach((x, j) => {
+        const edge = j === 0 || j === xs.length - 1;
+        if (mode === 'continuous' && j === 0 && i > 0) return; // shared beam already added by the previous slab
+        const shared = mode === 'continuous' && j === xs.length - 1 && i < k - 1;
+        res.beamsV.push({ x, w: edge ? pwm : iwm, d: shared ? res.split.sharedDepth : edge ? res.sz.per : res.sz.int,
+          kind: shared ? 'shared' : edge ? 'per' : 'int', y0: 0, y1: Ls });
+      });
+    });
+    const ys = g ? Array.from({ length: g.ny + 1 }, (_, j) => j * Ls / g.ny) : [0, Ls];
+    const segs = mode === 'separate' ? res.slabs.map(sl => [sl.x0, sl.x0 + Li]) : [[0, L]];
+    ys.forEach((y, j) => {
+      const edge = j === 0 || j === ys.length - 1;
+      segs.forEach(([a, b]) => res.beamsH.push({ y, w: edge ? pwm : iwm, d: edge ? res.sz.per : res.sz.int, kind: edge ? 'per' : 'int', x0: a, x1: b }));
+    });
+
+    const gc = Number.isFinite(inp.gc) ? inp.gc : 25;
+    const one = selfWeight(Li, Ls, res.grid, res.sz, pw, iw, gc);
+    const slabArea = Li * Ls * k;
+    let weight = one.total * slabArea;
+    // a shared beam would otherwise be counted once for each slab
+    if (mode === 'continuous') weight -= (k - 1) * gc * Ls * pwm * Math.max(0, res.sz.per - res.sz.slab) / 100;
+    res.sw = { ...one, beams: weight / slabArea - one.slab, total: weight / slabArea };
+    res.loadArea = slabArea;
     if (Object.keys(errors).length) return res;
 
     const Dtot = inp.deadMode === 'superimposed' ? inp.D + res.sw.total : inp.D;
     if (inp.deadMode === 'total' && inp.D < res.sw.total - EPS) res.warnings.push('deadBelowSelf');
     const ws = Dtot + inp.LL, wu = inp.gD * Dtot + inp.gL * inp.LL;
     const sigma = inp.alpha * inp.fcu + inp.beta * inp.fy * inp.rho / 100; // N/mm2
-    res.loads = { Dtot, ws, wu, sigma, Ps: ws * area * inp.floors, Pu: wu * area * inp.floors };
+    res.loads = { Dtot, ws, wu, sigma, Ps: ws * slabArea * inp.floors, Pu: wu * slabArea * inp.floors };
 
-    const cols = columnLayout(L, Ls, inp.columns, inp.dist);
-    res.columns = cols.map(c => {
-      const amp = c.corner ? inp.ampCorner : inp.ampEdge;
+    // columns: each slab's own layout, then columns at the same point (ends of a shared beam) are merged
+    const merged = new Map();
+    res.slabs.forEach((sl, i) => {
+      const allowed = [true, true, true, true];
+      if (mode === 'continuous') { if (i < k - 1) allowed[1] = false; if (i > 0) allowed[3] = false; }
+      columnLayout(Li, Ls, inp.columns, inp.dist, allowed).forEach(c => {
+        const x = c.x + sl.x0, key = `${x.toFixed(6)},${c.y.toFixed(6)}`;
+        if (merged.has(key)) { const m = merged.get(key); m.At += c.At; m.shared = true; m.slabs.push(sl.id); }
+        else merged.set(key, { x, y: c.y, At: c.At, slabCorner: c.corner, side: c.side, shared: false, slabs: [sl.id] });
+      });
+    });
+    const near = (a, b) => Math.abs(a - b) < 1e-6;
+    const onOuter = c => near(c.y, 0) || near(c.y, Ls) || near(c.x, 0) || near(c.x, L);
+    const u = c => near(c.y, 0) ? c.x : near(c.x, L) ? L + c.y : near(c.y, Ls) ? L + Ls + (L - c.x) : near(c.x, 0) ? 2 * L + Ls + (Ls - c.y) : 10 * (L + Ls) + c.x * 100 + c.y;
+    const cornerAlongX = (mode === 'separate' ? Li : L) >= Ls;
+    res.columns = [...merged.values()].sort((a, b) => u(a) - u(b)).map((c, i) => {
+      const corner = mode === 'separate' ? c.slabCorner : (near(c.x, 0) || near(c.x, L)) && (near(c.y, 0) || near(c.y, Ls));
+      const side = c.shared ? 'X' : corner ? 'corner' : c.side === 'corner' ? 'X' : c.side;
+      const amp = corner ? inp.ampCorner : inp.ampEdge;
       const Ps = ws * c.At * inp.floors, Pu = wu * c.At * inp.floors * amp;
       const req = Pu * 1000 / sigma / 100; // cm2
       const sec = chooseSection(req, inp.maxRatio);
-      // long side parallel to the edge it sits on; corners follow the longer side of the hall
-      const alongX = c.side === 'X' || (c.corner && L >= Ls);
-      return { ...c, amp, Ps, Pu, req, b: sec.b, h: sec.h, provided: sec.area, ratio: sec.ratio, util: req / sec.area,
+      // long side parallel to the edge it sits on; corners follow the longer side of their slab (or hall)
+      const alongX = side === 'X' || (corner && cornerAlongX);
+      return { id: i + 1, x: c.x, y: c.y, corner, side, shared: c.shared, outer: onOuter(c), slabs: c.slabs, At: c.At, amp, Ps, Pu, req,
+        b: sec.b, h: sec.h, provided: sec.area, ratio: sec.ratio, util: req / sec.area,
         dx: (alongX ? sec.h : sec.b) / 100, dy: (alongX ? sec.b : sec.h) / 100 };
     });
     if (res.columns.some(c => Math.max(c.b, c.h) > 100)) res.warnings.push('bigColumn');
+    if (mode === 'separate' && depth < 5) {
+      const atJoint = res.columns.filter(c => c.x > 1e-6 && c.x < L - 1e-6);
+      const need = Math.max(0, ...atJoint.map(c => c.dx));
+      if (need > joint + 1e-9) return build(need, depth + 1);
+    }
     return res;
+    }
   }
 
-  const engine = { LIMITS, PRESETS, DEFAULTS, RANGES, ceilTo, sizing, gridOptions, columnLayout, selfWeight, chooseSection, validate, calculate };
+  const engine = { LIMITS, PRESETS, DEFAULTS, RANGES, ceilTo, sizing, gridOptions, columnLayout, splitOptions, selfWeight, chooseSection, validate, calculate };
   if (typeof module !== 'undefined' && module.exports) module.exports = engine;
   root.PaneledBeam = engine;
   if (typeof document === 'undefined') return;
@@ -191,6 +275,14 @@
   /* ===================================================================== */
   const STR = {
     en: {
+      slabsWord: 'slabs', joint: 'joint', legShared: 'Shared beam', sharedBeam: 'Shared beam', contOver: 'continuous over the shared beam', shared: 'Shared',
+      splitInfo: 'The hall is larger than 180 m², so it is divided into equal paneled slabs of 60–180 m² each, separated by beams across the length L.',
+      slabsCount: 'Number of slabs', modeLabel: 'How neighbouring slabs meet',
+      modes: { separate: 'separate', continuous: 'continuous', single: 'single' },
+      modeOpts: { continuous: 'Continuous: slabs share the dividing beam and its columns', separate: 'Separate: each slab has its own beams and 4 corner columns' },
+      modeNote: 'Simple (separate) slabs: each slab is a hall of its own, with its own perimeter beams and four corner columns, and a joint between neighbouring slabs. Continuous slabs: neighbouring slabs share the dividing beam. It is treated as a perimeter beam with the perimeter-beam size of the larger slab, internal beams run continuously over it, and the columns at its ends carry load from both slabs. The Ls/45, Ls/16 and Ls/24 rules are for the simple case, so continuous sizing is only a rough preliminary estimate: continuity creates a negative moment over the shared beam, which needs top reinforcement.',
+      eachSlab: 'Each slab', slabRuleSide: 'For split slabs the rules use the shorter side of each slab',
+      colCountSlab: 'Perimeter columns per slab',
       steps: ['Hall geometry', 'Beam grid and slab', 'Occupancy and loads', 'Column sizing', 'Structural plan', 'Sections A–A and B–B', 'Summary and exports'],
       step: 'Step',
       L: 'Hall length L (m)', Ls: 'Hall width Ls (m)', example: 'Load example 12 × 14 m', reset: 'Reset',
@@ -235,13 +327,22 @@
         lsLonger: 'Ls is larger than L. Ls is normally the shorter side, and all depths here are taken from Ls.',
         noGrid: 'No regular grid meets all limits (2–4 m spacing, panel ≤ 16 m², ratio ≤ 4:3). Change the hall dimensions or the structural system. Internal beams are not drawn.',
         deadBelowSelf: 'D is smaller than the calculated self-weight of the slab and beams. Increase D or choose “superimposed load only”.',
-        bigColumn: 'At least one column side exceeds 100 cm. Consider more perimeter columns or another structural system.'
+        bigColumn: 'At least one column side exceeds 100 cm. Consider more perimeter columns or another structural system.',
+        split: 'The hall is larger than 180 m², so the calculator divides it into several slabs (step 1).'
       },
       limits: 'Limits of this calculator: educational preliminary sizing for architecture students. It does not check bending, shear, deflection, punching, slenderness, reinforcement or detailing, and it is not a substitute for structural analysis or code-compliant design by a structural engineer.',
       m: 'm', cm: 'cm', kN: 'kN', none: '—', yes: 'yes', no: 'no',
       fileTag: 'en'
     },
     ar: {
+      slabsWord: 'بلاطات', joint: 'فاصل', legShared: 'كمرة مشتركة', sharedBeam: 'الكمرة المشتركة', contOver: 'مستمرة فوق الكمرة المشتركة', shared: 'مشترك',
+      splitInfo: 'مساحة القاعة أكبر من 180 م²، لذلك تُقسَّم إلى بلاطات متساوية من الكمرات المتقاطعة، كل منها بين 60 و180 م²، تفصل بينها كمرات عبر الطول L.',
+      slabsCount: 'عدد البلاطات', modeLabel: 'طريقة التقاء البلاطات المتجاورة',
+      modes: { separate: 'منفصلة', continuous: 'مستمرة', single: 'واحدة' },
+      modeOpts: { continuous: 'مستمرة: تشترك البلاطات في الكمرة الفاصلة وأعمدتها', separate: 'منفصلة: لكل بلاطة كمراتها و4 أعمدة ركنية خاصة بها' },
+      modeNote: 'البلاطات البسيطة (المنفصلة): كل بلاطة قاعة مستقلة لها كمراتها المحيطية وأعمدتها الركنية الأربعة، وبين البلاطتين المتجاورتين فاصل. البلاطات المستمرة: تشترك البلاطتان المتجاورتان في الكمرة الفاصلة، وتُعامَل كمرة محيطية بمقاس الكمرة المحيطية للبلاطة الأكبر، وتمر الكمرات الداخلية فوقها مستمرة، والأعمدة عند طرفيها تحمل من البلاطتين. قواعد Ls/45 وLs/16 وLs/24 وُضعت للحالة البسيطة، لذلك يبقى تقدير الحالة المستمرة مبدئيًا تقريبيًا: الاستمرار يُحدث عزمًا سالبًا فوق الكمرة المشتركة يحتاج إلى تسليح علوي.',
+      eachSlab: 'كل بلاطة', slabRuleSide: 'في البلاطات المقسَّمة تُطبَّق القواعد على الضلع الأقصر لكل بلاطة',
+      colCountSlab: 'عدد الأعمدة المحيطية لكل بلاطة',
       steps: ['أبعاد القاعة', 'شبكة الكمرات والبلاطة', 'نوع الاستخدام والأحمال', 'قطاعات الأعمدة', 'المسقط الإنشائي', 'القطاعان A–A وB–B', 'الملخص والتصدير'],
       step: 'الخطوة',
       L: 'طول القاعة L (م)', Ls: 'عرض القاعة Ls (م)', example: 'مثال قاعة 12 × 14 م', reset: 'إعادة الضبط',
@@ -286,7 +387,8 @@
         lsLonger: 'العرض Ls أكبر من الطول L. المعتاد أن يكون Ls هو الضلع الأقصر، وكل الأعماق هنا تُحسب من Ls.',
         noGrid: 'لا توجد شبكة منتظمة تحقق كل الشروط (تباعد 2–4 م، بلاطة صغيرة ≤ 16 م²، نسبة ≤ 4:3). غيّر أبعاد القاعة أو النظام الإنشائي. لم تُرسم الكمرات الداخلية.',
         deadBelowSelf: 'الحمل D أقل من الوزن الذاتي المحسوب للبلاطة والكمرات. زِد D أو اختر «الأحمال الإضافية فقط».',
-        bigColumn: 'ضلع عمود واحد على الأقل يزيد على 100 سم. فكّر في زيادة الأعمدة المحيطية أو تغيير النظام الإنشائي.'
+        bigColumn: 'ضلع عمود واحد على الأقل يزيد على 100 سم. فكّر في زيادة الأعمدة المحيطية أو تغيير النظام الإنشائي.',
+        split: 'مساحة القاعة أكبر من 180 م²، لذلك تقسمها الحاسبة إلى عدة بلاطات (الخطوة 1).'
       },
       limits: 'حدود هذه الحاسبة: تقدير مبدئي تعليمي لطلاب العمارة. لا تفحص العزوم ولا القص ولا الترخيم ولا الثقب ولا النحافة ولا التسليح ولا التفاصيل، ولا تغني عن التحليل الإنشائي والتصميم المطابق للكود بواسطة مهندس إنشائي.',
       m: 'م', cm: 'سم', kN: 'كيلونيوتن', none: '—', yes: 'نعم', no: 'لا',
@@ -297,7 +399,7 @@
   /* ===================================================================== */
   /* 3. Drawings (SVG strings with explicit colours, so downloads look the same) */
   /* ===================================================================== */
-  const C = { ink: '#1b2433', muted: '#5b6575', dim: '#6b7686', per: '#13294b', int: '#5d86a8', panel: '#f1f5f9', col: '#c98a3c', colEdge: '#7a4b1c', cut: '#b3263e', slab: '#dbe6ef' };
+  const C = { ink: '#1b2433', muted: '#5b6575', dim: '#6b7686', per: '#13294b', int: '#5d86a8', panel: '#f1f5f9', col: '#c98a3c', colEdge: '#7a4b1c', cut: '#b3263e', slab: '#dbe6ef', shared: '#7a3e8f', colShared: '#dfa45a' };
   const f2 = v => String(Number(v.toFixed(2)));
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const hatch = id => `<pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#c9d6e2"/><line x1="0" y1="0" x2="0" y2="7" stroke="#55708a" stroke-width="1.3"/></pattern>`;
@@ -329,51 +431,65 @@
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}" direction="ltr" font-family="Arial, Tahoma, sans-serif"><defs>${defs}</defs>${rect(0, 0, w, h, '#ffffff')}${body}</svg>`;
 
   function planSVG(r, T, aFrac, bFrac) {
-    const { L, Ls, pw, iw } = r.inp, g = r.grid;
+    const { L, Ls } = r.inp, g = r.grid, sp = r.split;
     const W = 1000, H = 800, boxW = 600, boxH = 430;
     const s = Math.min(boxW / L, boxH / Ls);
     const ww = L * s, hh = Ls * s, ox = 40 + (W - ww) / 2, oy = 205 + (boxH - hh) / 2;
     const X = x => ox + x * s, Y = y => oy + y * s;
-    let o = svgText(W / 2, 34, T.planTitle, { size: 21, weight: 700 }) + svgText(W / 2, 58, T.planSub, { size: 13, fill: C.muted });
-    o += rect(ox, oy, ww, hh, C.panel);
-    const xs = g ? Array.from({ length: g.nx + 1 }, (_, i) => i * L / g.nx) : [0, L];
-    const ys = g ? Array.from({ length: g.ny + 1 }, (_, j) => j * Ls / g.ny) : [0, Ls];
-    // internal beams at true width
-    xs.slice(1, -1).forEach(x => { o += rect(X(x) - iw / 200 * s, oy, iw / 100 * s, hh, C.int); });
-    ys.slice(1, -1).forEach(y => { o += rect(ox, Y(y) - iw / 200 * s, ww, iw / 100 * s, C.int); });
-    // perimeter beams at true width, centred on the axes
-    const pwp = pw / 100 * s;
-    o += rect(ox - pwp / 2, oy - pwp / 2, ww + pwp, pwp, C.per) + rect(ox - pwp / 2, oy + hh - pwp / 2, ww + pwp, pwp, C.per);
-    o += rect(ox - pwp / 2, oy - pwp / 2, pwp, hh + pwp, C.per) + rect(ox + ww - pwp / 2, oy - pwp / 2, pwp, hh + pwp, C.per);
-    // panel labels
-    if (g && g.a * s > 62 && g.b * s > 26) {
-      for (let i = 0; i < g.nx; i++) for (let j = 0; j < g.ny; j++)
-        o += svgText(X((i + 0.5) * g.a), Y((j + 0.5) * g.b) + 4, `${f2(g.a)}×${f2(g.b)}`, { size: 11, fill: C.muted });
-    }
-    // grid bubbles: numbers along X, letters along Y
+    let o = svgText(W / 2, 34, T.planTitle, { size: 21, weight: 700 }) + svgText(W / 2, 58, sp.k > 1 ? `${T.planSub} · ${sp.k} ${T.slabsWord} (${T.modes[sp.mode]})` : T.planSub, { size: 13, fill: C.muted });
+    r.slabs.forEach(sl => { o += rect(X(sl.x0), oy, sl.L * s, hh, C.panel); });
+    const colorOf = b => b.kind === 'int' ? C.int : b.kind === 'shared' ? C.shared : C.per;
+    const drawV = b => { const ext = b.kind === 'int' ? 0 : b.w * s / 2; return rect(X(b.x) - b.w * s / 2, Y(b.y0) - ext, b.w * s, (b.y1 - b.y0) * s + 2 * ext, colorOf(b)); };
+    const drawH = b => { const ext = b.kind === 'int' ? 0 : b.w * s / 2; return rect(X(b.x0) - ext, Y(b.y) - b.w * s / 2, (b.x1 - b.x0) * s + 2 * ext, b.w * s, colorOf(b)); };
+    // perimeter and shared beams first; internal beams on top, so continuity over the shared beam is visible
+    r.beamsV.filter(b => b.kind !== 'int').forEach(b => { o += drawV(b); });
+    r.beamsH.filter(b => b.kind !== 'int').forEach(b => { o += drawH(b); });
+    r.beamsV.filter(b => b.kind === 'int').forEach(b => { o += drawV(b); });
+    r.beamsH.filter(b => b.kind === 'int').forEach(b => { o += drawH(b); });
+    // joints between separate slabs
+    if (sp.mode === 'separate') r.slabs.slice(0, -1).forEach(sl => {
+      const xj = X(sl.x0 + sl.L + sp.joint / 2);
+      o += ln(xj, oy - 14, xj, oy + hh + 14, C.cut, 1, '3 3') + svgText(xj, oy + hh + 26, T.joint, { size: 10, fill: C.cut });
+    });
+    // panel and slab labels
+    r.slabs.forEach(sl => {
+      if (g && g.a * s > 62 && g.b * s > 26) {
+        for (let i = 0; i < g.nx; i++) for (let j = 0; j < g.ny; j++)
+          o += svgText(X(sl.x0 + (i + 0.5) * g.a), Y((j + 0.5) * g.b) + 4, `${f2(g.a)}×${f2(g.b)}`, { size: 11, fill: C.muted });
+      }
+      if (sp.k > 1) o += `<g opacity="0.75">${rect(X(sl.x0 + sl.L / 2) - 30, Y(Ls / 2) - 15, 60, 24, '#ffffff', C.per, 1)}</g>` + svgText(X(sl.x0 + sl.L / 2), Y(Ls / 2) + 3, `S${sl.id}`, { size: 14, weight: 700, fill: C.per });
+    });
+    // grid bubbles: numbers along X, letters along Y; axes closer than 26 px share one bubble
     const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-    xs.forEach((x, i) => { o += ln(X(x), oy - 104, X(x), oy - 8, '#9aa6b5', 0.8, '6 4') + `<circle cx="${f2(X(x))}" cy="${f2(oy - 120)}" r="13" fill="#fff" stroke="${C.ink}" stroke-width="1.2"/>` + svgText(X(x), oy - 115.5, String(i + 1), { size: 12, weight: 700 }); });
+    const xs = [...new Set(r.beamsV.map(b => +b.x.toFixed(6)))].sort((a, b) => a - b);
+    const ys = [...new Set(r.beamsH.map(b => +b.y.toFixed(6)))].sort((a, b) => a - b);
+    let lastX = -1e9, n = 0;
+    xs.forEach(x => { if (X(x) - lastX < 26) return; lastX = X(x); n++; o += ln(X(x), oy - 104, X(x), oy - 8, '#9aa6b5', 0.8, '6 4') + `<circle cx="${f2(X(x))}" cy="${f2(oy - 120)}" r="13" fill="#fff" stroke="${C.ink}" stroke-width="1.2"/>` + svgText(X(x), oy - 115.5, String(n), { size: 12, weight: 700 }); });
     ys.forEach((y, j) => { o += ln(ox - 104, Y(y), ox - 8, Y(y), '#9aa6b5', 0.8, '6 4') + `<circle cx="${f2(ox - 120)}" cy="${f2(Y(y))}" r="13" fill="#fff" stroke="${C.ink}" stroke-width="1.2"/>` + svgText(ox - 120, Y(y) + 4.5, letters[j] || String(j + 1), { size: 12, weight: 700 }); });
-    // dimension chains: panels then overall
-    for (let i = 0; i + 1 < xs.length; i++) o += dimH(X(xs[i]), X(xs[i + 1]), oy - 52, f2(xs[i + 1] - xs[i]), 11);
+    // dimension chains: spacing then overall; labels are skipped where a segment is too short to read
+    for (let i = 0; i + 1 < xs.length; i++) { const d = xs[i + 1] - xs[i]; o += dimH(X(xs[i]), X(xs[i + 1]), oy - 52, d * s >= 26 ? f2(d) : '', 11); }
     o += dimH(ox, ox + ww, oy - 80, `L = ${f2(L)} m`, 13);
     for (let j = 0; j + 1 < ys.length; j++) o += dimV(Y(ys[j]), Y(ys[j + 1]), ox - 52, f2(ys[j + 1] - ys[j]), 11);
     o += dimV(oy, oy + hh, ox - 80, `Ls = ${f2(Ls)} m`, 13);
-    // columns at calculated size and orientation
+    // columns at calculated size and orientation; labels move outwards when they would overlap
+    const boxes = [];
     (r.columns || []).forEach(c => {
       const cw = c.dx * s, ch = c.dy * s;
-      o += rect(X(c.x) - cw / 2, Y(c.y) - ch / 2, cw, ch, C.col, C.colEdge, 1.2);
-      const out = 12 + Math.max(cw, ch) / 2;
-      const nx = c.x === 0 ? -1 : c.x === L ? 1 : 0, ny = c.y === 0 ? -1 : c.y === Ls ? 1 : 0;
-      const side = !c.corner && c.side === 'Y';
-      const tx = side ? X(c.x) + nx * 10 : X(c.x) + nx * (out + 4), ty = side ? Y(c.y) - ch / 2 - 6 : Y(c.y) + ny * (out + 6) + (ny > 0 ? 8 : 0);
-      const anchor = side ? (nx < 0 ? 'start' : 'end') : nx < 0 ? 'end' : nx > 0 ? 'start' : 'middle';
-      o += svgText(tx, ty, `C${c.id} ${c.b}×${c.h}`, { size: 11, anchor, fill: C.colEdge, weight: 700 });
+      o += rect(X(c.x) - cw / 2, Y(c.y) - ch / 2, cw, ch, c.shared ? C.colShared : C.col, C.colEdge, 1.2);
+      const label = `C${c.id} ${c.b}×${c.h}`, lw = label.length * 6.4;
+      const nx = c.x < 1e-6 ? -1 : c.x > L - 1e-6 ? 1 : 0, ny = c.y < 1e-6 ? -1 : c.y > Ls - 1e-6 ? 1 : 0;
+      const sideY = nx !== 0 && ny === 0;
+      let tx = sideY ? X(c.x) - nx * 10 : X(c.x) + nx * (12 + cw / 2), ty = sideY ? Y(c.y) - ch / 2 - 6 : Y(c.y) + (ny < 0 ? -(ch / 2 + 8) : ch / 2 + 18);
+      const anchor = sideY ? (nx < 0 ? 'start' : 'end') : nx < 0 ? 'end' : nx > 0 ? 'start' : 'middle';
+      const box = () => { const x1 = anchor === 'start' ? tx : anchor === 'end' ? tx - lw : tx - lw / 2; return [x1, ty - 10, x1 + lw, ty + 2]; };
+      for (let tries = 0; tries < 6 && boxes.some(b => { const a = box(); return a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]; }); tries++) ty += sideY ? -14 : (ny < 0 ? -13 : 13);
+      boxes.push(box());
+      o += svgText(tx, ty, label, { size: 11, anchor, fill: C.colEdge, weight: 700 });
     });
     // section lines (draggable on screen)
     const ay = Y(Ls * aFrac), bx = X(L * bFrac);
     const marker = (x, y, label, dir) => {
-      const pts = dir === 'up' ? `${x - 9},${y + 6} ${x + 9},${y + 6} ${x},${y - 9}` : dir === 'left' ? `${x + 6},${y - 9} ${x + 6},${y + 9} ${x - 9},${y}` : '';
+      const pts = dir === 'up' ? `${x - 9},${y + 6} ${x + 9},${y + 6} ${x},${y - 9}` : `${x + 6},${y - 9} ${x + 6},${y + 9} ${x - 9},${y}`;
       return `<polygon points="${pts}" fill="${C.cut}"/>` + (dir === 'up'
         ? svgText(x + 13, y + 5, label, { size: 15, weight: 700, fill: C.cut, anchor: 'start' })
         : svgText(x, y - 13, label, { size: 15, weight: 700, fill: C.cut }));
@@ -384,70 +500,82 @@
     o += marker(bx, oy + hh + 44, 'B', 'up') + marker(bx, oy - 22, 'B', 'up');
     // legend
     const ly = H - 34;
-    const items = [[rect(0, -11, 16, 14, C.col, C.colEdge), T.legCol], [rect(0, -8, 26, 8, C.per), T.legPer], [rect(0, -7, 26, 6, C.int), T.legInt], [ln(0, -4, 26, -4, C.cut, 2.4, '8 4'), T.legCut]];
-    let lx = 70;
-    items.forEach(([sw, label]) => { o += `<g transform="translate(${lx},${ly})">${sw}</g>` + svgText(lx + 34, ly, label, { size: 12, anchor: 'start' }); lx += 34 + label.length * 7.2 + 34; });
+    const items = [[rect(0, -11, 16, 14, C.col, C.colEdge), T.legCol], [rect(0, -8, 26, 8, C.per), T.legPer], [rect(0, -7, 26, 6, C.int), T.legInt]];
+    if (sp.mode === 'continuous') items.push([rect(0, -8, 26, 8, C.shared), T.legShared]);
+    items.push([ln(0, -4, 26, -4, C.cut, 2.4, '8 4'), T.legCut]);
+    let lx = 40;
+    items.forEach(([sw, label]) => { o += `<g transform="translate(${lx},${ly})">${sw}</g>` + svgText(lx + 34, ly, label, { size: 12, anchor: 'start' }); lx += 34 + label.length * 6.6 + 26; });
     o += svgText(W - 24, H - 8, T.dimNote, { size: 11, anchor: 'end', fill: C.muted });
     return { svg: svgWrap(W, H, o, T.planTitle), geo: { ox, oy, ww, hh, s } };
   }
 
   function sectionSVG(r, T, axis, frac) {
-    const { L, Ls, pw, iw } = r.inp, g = r.grid, sz = r.sz;
+    const { L, Ls, pw, iw } = r.inp, sz = r.sz, sp = r.split;
     const alongX = axis === 'X';
     const len = alongX ? L : Ls, cross = alongX ? Ls : L, cut = cross * frac;
     const W = 1000, H = 470, x0 = 190, Wd = 640, top = 120;
     const sH = Wd / len;
-    const t = sz.slab / 100, dP = sz.per / 100, dI = sz.int / 100;
+    const t = sz.slab / 100, dP = Math.max(sz.per, sp.sharedDepth) / 100, dI = sz.int / 100;
     const sV = Math.max(sH, 120 / dP);
     const ex = sV / sH;
     const X = p => x0 + p * sH, Yd = d => top + d * sV;
     const name = alongX ? 'A–A' : 'B–B';
+    const pwm = pw / 100;
     let o = svgText(W / 2, 32, `${T.secTitle} ${name} — ${alongX ? T.dirX : T.dirY}`, { size: 20, weight: 700 });
     o += svgText(W / 2, 54, `${T.cutAt} ${f2(cut)} ${T.m} ${T.of} ${f2(cross)} ${T.m}`, { size: 12, fill: C.muted });
-    // beams perpendicular to the section (cut across)
-    const perpAxes = g ? Array.from({ length: (alongX ? g.nx : g.ny) + 1 }, (_, i) => i * len / (alongX ? g.nx : g.ny)) : [0, len];
-    // beams parallel to the section: cut along their length when the line falls within their width
-    const parAxes = g ? Array.from({ length: (alongX ? g.ny : g.nx) + 1 }, (_, i) => i * cross / (alongX ? g.ny : g.nx)) : [0, cross];
-    let longCut = null;
-    parAxes.forEach((p, i) => {
-      const edge = i === 0 || i === parAxes.length - 1, w = (edge ? pw : iw) / 100;
-      if (Math.abs(cut - p) <= w / 2 + EPS) longCut = { edge, d: edge ? dP : dI, w };
-    });
-    if (longCut) o += rect(X(0) - pw / 200 * sH, top, len * sH + pw / 100 * sH, longCut.d * sV, 'url(#hb)', C.per, 1);
-    // slab
-    o += rect(X(0) - pw / 200 * sH, top, len * sH + pw / 100 * sH, t * sV, 'url(#hb)', C.per, 1);
-    perpAxes.forEach((p, i) => {
-      const edge = i === 0 || i === perpAxes.length - 1, w = (edge ? pw : iw) / 100, d = edge ? dP : dI;
-      o += rect(X(p) - w * sH / 2, top, Math.max(3, w * sH), d * sV, 'url(#hb)', C.per, 1.2);
-    });
+    // beams crossing the line (cut across) and beams lying on it (cut along their length)
+    let perp, along;
+    if (alongX) {
+      perp = r.beamsV.map(b => ({ p: b.x, w: b.w, d: b.d / 100, kind: b.kind }));
+      along = r.beamsH.filter(b => Math.abs(cut - b.y) <= b.w / 2 + EPS).map(b => { const ext = b.kind === 'int' ? 0 : pwm / 2; return { a: b.x0 - ext, b: b.x1 + ext, d: b.d / 100, kind: b.kind }; });
+    } else {
+      const seen = new Set();
+      perp = r.beamsH.filter(b => { const ext = b.kind === 'int' ? 0 : pwm / 2; return cut >= b.x0 - ext - EPS && cut <= b.x1 + ext + EPS; })
+        .map(b => ({ p: b.y, w: b.w, d: b.d / 100, kind: b.kind })).filter(b => { const key = b.p.toFixed(6); if (seen.has(key)) return false; seen.add(key); return true; });
+      along = r.beamsV.filter(b => Math.abs(cut - b.x) <= b.w / 2 + EPS).map(b => ({ a: -pwm / 2, b: Ls + pwm / 2, d: b.d / 100, kind: b.kind }));
+    }
+    const slabs = alongX ? r.slabs.map(sl => [sl.x0 - pwm / 2, sl.x0 + sl.L + pwm / 2])
+      : r.slabs.filter(sl => cut >= sl.x0 - pwm / 2 - EPS && cut <= sl.x0 + sl.L + pwm / 2 + EPS).slice(0, 1).map(() => [-pwm / 2, Ls + pwm / 2]);
+    const colorOf = k => k === 'shared' ? C.shared : C.per;
+    along.forEach(b => { o += rect(X(b.a), top, (b.b - b.a) * sH, b.d * sV, 'url(#hb)', colorOf(b.kind), 1); });
+    slabs.forEach(([a, b]) => { o += rect(X(a), top, (b - a) * sH, t * sV, 'url(#hb)', C.per, 1); });
+    perp.forEach(b => { o += rect(X(b.p) - b.w * sH / 2, top, Math.max(3, b.w * sH), b.d * sV, 'url(#hb)', colorOf(b.kind), 1.2); });
+    // joints between separate slabs
+    if (alongX && sp.mode === 'separate') r.slabs.slice(0, -1).forEach(sl => { const xj = X(sl.x0 + sl.L + sp.joint / 2); o += ln(xj, top - 22, xj, Yd(dP) + 10, C.cut, 1, '3 3') + svgText(xj, top - 26, T.joint, { size: 10, fill: C.cut }); });
     // columns actually cut by the line: the line must pass through the column footprint
     const hits = (r.columns || []).filter(c => Math.abs((alongX ? c.y : c.x) - cut) <= (alongX ? c.dy : c.dx) / 2 + EPS);
     const colH = 95;
-    hits.forEach(c => {
+    hits.forEach((c, i) => {
       const pos = alongX ? c.x : c.y, wid = (alongX ? c.dx : c.dy) * sH;
       const yTop = Yd(dP);
       o += rect(X(pos) - wid / 2, yTop, wid, colH, 'url(#hc)', C.colEdge, 1.2);
       const zz = `M${f2(X(pos) - wid / 2 - 6)} ${f2(yTop + colH)} l${f2(wid / 3 + 3)} -7 l${f2(wid / 3)} 14 l${f2(wid / 3 + 3)} -7`;
       o += `<path d="${zz}" fill="none" stroke="${C.colEdge}" stroke-width="1.2"/>`;
-      o += svgText(X(pos), yTop + colH + 22, `C${c.id} ${c.b}×${c.h} (${T.colCut})`, { size: 11, fill: C.colEdge, weight: 700 });
+      o += svgText(X(pos), yTop + colH + 20 + (i % 2) * 13, `C${c.id} ${c.b}×${c.h} (${T.colCut})`, { size: 11, fill: C.colEdge, weight: 700 });
     });
     if (!hits.length) o += svgText(W / 2, Yd(dP) + 60, T.noCols, { size: 12, fill: C.muted });
     // levels relative to the top of the slab
     const lvl = (d, label) => ln(x0 - 150, Yd(d), x0 - 8, Yd(d), C.dim, 0.8, '3 3') + svgText(x0 - 150, Yd(d) - 4, label, { size: 11, anchor: 'start', fill: C.ink });
-    o += lvl(0, '±0.00') + lvl(t, `−${t.toFixed(2)} ${T.slab}`) + lvl(dI, `−${dI.toFixed(2)} ${T.soffit}`) + lvl(dP, `−${dP.toFixed(2)} ${T.soffit}`);
+    o += lvl(0, '±0.00') + lvl(t, `−${t.toFixed(2)} ${T.slab}`) + lvl(dI, `−${dI.toFixed(2)} ${T.soffit}`) + lvl(sz.per / 100, `−${(sz.per / 100).toFixed(2)} ${T.soffit}`);
     // vertical dimensions on the right
     const xr = x0 + Wd + 60;
-    o += dimV(Yd(0), Yd(t), xr, `${sz.slab}`, 11) + dimV(Yd(0), Yd(dI), xr + 34, `${sz.int}`, 11) + dimV(Yd(0), Yd(dP), xr + 68, `${sz.per}`, 11);
+    o += dimV(Yd(0), Yd(t), xr, `${sz.slab}`, 11) + dimV(Yd(0), Yd(dI), xr + 34, `${sz.int}`, 11) + dimV(Yd(0), Yd(sz.per / 100), xr + 68, `${sz.per}`, 11);
     o += svgText(xr + 34, Yd(0) - 12, 'cm', { size: 11, fill: C.muted });
     // horizontal dimensions: spacing and overall
-    const yd = Yd(dP) + colH + 48;
-    for (let i = 0; i + 1 < perpAxes.length; i++) o += dimH(X(perpAxes[i]), X(perpAxes[i + 1]), yd, f2(perpAxes[i + 1] - perpAxes[i]), 11);
+    const yd = Yd(dP) + colH + 52;
+    const axes = [...new Set(perp.map(b => +b.p.toFixed(6)))].sort((a, b) => a - b);
+    for (let i = 0; i + 1 < axes.length; i++) { const d = axes[i + 1] - axes[i]; o += dimH(X(axes[i]), X(axes[i + 1]), yd, d * sH >= 26 ? f2(d) : '', 11); }
     o += dimH(X(0), X(len), yd + 26, `${f2(len)} m`, 12);
     // labels
-    o += svgText(X(len * 0.5), top - 12, `${T.slab} ${sz.slab} cm`, { size: 12 });
+    if (slabs.length) o += svgText(X(len * 0.5), top - 12, `${T.slab} ${sz.slab} cm`, { size: 12 });
     o += svgText(X(0), top - 30, `${T.perBeam} ${pw}×${sz.per}`, { size: 11, anchor: 'start', fill: C.per });
-    if (perpAxes.length > 2) o += svgText(X(perpAxes[1]), Yd(dI) + 16, `${T.intBeam} ${iw}×${sz.int}`, { size: 11, fill: C.per });
-    if (longCut) o += svgText(X(len * 0.5), Yd(longCut.d) + 34, `${longCut.edge ? T.perBeam : T.intBeam} — ${T.longBeam}`, { size: 11, fill: C.per });
+    const firstInt = perp.find(b => b.kind === 'int');
+    if (firstInt) o += svgText(X(firstInt.p), Yd(dI) + 16, `${T.intBeam} ${iw}×${sz.int}`, { size: 11, fill: C.per });
+    perp.filter(b => b.kind === 'shared').forEach(b => { o += svgText(X(b.p), top - 30, `${T.sharedBeam} ${pw}×${sp.sharedDepth}`, { size: 11, fill: C.shared, weight: 700 }); });
+    along.slice(0, 1).forEach(b => {
+      const cont = sp.mode === 'continuous' && b.kind === 'int' && alongX && sp.k > 1;
+      o += svgText(X(len * 0.27), Yd(b.d) + 34, `${b.kind === 'int' ? T.intBeam : b.kind === 'shared' ? T.sharedBeam : T.perBeam} — ${cont ? T.contOver : T.longBeam}`, { size: 11, fill: colorOf(b.kind) });
+    });
     o += svgText(W / 2, H - 12, ex > 1.05 ? `${T.vScale}${ex.toFixed(1)}` : T.hScaleOnly, { size: 12, fill: C.cut });
     return svgWrap(W, H, o, `${T.secTitle} ${name}`, hatch('hb') + hatchCol('hc'));
   }
@@ -472,13 +600,16 @@
 ${step(1, 'pb-s1', `<p class="pb-note">${T.geoNote}</p>
   <div class="pb-fields">${field('L', T.L, rng('L') + ' step="0.1"')}${field('Ls', T.Ls, rng('Ls') + ' step="0.1"')}</div>
   <div class="btn-row"><button type="button" class="btn btn-primary" id="pb-example">${T.example}</button><button type="button" class="btn" id="pb-reset">${T.reset}</button></div>
-  <div class="pb-metrics" id="pb-geo"></div>`)}
+  <div class="pb-metrics" id="pb-geo"></div>
+  <div id="pb-splitbox" hidden><p class="pb-note">${T.splitInfo}</p>
+  <div class="pb-fields">${select('slabs', T.slabsCount, [])}${select('mode', T.modeLabel, Object.entries(T.modeOpts))}</div>
+  <p class="pb-note pb-muted">${T.modeNote}</p></div>`)}
 ${step(2, 'pb-s2', `<p class="pb-note">${T.gridRule}</p>
   <div class="pb-fields">${select('grid', T.gridChoice, [])}${select('pw', T.pw, [['25', '25'], ['30', '30']])}${select('iw', T.iw, [['25', '25'], ['30', '30']])}</div>
   <div class="pb-metrics" id="pb-gridres"></div><p class="pb-note pb-muted">${T.sizeRule}</p><div class="pb-table" id="pb-sizes"></div>`)}
 ${step(3, 'pb-s3', `<div class="pb-fields">${select('occupancy', T.occupancy, Object.entries(T.occ))}${field('D', T.D, rng('D') + ' step="0.5"')}${field('LL', T.LL, rng('LL') + ' step="0.5"')}${select('deadMode', T.deadMode, Object.entries(T.deadModes))}${field('floors', T.floors, rng('floors') + ' step="1"')}${field('gc', T.gc, rng('gc') + ' step="0.5"')}${field('gD', T.gD, rng('gD') + ' step="0.05"')}${field('gL', T.gL, rng('gL') + ' step="0.05"')}</div>
   <p class="pb-note pb-warn">${T.loadNote}</p><div class="pb-table" id="pb-loads"></div>`)}
-${step(4, 'pb-s4', `<div class="pb-colcount"><span>${T.colCount}</span><button type="button" class="btn" id="pb-minus" aria-label="−1">−</button><output id="pb-colnum" class="pb-colnum">4</output><button type="button" class="btn" id="pb-plus" aria-label="+1">+</button>
+${step(4, 'pb-s4', `<div class="pb-colcount"><span id="pb-colcount-label">${T.colCount}</span><button type="button" class="btn" id="pb-minus" aria-label="−1">−</button><output id="pb-colnum" class="pb-colnum">4</output><button type="button" class="btn" id="pb-plus" aria-label="+1">+</button>
     <span class="pb-presets">${[4, 6, 8, 12, 24].map(n => `<button type="button" class="btn btn-sm pb-preset" data-n="${n}">${n}</button>`).join('')}</span></div>
   <div class="pb-fields">${select('dist', T.dist, Object.entries(T.dists))}${field('fcu', T.fcu, rng('fcu') + ' step="1"')}${field('fy', T.fy, rng('fy') + ' step="10"')}${field('rho', T.rho, rng('rho') + ' step="0.1"')}${field('maxRatio', T.maxRatio, rng('maxRatio') + ' step="0.1"')}</div>
   <details class="pb-adv"><summary>${T.advanced}</summary><div class="pb-fields">${field('alpha', T.alpha, rng('alpha') + ' step="0.01"')}${field('beta', T.beta, rng('beta') + ' step="0.01"')}${field('ampEdge', T.ampEdge, rng('ampEdge') + ' step="0.05"')}${field('ampCorner', T.ampCorner, rng('ampCorner') + ' step="0.05"')}</div></details>
@@ -492,7 +623,7 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
 
   const $ = id => document.getElementById('pb-' + id);
   const numIds = ['L', 'Ls', 'D', 'LL', 'floors', 'gc', 'gD', 'gL', 'fcu', 'fy', 'rho', 'maxRatio', 'alpha', 'beta', 'ampEdge', 'ampCorner'];
-  const selIds = ['pw', 'iw', 'occupancy', 'deadMode', 'dist'];
+  const selIds = ['pw', 'iw', 'occupancy', 'deadMode', 'dist', 'mode'];
   let columns = DEFAULTS.columns, gridIndex = 0, lastGridKey = '';
 
   function setInputs(v) {
@@ -506,7 +637,7 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
     numIds.forEach(k => { const s = $(k).value.trim(); v[k] = s === '' ? NaN : Number(s); });
     v.pw = Number($('pw').value); v.iw = Number($('iw').value);
     v.occupancy = $('occupancy').value; v.deadMode = $('deadMode').value; v.dist = $('dist').value;
-    v.columns = columns; v.grid = gridIndex;
+    v.columns = columns; v.grid = gridIndex; v.mode = $('mode').value; v.slabs = Number($('slabs').value) || 0;
     return v;
   }
   const table = (head, rows, foot) => `<table><thead><tr>${head.map(h => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => i ? `<td>${c}</td>` : `<th scope="row">${c}</th>`).join('')}</tr>`).join('')}</tbody>${foot ? `<tfoot><tr>${foot.map(c => `<th>${c}</th>`).join('')}</tr></tfoot>` : ''}</table>`;
@@ -536,15 +667,22 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
       $('grid').innerHTML = ''; return;
     }
     $('geo').innerHTML = metric(T.area, `${fmt(r.area)} m²`) + metric('L / Ls', fmt(r.inp.L / r.inp.Ls)) + `<p class="pb-muted pb-small">${T.areaRange}</p>`;
+    const sp = r.split;
+    $('splitbox').hidden = !r.splitOptions.length;
+    $('slabs').innerHTML = r.splitOptions.map(k => `<option value="${k}">${k} × (${fmt(r.inp.L / k)} × ${fmt(r.inp.Ls)} ${T.m} ≈ ${fmt(r.inp.L / k * r.inp.Ls, 1)} m²)</option>`).join('');
+    if (r.splitOptions.length) $('slabs').value = String(sp.k);
+    $('colcount-label').textContent = sp.k > 1 ? T.colCountSlab : T.colCount;
     $('grid').innerHTML = r.grids.length ? r.grids.map((g, i) => `<option value="${i}">${g.nx} × ${g.ny} — ${fmt(g.a)} × ${fmt(g.b)} ${T.m}</option>`).join('') : `<option>${T.none}</option>`;
     $('grid').value = String(Math.min(gridIndex, Math.max(0, r.grids.length - 1)));
     const g = r.grid;
     $('gridres').innerHTML = g ? metric(T.panels, g.nx * g.ny) + metric(T.division, `${g.nx} × ${g.ny}`) + metric(T.panelSize, `${fmt(g.a)} × ${fmt(g.b)} ${T.m}`) + metric(T.panelArea, `${fmt(g.area)} m²`) + metric(T.ratio, fmt(g.ratio)) : '';
-    const sz = r.sz, pw = r.inp.pw, iw = r.inp.iw, Ls = r.inp.Ls;
+    const sz = r.sz, pw = r.inp.pw, iw = r.inp.iw, Ls = sp.short;
     $('sizes').innerHTML = table([T.element, T.rule, T.calc, T.adopted, T.section, T.drop], [
       [T.slab, `Ls/45 = ${fmt(Ls)}/45`, `${fmt(sz.slabRaw)} ${T.cm}`, `${sz.slab} ${T.cm}`, T.none, T.none],
       [T.perBeam, `Ls/16 = ${fmt(Ls)}/16`, `${fmt(sz.perRaw)} ${T.cm}`, `${sz.per} ${T.cm}`, `${pw} × ${sz.per}`, `${Math.max(0, sz.per - sz.slab)} ${T.cm}`],
-      [T.intBeam, `Ls/24 = ${fmt(Ls)}/24`, `${fmt(sz.intRaw)} ${T.cm}`, `${sz.int} ${T.cm}`, `${iw} × ${sz.int}`, `${Math.max(0, sz.int - sz.slab)} ${T.cm}`]]);
+      [T.intBeam, `Ls/24 = ${fmt(Ls)}/24`, `${fmt(sz.intRaw)} ${T.cm}`, `${sz.int} ${T.cm}`, `${iw} × ${sz.int}`, `${Math.max(0, sz.int - sz.slab)} ${T.cm}`]]
+      .concat(sp.mode === 'continuous' ? [[T.sharedBeam, T.perBeam, T.none, `${sp.sharedDepth} ${T.cm}`, `${pw} × ${sp.sharedDepth}`, `${Math.max(0, sp.sharedDepth - sz.slab)} ${T.cm}`]] : []))
+      + (sp.k > 1 ? `<p class="pb-muted pb-small">${T.eachSlab}: ${fmt(sp.Li)} × ${fmt(r.inp.Ls)} ${T.m}. ${T.slabRuleSide} = ${fmt(sp.short)} ${T.m}.</p>` : '');
     const sw = r.sw;
     if (r.loads) {
       const ld = r.loads, inp = r.inp;
@@ -552,12 +690,12 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
         [T.selfSlab, `${fmt(sw.slab)} ${T.perM2}`], [T.selfBeams, `${fmt(sw.beams)} ${T.perM2}`], [T.selfTotal, `${fmt(sw.total)} ${T.perM2}`],
         [T.dTotal, `${fmt(ld.Dtot)} ${T.perM2}`], [T.service, `${fmt(ld.Dtot)} + ${fmt(inp.LL)} = <b>${fmt(ld.ws)}</b> ${T.perM2}`],
         [T.factored, `${fmt(inp.gD)} × ${fmt(ld.Dtot)} + ${fmt(inp.gL)} × ${fmt(inp.LL)} = <b>${fmt(ld.wu)}</b> ${T.perM2}`],
-        [T.serviceHall, `${fmt(ld.ws)} × ${fmt(r.area)} × ${inp.floors} = ${fmt(ld.Ps, 0)} ${T.kN}`], [T.factoredHall, `${fmt(ld.wu)} × ${fmt(r.area)} × ${inp.floors} = ${fmt(ld.Pu, 0)} ${T.kN}`]]);
+        [T.serviceHall, `${fmt(ld.ws)} × ${fmt(r.loadArea)} × ${inp.floors} = ${fmt(ld.Ps, 0)} ${T.kN}`], [T.factoredHall, `${fmt(ld.wu)} × ${fmt(r.loadArea)} × ${inp.floors} = ${fmt(ld.Pu, 0)} ${T.kN}`]]);
       const cs = r.columns;
       const sizes = cs.map(c => `${c.b}×${c.h}`), uniq = [...new Set(sizes)];
       $('colsum').innerHTML = metric(T.cols, cs.length) + metric(T.sigma, `${fmt(ld.sigma)} N/mm²`) + metric(T.sizes, uniq.length > 3 ? `${uniq[0]} … ${uniq[uniq.length - 1]}` : uniq.join(' / ')) + metric(T.maxUtil, fmt(Math.max(...cs.map(c => c.util)), 2));
       $('cols').innerHTML = table([T.col, T.type, T.At, T.Ps, T.Pu, T.req, T.b, T.h, T.provided, 'h/b', T.util],
-        cs.map(c => [`C${c.id}`, c.corner ? T.corner : T.edge, fmt(c.At), fmt(c.Ps, 0), fmt(c.Pu, 0), fmt(c.req, 0), c.b, c.h, fmt(c.provided, 0), fmt(c.ratio), fmt(c.util)]),
+        cs.map(c => [`C${c.id}`, (c.shared ? T.shared + ' · ' : '') + (c.corner ? T.corner : T.edge), fmt(c.At), fmt(c.Ps, 0), fmt(c.Pu, 0), fmt(c.req, 0), c.b, c.h, fmt(c.provided, 0), fmt(c.ratio), fmt(c.util)]),
         [T.total, '', fmt(cs.reduce((a, c) => a + c.At, 0)), fmt(cs.reduce((a, c) => a + c.Ps, 0), 0), fmt(cs.reduce((a, c) => a + c.Pu, 0), 0), fmt(cs.reduce((a, c) => a + c.req, 0), 0), '', '', fmt(cs.reduce((a, c) => a + c.provided, 0), 0), '', '']);
     } else {
       $('loads').innerHTML = ''; $('colsum').innerHTML = ''; $('cols').innerHTML = '';
@@ -568,9 +706,12 @@ ${step(7, 'pb-s7', `<div class="pb-table" id="pb-summary"></div><div class="btn-
     $('secA').innerHTML = sectionSVG(r, T, 'X', aF);
     $('secB').innerHTML = sectionSVG(r, T, 'Y', bF);
     // summary
-    const rows = [[T.L, `${fmt(r.inp.L)} ${T.m}`], [T.Ls, `${fmt(Ls)} ${T.m}`], [T.area, `${fmt(r.area)} m²`],
+    const rows = [[T.L, `${fmt(r.inp.L)} ${T.m}`], [T.Ls, `${fmt(r.inp.Ls)} ${T.m}`], [T.area, `${fmt(r.area)} m²`]];
+    if (sp.k > 1) rows.push([T.slabsCount, `${sp.k} × ${fmt(sp.Li)} × ${fmt(r.inp.Ls)} ${T.m}`], [T.modeLabel, T.modeOpts[sp.mode]]);
+    if (sp.mode === 'continuous' && sp.k > 1) rows.push([T.sharedBeam, `${pw} × ${sp.sharedDepth} ${T.cm}`]);
+    rows.push(
       [T.gridChoice, g ? `${g.nx} × ${g.ny} (${fmt(g.a)} × ${fmt(g.b)} ${T.m})` : T.none],
-      [T.slab, `${sz.slab} ${T.cm}`], [T.perBeam, `${pw} × ${sz.per} ${T.cm}`], [T.intBeam, `${iw} × ${sz.int} ${T.cm}`]];
+      [T.slab, `${sz.slab} ${T.cm}`], [T.perBeam, `${pw} × ${sz.per} ${T.cm}`], [T.intBeam, `${iw} × ${sz.int} ${T.cm}`]);
     if (r.loads) {
       rows.push([T.occupancy, T.occ[r.inp.occupancy]], [T.dTotal, `${fmt(r.loads.Dtot)} ${T.perM2}`], [T.LL, `${fmt(r.inp.LL)} ${T.perM2}`],
         [T.service, `${fmt(r.loads.ws)} ${T.perM2}`], [T.factored, `${fmt(r.loads.wu)} ${T.perM2}`], [T.floors, r.inp.floors],

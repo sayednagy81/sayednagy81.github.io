@@ -24,6 +24,10 @@ unchanged, and the calculator is linked from `/tools/`, the home page, search, t
 ## How it works
 
 1. Hall geometry: length L (X) and width Ls (Y), between beam axes. One paneled slab should be 60–180 m².
+   A hall over 180 m² is not rejected: it is split along L into equal slabs of 60–180 m² (the student picks how many). Two modes:
+   - Separate: each slab is an independent hall with its own perimeter beams and four corner columns; the joint between slabs is widened until the twin columns do not overlap.
+   - Continuous: neighbouring slabs share the dividing beam, treated as a perimeter beam with the perimeter-beam size of the larger slab; internal beams run continuously over it, and the columns at its ends take tributary area from both slabs. No extra columns are placed along the shared beam. The Ls rules are for the simple case, so this is a rough estimate (continuity gives a negative moment over the shared beam, needing top reinforcement).
+   For split slabs the Ls rules use the shorter side of each slab.
 2. Beam grid: internal beams spaced 2–4 m, panel area no more than 16 m², panel ratio no more than 4:3. All feasible grids are listed; if none exists a warning is shown and no internal beams are drawn.
 3. Slab and beams from Ls: slab Ls/45 (rounded up to 1 cm), perimeter beam Ls/16 and internal beam Ls/24 overall depth (rounded up to 5 cm).
 4. Loads: editable presets (school and offices D = 6, L = 3; public service and assembly D = 6, L = 5 kN/m²). D is either a superimposed load (slab and beam self-weight added automatically) or a total dead load. Service load w = D + L; factored load wu = γD·D + γL·L with editable factors (default 1.4 and 1.6). These are teaching assumptions, not verified code values.

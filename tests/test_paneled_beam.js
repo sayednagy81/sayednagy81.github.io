@@ -103,7 +103,7 @@ test('grid limits and infeasible layouts', () => {
 
 test('hall area range 60-180 m2 and validation', () => {
   assert.ok(!E.calculate({ L: 14, Ls: 12 }).warnings.includes('hallArea'));
-  assert.ok(E.calculate({ L: 15, Ls: 12.5 }).warnings.includes('hallArea')); // 187.5
+  assert.ok(E.calculate({ L: 15, Ls: 12.5 }).warnings.includes('split'));    // 187.5 -> split, not rejected
   assert.ok(E.calculate({ L: 8, Ls: 7 }).warnings.includes('hallArea'));     // 56
   assert.ok(!E.calculate({ L: 12, Ls: 5 }).warnings.includes('hallArea'));   // 60
   assert.ok(!E.calculate({ L: 15, Ls: 12 }).warnings.includes('hallArea'));  // 180
@@ -111,6 +111,62 @@ test('hall area range 60-180 m2 and validation', () => {
   assert.strictEqual(E.calculate({ L: 14, Ls: 12, floors: 2.5 }).errors.floors, 'integer');
   assert.strictEqual(E.calculate({ L: 14, Ls: 12, fcu: 5 }).errors.fcu, 'range');
   assert.strictEqual(E.calculate({ L: NaN, Ls: 12 }).errors.L, 'required');
+});
+
+// 5. Halls over 180 m2 are split into slabs of 60-180 m2
+test('split options', () => {
+  assert.deepStrictEqual(E.splitOptions(20, 12), [2, 3, 4]); // 120, 80, 60 m2
+  assert.deepStrictEqual(E.splitOptions(30, 12), [2, 3, 4, 5, 6]); // 180, 120, 90, 72, 60 m2
+  const r = E.calculate({ L: 20, Ls: 12 });
+  assert.strictEqual(r.split.k, 2); assert.strictEqual(r.split.mode, 'continuous');
+  assert.ok(!r.warnings.includes('hallArea'));
+  // each slab 10 x 12: the rules use the shorter side 10 m
+  assert.strictEqual(r.split.short, 10); assert.deepStrictEqual([r.sz.slab, r.sz.per, r.sz.int], [23, 65, 45]);
+  assert.strictEqual(E.calculate({ L: 20, Ls: 12, slabs: 3 }).split.k, 3);
+  assert.strictEqual(E.calculate({ L: 20, Ls: 12, slabs: 7 }).split.k, 2); // invalid choice falls back
+});
+
+test('continuous slabs share the dividing beam and its columns', () => {
+  const r = E.calculate({ L: 20, Ls: 12, mode: 'continuous', columns: 4 });
+  const cs = r.columns;
+  assert.strictEqual(cs.length, 6); // 4 + 4 minus 2 shared
+  const shared = cs.filter(c => c.shared);
+  assert.strictEqual(shared.length, 2);
+  // by hand: slab 10 x 12, perimeter 44, corner zone 11 -> At = 120 * 11 / 44 = 30; shared column takes both sides
+  shared.forEach(c => { near(c.x, 10); near(c.At, 60); assert.ok(!c.corner); });
+  cs.filter(c => !c.shared).forEach(c => near(c.At, 30));
+  near(cs.reduce((a, c) => a + c.At, 0), 240);
+  cs.forEach(c => assert.ok(c.outer, 'no column inside the hall'));
+  const sb = r.beamsV.filter(b => b.kind === 'shared');
+  assert.strictEqual(sb.length, 1); near(sb[0].x, 10); assert.strictEqual(sb[0].d, r.split.sharedDepth); assert.strictEqual(sb[0].d, r.sz.per);
+  // internal beams along X run continuously over the shared beam
+  r.beamsH.filter(b => b.kind === 'int').forEach(b => { near(b.x0, 0); near(b.x1, 20); });
+  // extra columns stay on the outer sides, never along the shared beam
+  E.calculate({ L: 20, Ls: 12, mode: 'continuous', columns: 12 }).columns.forEach(c => assert.ok(c.outer));
+  // shared beam self-weight counted once
+  const sep = E.calculate({ L: 20, Ls: 12, mode: 'separate' });
+  assert.ok(r.sw.total < E.calculate({ L: 20, Ls: 12, mode: 'continuous', pw: 25 }).sw.total + 1e-9);
+  assert.ok(sep.columns.length === 8);
+});
+
+test('separate slabs are independent halls with a joint', () => {
+  const r = E.calculate({ L: 20, Ls: 12, mode: 'separate', columns: 4 });
+  assert.strictEqual(r.columns.length, 8);
+  assert.ok(r.columns.every(c => !c.shared && c.corner));
+  const j = r.split.joint;
+  assert.ok(j >= 0.25 - 1e-9);
+  near(r.split.Li, (20 - j) / 2);
+  near(r.columns.reduce((a, c) => a + c.At, 0), r.loadArea);
+  assert.ok(r.beamsV.every(b => b.kind !== 'shared'));
+  near(r.slabs[1].x0 - (r.slabs[0].x0 + r.slabs[0].L), j);
+  // twin columns at the joint must not overlap
+  for (const n of [4, 8, 12]) for (const L of [20, 26, 32]) {
+    const q = E.calculate({ L, Ls: 12, mode: 'separate', columns: n, floors: 6 });
+    for (const y of [0, 12]) {
+      const row = q.columns.filter(c => Math.abs(c.y - y) < 1e-6).sort((a, b) => a.x - b.x);
+      for (let i = 0; i + 1 < row.length; i++) assert.ok(row[i + 1].x - row[i].x >= (row[i].dx + row[i + 1].dx) / 2 - 1e-9, `overlap L=${L} n=${n}`);
+    }
+  }
 });
 
 console.log(`\n${passed} test groups passed`);
