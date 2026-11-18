@@ -55,7 +55,7 @@ test('load combinations', () => {
 
 test('column sections: minimum 30 cm, multiples of 5, area covered', () => {
   for (let req = 1; req <= 20000; req += 41) AR.api.sectionOptions(req).forEach(o => {
-    assert.ok(o.b >= 30 && o.h >= 30 && o.h >= o.b && o.b % 5 === 0 && o.h % 5 === 0 && o.area >= req - 1e-9 && (o.wall || o.h / o.b <= 3 + 1e-9));
+    assert.ok(o.b >= 30 && o.h >= 30 && o.h >= o.b && o.b % 5 === 0 && o.h % 5 === 0 && o.area >= req - 1e-9 && o.h / o.b <= 5 + 1e-9);
   });
   for (const req of [50, 900, 1200, 4000]) assert.ok(AR.api.sectionOptions(req).some(o => o.b === 30 && o.area >= req));
   assert.deepStrictEqual(AR.api.sectionOptions(1200).map(o => [o.b, o.h]), [[35, 35], [30, 40]]);
@@ -126,12 +126,16 @@ test('complete column loads: perimeter beam and wall, column weight, use, height
   assert.ok(g.demand > 2 * 657, `corner load ${g.demand} kN is more than twice the old 657 kN`);
   assert.strictEqual(g.minB, 60); assert.strictEqual(g.gov, 'span');
   assert.ok(g.chosen.b >= 60 && g.chosen.h >= 60, `chosen ${g.chosen.b} x ${g.chosen.h}`);
+  // alternatives for the designer: every width from 30 cm in 5 cm steps up to the square
+  assert.deepStrictEqual(g.options.map(o => o.b), [60, 55, 50, 45, 40, 35, 30]);
+  assert.deepStrictEqual(g.options.map(o => [o.b, o.h]).find(o => o[0] === 30), [30, 120]);
   // minimum side rule everywhere, and no 25 or 30 cm column for a 12 m span
   for (const n of [4, 6, 8, 12, 24]) for (const H of [3, 4.5, 6, 9]) {
     const v = AR.api.solve({ ...base, colCount: n, colHeight: H, hallUse: 3 });
     v.groups.forEach(x => {
       assert.strictEqual(x.minB, Math.max(30, up(1.2 * H * 100 / 15), up(x.span * 100 / 20)));
-      assert.ok(x.chosen.b >= x.minB && x.chosen.h >= x.minB && x.chosen.area >= x.req - 1e-9);
+      assert.ok(x.chosen.b >= 30 && x.chosen.area >= Math.max(x.req, x.minB * x.minB) - 1e-9);
+      x.options.forEach(o => assert.ok(o.area >= Math.max(x.req, x.minB * x.minB) - 1e-9 && o.b >= 30 && o.h / o.b <= 5 + 1e-9));
     });
   }
   // taller columns, heavier use and more storeys never give smaller sections

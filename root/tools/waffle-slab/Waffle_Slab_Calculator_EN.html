@@ -37,19 +37,25 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
 <main class="wrap">
 <form class="card" id="form" novalidate>
   <h2>Calculator inputs</h2>
-  <fieldset><legend>Slab dimensions</legend>
+  <fieldset><legend>Step 1: Hall size</legend>
     <div class="row"><label>Length X (m)<input id="length" type="number" step="any" min="0.01" value="12" required></label><label>Width Y (m)<input id="width" type="number" step="any" min="0.01" value="10" required></label></div>
     <div class="row space"><label>Minimum edge band (cm)<input id="edge" type="number" min="25" step="5" value="25" required></label><label>Topping thickness (cm)<input id="topping" type="number" min="0.1" step="any" value="8" required></label></div>
     <p class="hint space">Enter overall slab dimensions. Unused length is distributed equally at both ends of each axis.</p>
   </fieldset>
-  <fieldset><legend>Mould and rib geometry</legend>
+  <fieldset><legend>Step 2: Mould and rib</legend>
     <label>Mould preset (base dimensions × depth)<select id="preset"><option value="60">60 × 60 × 20 cm</option><option value="6030">60 × 60 × 30 cm</option><option value="6040">60 × 60 × 40 cm</option><option value="75">75 × 75 × 25 cm</option><option value="7530">75 × 75 × 30 cm</option><option value="7540">75 × 75 × 40 cm</option><option value="90" selected>90 × 90 × 45 cm</option><option value="10550">105 × 105 × 50 cm</option><option value="10560">105 × 105 × 60 cm</option><option value="custom">Custom</option></select></label>
     <div class="row space"><label>Mould base X (cm)<input id="baseX" type="number" min="0.1" step="any" value="90" disabled></label><label>Mould base Y (cm)<input id="baseY" type="number" min="0.1" step="any" value="90" disabled></label></div>
     <div class="row space"><label>Mould depth (cm)<input id="depth" type="number" min="0.1" step="any" value="45" disabled></label><label>Bottom rib width (cm)<input id="rib" type="number" min="0.1" step="any" value="15" disabled></label></div>
     <label class="space">Inward taper from vertical<select id="angle"><option value="5">5°</option><option value="7">7°</option></select></label>
     <p class="hint space">Each mould face slopes inward going upward. The void narrows and the rib widens.</p>
   </fieldset>
-  <fieldset><legend>Concrete quantities</legend>
+  <fieldset><legend>Step 3: Perimeter columns</legend>
+    <div class="row"><label>Perimeter columns (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>Extra columns go<select id="dist"><option value="0">Balanced around the perimeter</option><option value="1">On the long sides first</option><option value="2">On the short sides first</option></select></label></div><div class="row space"><label>Storeys carried by the columns<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>Use of the hall<select id="hallUse"><option value="5">Assembly hall or theatre (5 kN/m²)</option><option value="3">Classrooms or offices (3)</option><option value="2">Residential (2)</option></select></label><label>Column height (m)<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label></div>
+    <div class="row space"><label>Solid-zone side (cm)<input id="pad" type="number" min="0" step="any" value="150"></label></div>
+    <label class="space" hidden>Assumed axial stress (MPa)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label>
+    <label class="space">Column side ratio (width : length)<select id="colRatio"><option value="1">1 : 1</option><option value="1.25">1 : 1.25</option><option value="1.5">1 : 1.5</option><option value="2">1 : 2</option><option value="2.5">1 : 2.5</option><option value="3">1 : 3</option></select></label><p class="hint space">Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.</p>
+  </fieldset>
+  <fieldset><legend>Step 4: Concrete quantities</legend>
     <div class="row"><label>Concrete unit weight (kN/m³)<input id="density" type="number" min="0.1" step="any" value="25" required></label><label>Concrete waste (%)<input id="waste" type="number" min="0" step="any" value="5" required></label></div>
   </fieldset>
   <fieldset hidden><legend>Gravity loads</legend>
@@ -58,17 +64,12 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
     <label class="space">Load combination<select id="combo"><option value="1">1.4D + 1.6L (common in Egyptian practice)</option><option value="2">ACI 318: greater of 1.4D and 1.2D + 1.6L</option></select></label>
     <p class="hint space">Occupancy values are illustrative. Enter the live load required for your project and governing code.</p>
   </fieldset>
-  <fieldset><legend>Perimeter columns</legend>
-    <div class="row"><label>Storeys carried by the columns<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>Use of the hall<select id="hallUse"><option value="5">Assembly hall or theatre (5 kN/m²)</option><option value="3">Classrooms or offices (3)</option><option value="2">Residential (2)</option></select></label><label>Column height (m)<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label><label>Perimeter columns (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>Extra columns go<select id="dist"><option value="0">Balanced around the perimeter</option><option value="1">On the long sides first</option><option value="2">On the short sides first</option></select></label></div>
-    <div class="row space"><label>Solid-zone side (cm)<input id="pad" type="number" min="0" step="any" value="150"></label></div>
-    <label class="space" hidden>Assumed axial stress (MPa)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label><p class="hint space">This is an architectural sizing aid, so the detailed loads are built in: slab self-weight from the concrete quantity, finishes 1.5 kN/m², the live load of the chosen use, a 30 cm wide edge beam about span / 10 deep, a 25 cm brick wall (18 kN/m³) up to the beam, and the column self-weight, repeated for every storey. Edge column loads are increased by 25 % and corner loads by 50 % for bending. Capacity uses the short tied-column form σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %), and no side is less than 30 cm, 1.2 × column height / 15 (short braced column) or the span between columns / 20.</p>
-    <label class="space">Column side ratio (width : length)<select id="colRatio"><option value="1">1 : 1</option><option value="1.25">1 : 1.25</option><option value="1.5">1 : 1.5</option><option value="2">1 : 2</option><option value="2.5">1 : 2.5</option><option value="3">1 : 3</option></select></label><p class="hint space">Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.</p>
-  </fieldset>
+  
   <div class="buttons hide-print"><button type="submit" class="primary">Calculate</button><button type="button" id="reset">Reset example</button></div>
 </form>
 <div class="stack">
   <section class="card">
-    <div class="toolbar"><h2>Results</h2><div class="buttons hide-print"><button type="button" id="csv">Export CSV</button><button type="button" id="svg">Export SVG</button><button type="button" id="print">Print / PDF</button></div></div>
+    <div class="toolbar"><h2>Step 5: Results and drawings</h2><div class="buttons hide-print"><button type="button" id="csv">Export CSV</button><button type="button" id="svg">Export SVG</button><button type="button" id="print">Print / PDF</button></div></div>
     <p id="error" role="alert" hidden></p><p id="notice" role="status" hidden></p><p id="refs" class="hint" hidden></p>
     <div id="results">
       <div class="metrics" id="metrics" aria-live="polite"></div>
@@ -79,15 +80,17 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
       <div class="legend"><span><i class="swatch solid"></i>Concrete</span><span><i class="swatch void"></i>Mould void</span><span><i class="swatch line"></i>A–A / B–B</span><span><i class="swatch support"></i>Columns</span></div>
     </div>
   </section>
-  <section class="card" id="details"><h2>Geometry and quantities</h2><div class="cols"><div class="tablewrap"><table aria-label="Geometry"><thead><tr><th colspan="2"><strong>Geometry</strong></th></tr></thead><tbody id="geometry"></tbody></table></div><div class="tablewrap"><table aria-label="Concrete quantities"><thead><tr><th colspan="2"><strong>Concrete quantities</strong></th></tr></thead><tbody id="quantities"></tbody></table></div></div></section>
-  <section class="card" id="loadDetails"><h2>Preliminary column sizes</h2><div class="cols"><div class="tablewrap" hidden><table aria-label="Loads and preliminary column sizes"><tbody id="loadTable"></tbody></table></div><div class="tablewrap"><table aria-label="Column grid"><thead id="supportHead"></thead><tbody id="supportTable"></tbody></table></div></div><h3 class="space">Column section options</h3><div id="colOptions"></div><p class="hint space">Every option has at least the required area, with sides in multiples of 5 cm and at least 30 cm. ★ marks the option closest to the chosen ratio; a 30 cm wide option is always offered. Click an option to use it.</p><p class="hint space">Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 30 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.</p></section>
+  <section class="card" id="loadDetails"><h2>Step 6: Choose the column section</h2><div class="cols"><div class="tablewrap" hidden><table aria-label="Loads and preliminary column sizes"><tbody id="loadTable"></tbody></table></div><div class="tablewrap"><table aria-label="Column grid"><thead id="supportHead"></thead><tbody id="supportTable"></tbody></table></div></div><h3 class="space">Column section options</h3><div id="colOptions"></div><p class="hint space">These are suggested sections for the designer to choose from: widths start at 30 cm in 5 cm steps and each length is rounded up so the area is not less than the required area. ★ marks the option closest to the chosen side ratio. Click an option to use it in the plan.</p></section>
+  <section class="card" id="details"><h2>Step 7: Geometry and quantities</h2><div class="cols"><div class="tablewrap"><table aria-label="Geometry"><thead><tr><th colspan="2"><strong>Geometry</strong></th></tr></thead><tbody id="geometry"></tbody></table></div><div class="tablewrap"><table aria-label="Concrete quantities"><thead><tr><th colspan="2"><strong>Concrete quantities</strong></th></tr></thead><tbody id="quantities"></tbody></table></div></div></section>
+  
   <section class="card"><details><summary>Calculation method and references</summary><p class="hint space">Pitch equals the mould base dimension plus bottom rib width. Voids have rectangular bases and straight faces. Presets are model inputs.</p><p class="hint" id="formula"></p><p class="hint">Void volume uses the base, midpoint and top areas in Simpson’s rule, which is exact for this geometry. Net concrete equals the gross envelope minus all voids. Self-weight is equivalent thickness times concrete unit weight.</p><p class="hint">Use for quantity takeoff and preliminary estimates of a rectangular slab. Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L. The ACI 318-19 §8.8 screening covers selected geometry criteria for removable forms. <a href="https://www.concrete.org/store/productdetail?ItemID=318U19&amp;Language=English&amp;Units=US_Units" target="_blank" rel="noopener">ACI 318-19</a></p><p class="hint">Formwork background <a href="https://www.renukafiberglass.com/latest-update/waffle-mould-slap/4" target="_blank" rel="noopener">Renuka Fibre Glass</a> · <a href="https://www.zoloformwork.com/zplastk/domex-waffle-slab-plastic-formwork.html" target="_blank" rel="noopener">Zolo Domex</a></p></details></section>
+  <section class="card" id="loadNote"><details><summary>Note: how the column loads are calculated</summary><p class="hint space">This is an architectural sizing aid, so the detailed loads are built in: slab self-weight from the concrete quantity, finishes 1.5 kN/m², the live load of the chosen use, a 30 cm wide edge beam about span / 10 deep, a 25 cm brick wall (18 kN/m³) up to the beam, and the column self-weight, repeated for every storey. Edge column loads are increased by 25 % and corner loads by 50 % for bending. Capacity uses the short tied-column form σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %), and no side is less than 30 cm, 1.2 × column height / 15 (short braced column) or the span between columns / 20.</p><div id="loadSteps"></div><p class="hint space">Every alternative has at least the required area and at least the square of the governing minimum side; slim sections (30 cm wide with a tall column) need a structural slenderness check.</p><p class="hint space">Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 30 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.</p></details></section>
 </div>
 </main>
 <script>
  'use strict';
 const T = {"title": "Waffle Slab Calculator", "subtitle": "Mould layout, concrete quantities and preliminary gravity loads.", "language": "العربية", "inputs": "Calculator inputs", "panel": "Slab dimensions", "length": "Length X (m)", "width": "Width Y (m)", "edge": "Minimum edge band (cm)", "topping": "Topping thickness (cm)", "edgeHelp": "Enter overall slab dimensions. Unused length is distributed equally at both ends of each axis.", "mould": "Mould and rib geometry", "preset": "Mould preset (base dimensions × depth)", "cm": "cm", "m": "m", "m2": "m²", "m3": "m³", "kn": "kN", "kpa": "kN/m²", "custom": "Custom", "baseX": "Mould base X (cm)", "baseY": "Mould base Y (cm)", "depth": "Mould depth (cm)", "rib": "Bottom rib width (cm)", "angle": "Inward taper from vertical", "angleHelp": "Each mould face slopes inward going upward. The void narrows and the rib widens.", "quantity": "Concrete quantities", "density": "Concrete unit weight (kN/m³)", "waste": "Concrete waste (%)", "loads": "Gravity loads", "use": "Illustrative occupancy", "residential": "Residential", "office": "Office", "classroom": "Classroom", "retail": "Retail", "dead": "Additional dead load (kN/m²)", "live": "Live load (kN/m²)", "loadHelp": "Occupancy values are illustrative. Enter the live load required for your project and governing code.", "supports": "Column grid", "baysX": "Bays along X", "baysY": "Bays along Y", "pad": "Solid-zone side (cm)", "storeys": "Storeys carried by the columns", "stress": "Assumed axial stress (MPa)", "supportHelp": "Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.", "calculate": "Calculate", "reset": "Reset example", "results": "Results", "csv": "Export CSV", "svg": "Export SVG", "print": "Print / PDF", "plan": "Mould layout plan", "section": "Slab section", "sectionHelp": "H = total depth, h = mould depth, t = topping, and b₀ and b₁ = bottom and top rib widths.", "concrete": "Concrete", "void": "Mould void", "support": "Columns", "details": "Geometry and quantities", "geometry": "Geometry", "loadResults": "Loads and preliminary column sizes", "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 30 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.", "method": "Calculation method and references", "methodLayout": "Pitch equals the mould base dimension plus bottom rib width. Voids have rectangular bases and straight faces. Presets are model inputs.", "formula": "Inset per face Δ = h × tan θ. Top opening = base opening − 2Δ. Top rib width = bottom rib width + 2Δ.", "methodVolume": "Void volume uses the base, midpoint and top areas in Simpson’s rule, which is exact for this geometry. Net concrete equals the gross envelope minus all voids. Self-weight is equivalent thickness times concrete unit weight.", "methodScope": "Use for quantity takeoff and preliminary estimates of a rectangular slab. Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L. The ACI 318-19 §8.8 screening covers selected geometry criteria for removable forms.", "sourceLabel": "Formwork background", "planHelp": "Yellow squares mark column locations. Dashed yellow outlines mark the nominal solid zones. The cut passes through a mould row or column near the centre.", "verticalScale": "Vertical scale relative to horizontal", "grossArea": "Gross slab area", "baseSize": "Opening at soffit", "topSize": "Opening beneath topping", "inset": "Horizontal inset per face", "baseRib": "Bottom rib width", "topRib": "Top rib width", "pitch": "Pitch X × Y", "margins": "Actual edge band X × Y", "spans": "Bay spans X × Y", "totalDepth": "Total depth", "refTopping": "Topping, ACI reference minimum", "potential": "Grid before exclusions", "removed": "Moulds omitted at supports", "count": "Mould count", "oneVoid": "Void per mould", "voids": "Total void volume", "full": "Solid volume at equal depth", "topVolume": "Topping volume", "below": "Concrete below topping", "net": "Net concrete", "order": "Order quantity with waste", "reduction": "Concrete reduction vs. solid slab of equal depth", "equivalent": "Equivalent concrete thickness", "self": "Slab self-weight", "totalDead": "Total dead load D", "service": "Service load D + L", "ultimate": "Factored gravity load", "corner": "Corner", "edgeColumn": "Edge", "interior": "Interior", "number": "Count", "trib": "Tributary area", "axial": "Indicative axial load", "columnSize": "Indicative size", "badInput": "Enter a valid number within the field range for", "badTaper": "The taper and depth close the top opening. Increase the base dimensions or reduce depth.", "large": "The slab or mould grid is too large for this calculator. Divide the layout into smaller areas.", "noMould": "This layout has zero moulds and is calculated as solid.", "codeRib": "Bottom rib width is below the 10.16 cm reference threshold.", "codeDepth": "Overall depth exceeds 3.5 times the minimum rib width in the reference check.", "codeClear": "The largest clear gap exceeds the 76.2 cm reference threshold.", "codeTop": "Topping is thinner than the calculated reference minimum.", "punch": "Check punching shear at every column and the required extent of its solid zone using the project’s structural analysis."};
-Object.assign(T, {"cm2": "cm²", "reqArea": "Required area", "stepLine": "Perimeter line load (edge beam + 25 cm wall, factored)", "stepColW": "Column self-weight per storey", "stepMin": "Minimum side from column height and span", "govArea": "the axial load governs", "govSlender": "the column height (slenderness) governs", "govSpan": "the span between columns governs", "govMin": "the 30 cm minimum governs", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)", "refHead": "Reference notes (ACI 318-19 §9.8; not errors in your inputs):", "codeRib": "Bottom rib width is below the 10.16 cm minimum for joist construction.", "codeDepth": "Overall depth {H} cm is more than 3.5 × the bottom rib width ({L} cm); a wider rib or a shallower mould keeps within this joist limit.", "codeClear": "Moulds wider than 76.2 cm are beyond the clear-spacing limit for ACI joist construction, so the slab is treated as a two-way ribbed (waffle) slab without the joist allowances. This is normal for 90 cm and larger moulds.", "codeTop": "Topping is thinner than the calculated reference minimum."});
+Object.assign(T, {"cm2": "cm²", "reqArea": "Required area", "minArea": "Minimum section area", "stepLine": "Perimeter line load (edge beam + 25 cm wall, factored)", "stepColW": "Column self-weight per storey", "stepMin": "Minimum side from column height and span", "govArea": "the axial load governs", "govSlender": "the column height (slenderness) governs", "govSpan": "the span between columns governs", "govMin": "the 30 cm minimum governs", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)", "refHead": "Reference notes (ACI 318-19 §9.8; not errors in your inputs):", "codeRib": "Bottom rib width is below the 10.16 cm minimum for joist construction.", "codeDepth": "Overall depth {H} cm is more than 3.5 × the bottom rib width ({L} cm); a wider rib or a shallower mould keeps within this joist limit.", "codeClear": "Moulds wider than 76.2 cm are beyond the clear-spacing limit for ACI joist construction, so the slab is treated as a two-way ribbed (waffle) slab without the joist allowances. This is normal for 90 cm and larger moulds.", "codeTop": "Topping is thinner than the calculated reference minimum."});
 Object.assign(T, {"supports": "Perimeter columns", "spans": "Column spacing X × Y", "planHelp": "Columns stand on the perimeter only, drawn at their chosen size; dashed outlines mark their solid zones. Drag the section line or use the slider under the section; a cut through a rib shows solid concrete.", "hallArea": "The slab area is outside the 60–180 m² range used for one slab in the paneled beam calculator."});
 const PRESETS = {60:[60,60,20,10],6030:[60,60,30,12],6040:[60,60,40,15],75:[75,75,25,12],7530:[75,75,30,12],7540:[75,75,40,15],90:[90,90,45,15],10550:[105,105,50,20],10560:[105,105,60,20]};
 const mouldFields = ['baseX','baseY','depth','rib'];
@@ -116,8 +119,8 @@ function layoutAxis(span, opening, rib, edge, bays, pad) {
 }
 
 
-// Column sections: b, h multiples of 5 cm, at least 30 cm in both directions, h/b up to 3, area not more than
-// 30 % above the smallest, plus one 30 cm wide section in every case. Sorted from square to elongated.
+// Column alternatives: widths from 30 cm in 5 cm steps, h rounded up to 5 cm so the area covers the required
+// area and the governing minimum side squared, h/b up to 5. Sorted from square to elongated.
 const COL_MIN=30;
 
 // Perimeter columns as in the paneled beam calculator: four corners plus extra columns on the sides.
@@ -139,25 +142,21 @@ function columnLayout(L,W,count,dist){
 }
 function sectionOptions(req,minB) {
   const m=Math.max(COL_MIN,Math.ceil((minB||COL_MIN)/5-1e-7)*5);
-  const out=[];
-  const bMax=Math.max(m,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=m;b<=bMax;b+=5){
-    const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
-    if(h/b>3+EPS) continue;
-    out.push({b,h,area:b*h,ratio:h/b});
+  const need=Math.max(req,m*m), sq=Math.ceil(Math.sqrt(need)/5-1e-7)*5, out=[];
+  for(let b=COL_MIN;b<=sq;b+=5){
+    const h=Math.max(b,Math.ceil(need/b/5-1e-7)*5);
+    if(h/b>5+EPS) continue;
+    if(!out.some(o=>o.b===b&&o.h===h)) out.push({b,h,area:b*h,ratio:h/b});
   }
-  const minA=Math.min(...out.map(c=>c.area));
-  const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(m<=30&&!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
-  const seen=new Set();
-  return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
+  return out.sort((p,q)=>p.ratio-q.ratio||p.area-q.area);
 }
 function recommendSection(options,ratio){return options.filter(o=>o.b>=COL_MIN&&o.h>=COL_MIN).sort((p,q)=>Math.abs(p.ratio-ratio)-Math.abs(q.ratio-ratio)||p.area-q.area)[0];}
 function renderColumnOptions(v){
   const box=$('colOptions');box.replaceChildren();
+  const noteBox=$('loadSteps');noteBox.replaceChildren();
   for(const g of v.groups){
     const wrap=document.createElement('div');wrap.className='colgroup';
-    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.reqArea+': '+fmt(g.req,0)+' '+T.cm2;
+    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.minArea+': '+fmt(Math.max(g.req,g.minB*g.minB),0)+' '+T.cm2;
     const chips=document.createElement('div');chips.className='chips';chips.setAttribute('role','group');chips.setAttribute('aria-label',T[g.key]);
     for(const o of g.options){
       const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.group=g.key;b.dataset.sec=o.b+'x'+o.h;
@@ -184,7 +183,8 @@ function renderColumnOptions(v){
       const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
       if(note){const n=document.createElement('em');n.textContent=' — '+note;li.append(n);}
       ol.append(li);}
-    wrap.append(p,ol,chips);box.append(wrap);
+    wrap.append(p,chips);box.append(wrap);
+    const sw=document.createElement('div');sw.className='colgroup';const sh=document.createElement('p');sh.textContent=T[g.key]+' ('+g.number+')';sw.append(sh,ol);noteBox.append(sw);
   }
 }
 
@@ -428,8 +428,8 @@ function update() {
   renderRows('geometry',rows.geom);
   renderRows('quantities',rows.qty);
   renderRows('loadTable',rows.load);
-  renderRows('supportHead',[[T.support,T.number,T.trib,T.axial,T.reqArea,T.columnSize]]);
-  renderRows('supportTable',rows.groups);
+  renderRows('supportHead',[[T.support,T.number,T.trib,T.columnSize]]);
+  renderRows('supportTable',rows.groups.map(r=>[r[0],r[1],r[2],r[5]]));
   renderColumnOptions(v);
   draw(v);
 }

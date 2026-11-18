@@ -16,7 +16,9 @@ Changes made here, the same way in both languages:
      calculation per column group (tributary area, factored load, P, required area, proposed b x h);
   9. complete column loads: perimeter beam and wall line loads, column self-weight and a live load by use
      (hall 5 kN/m2 by default), and a minimum column side from the column height (k H / 15, k = 1.2, braced)
-     and from the span between columns (span / 20), so a 12 m hall on four columns no longer gets 25 x 25 cm.
+     and from the span between columns (span / 20), so a 12 m hall on four columns no longer gets 25 x 25 cm;
+ 10. numbered steps (hall, mould, columns, quantities, results, column choice, quantities table), column
+     alternatives from 30 cm wide for the designer to choose, and the load calculation moved to a note at the end.
 Run: python tools/make_waffle_pages.py
 """
 import json
@@ -37,13 +39,13 @@ TXT = {
         "home": "Home", "tools": "Tools", "name": "Dr. Sayed Marey Nagy", "locale": "en_US",
         "combo": "Load combination", "comboEcp": "1.4D + 1.6L (common in Egyptian practice)", "comboAci": "ACI 318: greater of 1.4D and 1.2D + 1.6L",
         "colRatio": "Column side ratio (width : length)", "colOptions": "Column section options",
-        "optNote": "Every option has at least the required area, with sides in multiples of 5 cm and at least 30 cm. ★ marks the option closest to the chosen ratio; a 30 cm wide option is always offered. Click an option to use it.",
+        "optNote": "These are suggested sections for the designer to choose from: widths start at 30 cm in 5 cm steps and each length is rounded up so the area is not less than the required area. ★ marks the option closest to the chosen side ratio. Click an option to use it in the plan.",
         "oldColumnScope": "Square-column estimates use tributary area under a uniform average load and round up to 5 cm. Structural analysis is required for actual loading, moments, slenderness, code dimensions and reinforcement.",
         "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 30 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.",
         "oldScope": "Factored gravity load is the greater of 1.4D and 1.2D + 1.6L.",
         "scope": "Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L.",
         "T": {
-            "cm2": "cm²", "reqArea": "Required area", "stepLine": "Perimeter line load (edge beam + 25 cm wall, factored)", "stepColW": "Column self-weight per storey", "stepMin": "Minimum side from column height and span", "govArea": "the axial load governs", "govSlender": "the column height (slenderness) governs", "govSpan": "the span between columns governs", "govMin": "the 30 cm minimum governs", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)",
+            "cm2": "cm²", "reqArea": "Required area", "minArea": "Minimum section area", "stepLine": "Perimeter line load (edge beam + 25 cm wall, factored)", "stepColW": "Column self-weight per storey", "stepMin": "Minimum side from column height and span", "govArea": "the axial load governs", "govSlender": "the column height (slenderness) governs", "govSpan": "the span between columns governs", "govMin": "the 30 cm minimum governs", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)",
             "refHead": "Reference notes (ACI 318-19 §9.8; not errors in your inputs):",
             "codeRib": "Bottom rib width is below the 10.16 cm minimum for joist construction.",
             "codeDepth": "Overall depth {H} cm is more than 3.5 × the bottom rib width ({L} cm); a wider rib or a shallower mould keeps within this joist limit.",
@@ -58,13 +60,13 @@ TXT = {
         "home": "الرئيسية", "tools": "الأدوات", "name": "د. سيد مرعي", "locale": "ar_AR",
         "combo": "توليفة الأحمال", "comboEcp": "1.4D + 1.6L (الشائعة في التصميم بمصر)", "comboAci": "ACI 318: الأكبر من 1.4D و1.2D + 1.6L",
         "colRatio": "نسبة ضلعي العمود (العرض : الطول)", "colOptions": "اختيارات قطاع العمود",
-        "optNote": "كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 30 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة، ويظهر دائمًا اختيار بعرض 30 سم. اضغط أي اختيار لاستخدامه.",
+        "optNote": "هذه قطاعات مقترحة يختار منها المصمم: يبدأ العرض من 30 سم ويزيد 5 سم، ويُقرَّب الطول للأعلى بحيث لا تقل المساحة عن المطلوبة. العلامة ★ على الاختيار الأقرب لنسبة الضلعين المختارة. اضغط أي اختيار لاستخدامه في المسقط.",
         "oldColumnScope": "التقدير للأعمدة المربعة بطريقة مساحة التأثير تحت حمل موزّع متوسط، مع التقريب للأعلى إلى 5 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة ومتطلبات الكود والتسليح.",
         "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.",
         "oldScope": "الحمل الرأسي المضاعف هو الأكبر من 1.4D و1.2D + 1.6L.",
         "scope": "الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318.",
         "T": {
-            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
+            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "minArea": "أقل مساحة للقطاع", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
             "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):",
             "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.",
             "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.",
@@ -75,30 +77,26 @@ TXT = {
 }
 
 ENGINE = r"""
-// Column sections: b, h multiples of 5 cm, at least 30 cm in both directions, h/b up to 3, area not more than
-// 30 % above the smallest, plus one 30 cm wide section in every case. Sorted from square to elongated.
+// Column alternatives: widths from 30 cm in 5 cm steps, h rounded up to 5 cm so the area covers the required
+// area and the governing minimum side squared, h/b up to 5. Sorted from square to elongated.
 const COL_MIN=30;
 function sectionOptions(req,minB) {
   const m=Math.max(COL_MIN,Math.ceil((minB||COL_MIN)/5-1e-7)*5);
-  const out=[];
-  const bMax=Math.max(m,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=m;b<=bMax;b+=5){
-    const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
-    if(h/b>3+EPS) continue;
-    out.push({b,h,area:b*h,ratio:h/b});
+  const need=Math.max(req,m*m), sq=Math.ceil(Math.sqrt(need)/5-1e-7)*5, out=[];
+  for(let b=COL_MIN;b<=sq;b+=5){
+    const h=Math.max(b,Math.ceil(need/b/5-1e-7)*5);
+    if(h/b>5+EPS) continue;
+    if(!out.some(o=>o.b===b&&o.h===h)) out.push({b,h,area:b*h,ratio:h/b});
   }
-  const minA=Math.min(...out.map(c=>c.area));
-  const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(m<=30&&!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
-  const seen=new Set();
-  return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
+  return out.sort((p,q)=>p.ratio-q.ratio||p.area-q.area);
 }
 function recommendSection(options,ratio){return options.filter(o=>o.b>=COL_MIN&&o.h>=COL_MIN).sort((p,q)=>Math.abs(p.ratio-ratio)-Math.abs(q.ratio-ratio)||p.area-q.area)[0];}
 function renderColumnOptions(v){
   const box=$('colOptions');box.replaceChildren();
+  const noteBox=$('loadSteps');noteBox.replaceChildren();
   for(const g of v.groups){
     const wrap=document.createElement('div');wrap.className='colgroup';
-    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.reqArea+': '+fmt(g.req,0)+' '+T.cm2;
+    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.minArea+': '+fmt(Math.max(g.req,g.minB*g.minB),0)+' '+T.cm2;
     const chips=document.createElement('div');chips.className='chips';chips.setAttribute('role','group');chips.setAttribute('aria-label',T[g.key]);
     for(const o of g.options){
       const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.group=g.key;b.dataset.sec=o.b+'x'+o.h;
@@ -125,7 +123,8 @@ function renderColumnOptions(v){
       const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
       if(note){const n=document.createElement('em');n.textContent=' — '+note;li.append(n);}
       ol.append(li);}
-    wrap.append(p,ol,chips);box.append(wrap);
+    wrap.append(p,chips);box.append(wrap);
+    const sw=document.createElement('div');sw.className='colgroup';const sh=document.createElement('p');sh.textContent=T[g.key]+' ('+g.number+')';sw.append(sh,ol);noteBox.append(sw);
   }
 }
 """
@@ -453,6 +452,51 @@ def extend(s, lang):
   }
 """ + s[b:]
     s = R(s, "return {cols,skip,spacing,raw,", "return {cols,skip,spacing,live,raw,")
+    # 10. numbered steps, column choice before the quantity tables, load calculation as a note at the end
+    steps = (["أولًا: أبعاد القاعة", "ثانيًا: القالب والعصب", "ثالثًا: الأعمدة المحيطية", "رابعًا: كميات الخرسانة",
+              "خامسًا: النتائج والرسومات", "سادسًا: اختيار قطاع العمود", "سابعًا: الهندسة وحصر الكميات"] if ar else
+             ["Step 1: Hall size", "Step 2: Mould and rib", "Step 3: Perimeter columns", "Step 4: Concrete quantities",
+              "Step 5: Results and drawings", "Step 6: Choose the column section", "Step 7: Geometry and quantities"])
+    old_leg = (["أبعاد البلاطة", "مقاس القالب والعصب", e["legend"], "كميات الخرسانة"] if ar else
+               ["Slab dimensions", "Mould and rib geometry", e["legend"], "Concrete quantities"])
+    for o, n in zip(old_leg, steps):
+        s = R(s, f"<legend>{o}</legend>", f"<legend>{n}</legend>")
+    # columns fieldset before the concrete quantities fieldset
+    a = s.index(f"<fieldset><legend>{steps[2]}</legend>"); b = s.index("</fieldset>", a) + len("</fieldset>")
+    cols_fs = s[a:b]; s = s[:a] + s[b:]
+    # inside it: number of columns and their distribution first, then storeys, use and height
+    a = cols_fs.index(f'<label>{st_new}'); b = cols_fs.index('<label>', cols_fs.index('id="colHeight"'))
+    trio = cols_fs[a:b]; cols_fs = cols_fs[:a] + cols_fs[b:]
+    d = cols_fs.index('</select></label>', cols_fs.index('<select id="dist">')) + len('</select></label>')
+    cols_fs = cols_fs[:d] + '</div><div class="row space">' + trio + cols_fs[d:]
+    # the built-in loads note leaves the form for the note at the end
+    note = f'<p class="hint space">{e["builtIn"]}</p>'
+    cols_fs = R(cols_fs, note, '')
+    q = s.index(f"<fieldset><legend>{steps[3]}</legend>")
+    s = s[:q] + cols_fs + "\n  " + s[q:]
+    # result cards: numbered, column choice before the geometry and quantity tables
+    res_h2 = "ملخص النتائج" if ar else "Results"
+    geo_h2 = "الهندسة وحصر الكميات" if ar else "Geometry and quantities"
+    s = R(s, f"<h2>{res_h2}</h2>", f"<h2>{steps[4]}</h2>")
+    s = R(s, f"<h2>{geo_h2}</h2>", f"<h2>{steps[6]}</h2>")
+    s = R(s, f'<section class="card" id="loadDetails"><h2>{e["colTitle"]}</h2>', f'<section class="card" id="loadDetails"><h2>{steps[5]}</h2>')
+    a = s.index('<section class="card" id="loadDetails">'); b = s.index('</section>', a) + len('</section>')
+    card = s[a:b]; s = s[:a] + s[b:]
+    g = s.index('<section class="card" id="details">')
+    s = s[:g] + card + "\n  " + s[g:]
+    # column table without loads: type, number, tributary area, chosen section (the CSV keeps every column)
+    s = R(s, "renderRows('supportHead',[[T.support,T.number,T.trib,T.axial,T.reqArea,T.columnSize]]);",
+          "renderRows('supportHead',[[T.support,T.number,T.trib,T.columnSize]]);")
+    s = R(s, "renderRows('supportTable',rows.groups);", "renderRows('supportTable',rows.groups.map(r=>[r[0],r[1],r[2],r[5]]));")
+    # the scope paragraph about loads goes with the note
+    scope = f'<p class="hint space">{TXT[lang]["columnScope"]}</p>'
+    s = R(s, scope, '')
+    note_title = "ملاحظة: طريقة حساب أحمال الأعمدة" if ar else "Note: how the column loads are calculated"
+    alt_note = ("البدائل لها مساحة لا تقل عن المطلوبة ولا عن مربع أقل ضلع حاكم؛ والقطاعات النحيفة (عرض 30 سم مع ارتفاع كبير) تحتاج تحققًا إنشائيًا من النحافة." if ar else
+                "Every alternative has at least the required area and at least the square of the governing minimum side; slim sections (30 cm wide with a tall column) need a structural slenderness check.")
+    end = s.rindex("</div>\n</main>")
+    s = s[:end] + (f'  <section class="card" id="loadNote"><details><summary>{note_title}</summary>{note}'
+                   f'<div id="loadSteps"></div><p class="hint space">{alt_note}</p>{scope}</details></section>\n') + s[end:]
     return s
 
 

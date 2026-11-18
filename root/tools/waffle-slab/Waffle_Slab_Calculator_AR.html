@@ -37,19 +37,25 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
 <main class="wrap">
 <form class="card" id="form" novalidate>
   <h2>مدخلات الحاسبة</h2>
-  <fieldset><legend>أبعاد البلاطة</legend>
+  <fieldset><legend>أولًا: أبعاد القاعة</legend>
     <div class="row"><label>طول X (م)<input id="length" type="number" step="any" min="0.01" value="12" required></label><label>عرض Y (م)<input id="width" type="number" step="any" min="0.01" value="10" required></label></div>
     <div class="row space"><label>أقل شريط حافة (سم)<input id="edge" type="number" min="25" step="5" value="25" required></label><label>سمك الطبقة العلوية (سم)<input id="topping" type="number" min="0.1" step="any" value="8" required></label></div>
     <p class="hint space">المقاسات بين الحدود الخارجية لنطاق الحساب. يوزّع المتبقي بالتساوي على طرفي كل اتجاه.</p>
   </fieldset>
-  <fieldset><legend>مقاس القالب والعصب</legend>
+  <fieldset><legend>ثانيًا: القالب والعصب</legend>
     <label>القالب (قاعدة سفلية × عمق)<select id="preset"><option value="60">60 × 60 × 20 سم</option><option value="6030">60 × 60 × 30 سم</option><option value="6040">60 × 60 × 40 سم</option><option value="75">75 × 75 × 25 سم</option><option value="7530">75 × 75 × 30 سم</option><option value="7540">75 × 75 × 40 سم</option><option value="90" selected>90 × 90 × 45 سم</option><option value="10550">105 × 105 × 50 سم</option><option value="10560">105 × 105 × 60 سم</option><option value="custom">مخصص</option></select></label>
     <div class="row space"><label>قاعدة القالب X (سم)<input id="baseX" type="number" min="0.1" step="any" value="90" disabled></label><label>قاعدة القالب Y (سم)<input id="baseY" type="number" min="0.1" step="any" value="90" disabled></label></div>
     <div class="row space"><label>عمق القالب (سم)<input id="depth" type="number" min="0.1" step="any" value="45" disabled></label><label>عرض العصب أسفل (سم)<input id="rib" type="number" min="0.1" step="any" value="15" disabled></label></div>
     <label class="space">زاوية الميل عن الرأسي<select id="angle"><option value="5">5°</option><option value="7">7°</option></select></label>
     <p class="hint space">يميل كل وجه للقالب إلى الداخل صعودًا، فيصغر الفراغ أعلى القالب ويزداد عرض العصب.</p>
   </fieldset>
-  <fieldset><legend>كميات الخرسانة</legend>
+  <fieldset><legend>ثالثًا: الأعمدة المحيطية</legend>
+    <div class="row"><label>عدد الأعمدة المحيطية (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>توزيع الأعمدة الإضافية<select id="dist"><option value="0">متوازن على محيط القاعة</option><option value="1">على الضلعين الطويلين أولًا</option><option value="2">على الضلعين القصيرين أولًا</option></select></label></div><div class="row space"><label>عدد الطوابق التي تحملها الأعمدة<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>استخدام القاعة<select id="hallUse"><option value="5">قاعة اجتماعات أو مسرح (5 كيلونيوتن/م²)</option><option value="3">فصول دراسية أو مكاتب (3)</option><option value="2">سكني (2)</option></select></label><label>ارتفاع العمود (م)<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label></div>
+    <div class="row space"><label>ضلع المنطقة المصمتة (سم)<input id="pad" type="number" min="0" step="any" value="150"></label></div>
+    <label class="space" hidden>إجهاد محوري افتراضي (ميغاباسكال)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label>
+    <label class="space">نسبة ضلعي العمود (العرض : الطول)<select id="colRatio"><option value="1">1 : 1</option><option value="1.25">1 : 1.25</option><option value="1.5">1 : 1.5</option><option value="2">1 : 2</option><option value="2.5">1 : 2.5</option><option value="3">1 : 3</option></select></label><p class="hint space">الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.</p>
+  </fieldset>
+  <fieldset><legend>رابعًا: كميات الخرسانة</legend>
     <div class="row"><label>وزن وحدة الخرسانة (كيلونيوتن/م³)<input id="density" type="number" min="0.1" step="any" value="25" required></label><label>هالك الخرسانة (%)<input id="waste" type="number" min="0" step="any" value="5" required></label></div>
   </fieldset>
   <fieldset hidden><legend>الأحمال الرأسية</legend>
@@ -58,17 +64,12 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
     <label class="space">توليفة الأحمال<select id="combo"><option value="1">1.4D + 1.6L (الشائعة في التصميم بمصر)</option><option value="2">ACI 318: الأكبر من 1.4D و1.2D + 1.6L</option></select></label>
     <p class="hint space">قيم الإشغال للاسترشاد ويمكن تعديل الحمل الحي. استخدم قيم المشروع والكود المعتمد لديه.</p>
   </fieldset>
-  <fieldset><legend>الأعمدة المحيطية</legend>
-    <div class="row"><label>عدد الطوابق التي تحملها الأعمدة<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>استخدام القاعة<select id="hallUse"><option value="5">قاعة اجتماعات أو مسرح (5 كيلونيوتن/م²)</option><option value="3">فصول دراسية أو مكاتب (3)</option><option value="2">سكني (2)</option></select></label><label>ارتفاع العمود (م)<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label><label>عدد الأعمدة المحيطية (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>توزيع الأعمدة الإضافية<select id="dist"><option value="0">متوازن على محيط القاعة</option><option value="1">على الضلعين الطويلين أولًا</option><option value="2">على الضلعين القصيرين أولًا</option></select></label></div>
-    <div class="row space"><label>ضلع المنطقة المصمتة (سم)<input id="pad" type="number" min="0" step="any" value="150"></label></div>
-    <label class="space" hidden>إجهاد محوري افتراضي (ميغاباسكال)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label><p class="hint space">هذه أداة للتصميم المعماري، لذلك الأحمال التفصيلية ثابتة داخليًا: الوزن الذاتي للبلاطة من كمية الخرسانة، وتشطيبات 1.5 كيلونيوتن/م²، والحمل الحي حسب الاستخدام المختار، وكمرة طرفية عرضها 30 سم وعمقها نحو البحر ÷ 10، وحائط طوب 25 سم (18 كيلونيوتن/م³) حتى الكمرة، ووزن العمود نفسه، وتتكرر لكل طابق. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لأثر العزوم. والقدرة بصيغة الأعمدة القصيرة ذات الكانات σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%)، ولا يقل أي ضلع عن 30 سم ولا عن 1.2 × ارتفاع العمود ÷ 15 (عمود قصير مقيد) ولا عن البحر بين الأعمدة ÷ 20.</p>
-    <label class="space">نسبة ضلعي العمود (العرض : الطول)<select id="colRatio"><option value="1">1 : 1</option><option value="1.25">1 : 1.25</option><option value="1.5">1 : 1.5</option><option value="2">1 : 2</option><option value="2.5">1 : 2.5</option><option value="3">1 : 3</option></select></label><p class="hint space">الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.</p>
-  </fieldset>
+  
   <div class="buttons hide-print"><button type="submit" class="primary">احسب</button><button type="button" id="reset">استعادة المثال</button></div>
 </form>
 <div class="stack">
   <section class="card">
-    <div class="toolbar"><h2>ملخص النتائج</h2><div class="buttons hide-print"><button type="button" id="csv">تصدير CSV</button><button type="button" id="svg">تصدير SVG</button><button type="button" id="print">طباعة / PDF</button></div></div>
+    <div class="toolbar"><h2>خامسًا: النتائج والرسومات</h2><div class="buttons hide-print"><button type="button" id="csv">تصدير CSV</button><button type="button" id="svg">تصدير SVG</button><button type="button" id="print">طباعة / PDF</button></div></div>
     <p id="error" role="alert" hidden></p><p id="notice" role="status" hidden></p><p id="refs" class="hint" hidden></p>
     <div id="results">
       <div class="metrics" id="metrics" aria-live="polite"></div>
@@ -79,15 +80,17 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
       <div class="legend"><span><i class="swatch solid"></i>خرسانة</span><span><i class="swatch void"></i>فراغ القالب</span><span><i class="swatch line"></i>A–A / B–B</span><span><i class="swatch support"></i>الأعمدة</span></div>
     </div>
   </section>
-  <section class="card" id="details"><h2>الهندسة وحصر الكميات</h2><div class="cols"><div class="tablewrap"><table aria-label="الهندسة"><thead><tr><th colspan="2"><strong>الهندسة</strong></th></tr></thead><tbody id="geometry"></tbody></table></div><div class="tablewrap"><table aria-label="كميات الخرسانة"><thead><tr><th colspan="2"><strong>كميات الخرسانة</strong></th></tr></thead><tbody id="quantities"></tbody></table></div></div></section>
-  <section class="card" id="loadDetails"><h2>التقدير الأولي لقطاعات الأعمدة</h2><div class="cols"><div class="tablewrap" hidden><table aria-label="الأحمال والتقدير الأولي للأعمدة"><tbody id="loadTable"></tbody></table></div><div class="tablewrap"><table aria-label="شبكة الأعمدة"><thead id="supportHead"></thead><tbody id="supportTable"></tbody></table></div></div><h3 class="space">اختيارات قطاع العمود</h3><div id="colOptions"></div><p class="hint space">كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 30 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة، ويظهر دائمًا اختيار بعرض 30 سم. اضغط أي اختيار لاستخدامه.</p><p class="hint space">تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.</p></section>
+  <section class="card" id="loadDetails"><h2>سادسًا: اختيار قطاع العمود</h2><div class="cols"><div class="tablewrap" hidden><table aria-label="الأحمال والتقدير الأولي للأعمدة"><tbody id="loadTable"></tbody></table></div><div class="tablewrap"><table aria-label="شبكة الأعمدة"><thead id="supportHead"></thead><tbody id="supportTable"></tbody></table></div></div><h3 class="space">اختيارات قطاع العمود</h3><div id="colOptions"></div><p class="hint space">هذه قطاعات مقترحة يختار منها المصمم: يبدأ العرض من 30 سم ويزيد 5 سم، ويُقرَّب الطول للأعلى بحيث لا تقل المساحة عن المطلوبة. العلامة ★ على الاختيار الأقرب لنسبة الضلعين المختارة. اضغط أي اختيار لاستخدامه في المسقط.</p></section>
+  <section class="card" id="details"><h2>سابعًا: الهندسة وحصر الكميات</h2><div class="cols"><div class="tablewrap"><table aria-label="الهندسة"><thead><tr><th colspan="2"><strong>الهندسة</strong></th></tr></thead><tbody id="geometry"></tbody></table></div><div class="tablewrap"><table aria-label="كميات الخرسانة"><thead><tr><th colspan="2"><strong>كميات الخرسانة</strong></th></tr></thead><tbody id="quantities"></tbody></table></div></div></section>
+  
   <section class="card"><details><summary>طريقة الحساب والمراجع</summary><p class="hint space">خطوة التكرار = قاعدة القالب + عرض العصب أسفل. الأبعاد تمثل فراغًا بأوجه مستوية وقاعدة مستطيلة؛ المقاسات الجاهزة هي مدخلات النموذج.</p><p class="hint" id="formula"></p><p class="hint">حجم الفراغ يُحسب من مساحات القاعدة والمنتصف والأعلى بقاعدة سمبسون الدقيقة لهذه الأوجه. صافي الخرسانة = حجم الغلاف الكامل − مجموع أحجام الفراغات. الوزن الذاتي = وزن الوحدة × السمك المكافئ.</p><p class="hint">الحاسبة لحصر الكميات والتقدير الأولي لبلاطة مستطيلة. الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318. فحص ACI 318-19 §8.8 يقتصر على مؤشرات هندسية مرجعية للأعصاب والطبقة العلوية عند استخدام قوالب قابلة للإزالة. <a href="https://www.concrete.org/store/productdetail?ItemID=318U19&amp;Language=English&amp;Units=US_Units" target="_blank" rel="noopener">ACI 318-19</a></p><p class="hint">مراجع خلفية نظام القوالب <a href="https://www.renukafiberglass.com/latest-update/waffle-mould-slap/4" target="_blank" rel="noopener">Renuka Fibre Glass</a> · <a href="https://www.zoloformwork.com/zplastk/domex-waffle-slab-plastic-formwork.html" target="_blank" rel="noopener">Zolo Domex</a></p></details></section>
+  <section class="card" id="loadNote"><details><summary>ملاحظة: طريقة حساب أحمال الأعمدة</summary><p class="hint space">هذه أداة للتصميم المعماري، لذلك الأحمال التفصيلية ثابتة داخليًا: الوزن الذاتي للبلاطة من كمية الخرسانة، وتشطيبات 1.5 كيلونيوتن/م²، والحمل الحي حسب الاستخدام المختار، وكمرة طرفية عرضها 30 سم وعمقها نحو البحر ÷ 10، وحائط طوب 25 سم (18 كيلونيوتن/م³) حتى الكمرة، ووزن العمود نفسه، وتتكرر لكل طابق. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لأثر العزوم. والقدرة بصيغة الأعمدة القصيرة ذات الكانات σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%)، ولا يقل أي ضلع عن 30 سم ولا عن 1.2 × ارتفاع العمود ÷ 15 (عمود قصير مقيد) ولا عن البحر بين الأعمدة ÷ 20.</p><div id="loadSteps"></div><p class="hint space">البدائل لها مساحة لا تقل عن المطلوبة ولا عن مربع أقل ضلع حاكم؛ والقطاعات النحيفة (عرض 30 سم مع ارتفاع كبير) تحتاج تحققًا إنشائيًا من النحافة.</p><p class="hint space">تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.</p></details></section>
 </div>
 </main>
 <script>
  'use strict';
 const T = {"title": "حاسبة البلاطة الوافل", "subtitle": "توزيع القوالب، حصر الخرسانة، وتقدير الأحمال الرأسية.", "language": "English", "inputs": "مدخلات الحاسبة", "panel": "أبعاد البلاطة", "length": "طول X (م)", "width": "عرض Y (م)", "edge": "أقل شريط حافة (سم)", "topping": "سمك الطبقة العلوية (سم)", "edgeHelp": "المقاسات بين الحدود الخارجية لنطاق الحساب. يوزّع المتبقي بالتساوي على طرفي كل اتجاه.", "mould": "مقاس القالب والعصب", "preset": "القالب (قاعدة سفلية × عمق)", "cm": "سم", "m": "م", "m2": "م²", "m3": "م³", "kn": "كيلونيوتن", "kpa": "كيلونيوتن/م²", "custom": "مخصص", "baseX": "قاعدة القالب X (سم)", "baseY": "قاعدة القالب Y (سم)", "depth": "عمق القالب (سم)", "rib": "عرض العصب أسفل (سم)", "angle": "زاوية الميل عن الرأسي", "angleHelp": "يميل كل وجه للقالب إلى الداخل صعودًا، فيصغر الفراغ أعلى القالب ويزداد عرض العصب.", "quantity": "كميات الخرسانة", "density": "وزن وحدة الخرسانة (كيلونيوتن/م³)", "waste": "هالك الخرسانة (%)", "loads": "الأحمال الرأسية", "use": "نوع الاستخدام التوضيحي", "residential": "سكني", "office": "مكاتب", "classroom": "فصول دراسية", "retail": "تجاري", "dead": "حمل دائم إضافي (كيلونيوتن/م²)", "live": "حمل حي (كيلونيوتن/م²)", "loadHelp": "قيم الإشغال للاسترشاد ويمكن تعديل الحمل الحي. استخدم قيم المشروع والكود المعتمد لديه.", "supports": "شبكة الأعمدة", "baysX": "عدد البحور X", "baysY": "عدد البحور Y", "pad": "ضلع المنطقة المصمتة (سم)", "storeys": "عدد الطوابق التي تحملها الأعمدة", "stress": "إجهاد محوري افتراضي (ميغاباسكال)", "supportHelp": "الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.", "calculate": "احسب", "reset": "استعادة المثال", "results": "ملخص النتائج", "csv": "تصدير CSV", "svg": "تصدير SVG", "print": "طباعة / PDF", "plan": "مسقط توزيع القوالب", "section": "قطاع البلاطة", "sectionHelp": "الرموز H للعمق الكلي، وh لعمق القالب، وt للطبقة العلوية، وb₀ وb₁ لعرض العصب أسفل وأعلى.", "concrete": "خرسانة", "void": "فراغ القالب", "support": "الأعمدة", "details": "الهندسة وحصر الكميات", "geometry": "الهندسة", "loadResults": "الأحمال والتقدير الأولي للأعمدة", "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.", "method": "طريقة الحساب والمراجع", "methodLayout": "خطوة التكرار = قاعدة القالب + عرض العصب أسفل. الأبعاد تمثل فراغًا بأوجه مستوية وقاعدة مستطيلة؛ المقاسات الجاهزة هي مدخلات النموذج.", "formula": "الإزاحة لكل جانب Δ = h × tan θ. البُعد العلوي = البُعد السفلي − 2Δ. عرض العصب العلوي = عرض العصب السفلي + 2Δ.", "methodVolume": "حجم الفراغ يُحسب من مساحات القاعدة والمنتصف والأعلى بقاعدة سمبسون الدقيقة لهذه الأوجه. صافي الخرسانة = حجم الغلاف الكامل − مجموع أحجام الفراغات. الوزن الذاتي = وزن الوحدة × السمك المكافئ.", "methodScope": "الحاسبة لحصر الكميات والتقدير الأولي لبلاطة مستطيلة. الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318. فحص ACI 318-19 §8.8 يقتصر على مؤشرات هندسية مرجعية للأعصاب والطبقة العلوية عند استخدام قوالب قابلة للإزالة.", "sourceLabel": "مراجع خلفية نظام القوالب", "planHelp": "المربعات الصفراء نقاط الأعمدة، والخطوط الصفراء المتقطعة حدود المناطق المصمتة الاسمية. خط القطاع يمر بمنتصف صف أو عمود قوالب قريب من مركز المسقط.", "verticalScale": "تكبير المقياس الرأسي", "grossArea": "مساحة البلاطة", "baseSize": "الفتحة عند أسفل البلاطة", "topSize": "الفتحة أسفل الطبقة العلوية", "inset": "الإزاحة الأفقية لكل وجه", "baseRib": "عرض العصب أسفل", "topRib": "عرض العصب أعلى", "pitch": "خطوة التكرار X × Y", "margins": "شريط الحافة الفعلي X × Y", "spans": "أطوال البحور X × Y", "totalDepth": "العمق الكلي", "refTopping": "سمك الطبقة العلوية، حد ACI المرجعي", "potential": "شبكة القوالب قبل الاستبعاد", "removed": "القوالب المستبعدة حول الأعمدة", "count": "عدد القوالب", "oneVoid": "فراغ القالب الواحد", "voids": "إجمالي الفراغات", "full": "حجم بلاطة مصمتة بالعمق نفسه", "topVolume": "حجم الطبقة العلوية", "below": "الخرسانة أسفل الطبقة العلوية", "net": "صافي الخرسانة", "order": "كمية الطلب مع الهالك", "reduction": "خفض الخرسانة مقارنة ببلاطة مصمتة بالعمق نفسه", "equivalent": "السمك الخرساني المكافئ", "self": "الوزن الذاتي للبلاطة", "totalDead": "إجمالي الحمل الدائم D", "service": "الحمل الخدمي D + L", "ultimate": "الحمل الرأسي المضاعف", "corner": "ركنية", "edgeColumn": "طرفية", "interior": "داخلية", "number": "العدد", "trib": "مساحة التأثير", "axial": "حمل محوري تقديري", "columnSize": "قطاع تقديري", "badInput": "أدخل قيمة رقمية صحيحة ضمن مجال الحقل", "badTaper": "الميل والعمق يُغلقان فتحة القالب العلوية. زِد القاعدة أو قلِّل العمق.", "large": "تتجاوز الأبعاد أو كثافة شبكة القوالب حدود عرض الحاسبة. اقسم المسقط إلى نطاقات أصغر.", "noMould": "لا توجد قوالب ضمن هذا التوزيع، وحُسبت البلاطة مصمتة.", "codeRib": "عرض العصب السفلي أقل من 10.16 سم وفق الفحص المرجعي.", "codeDepth": "العمق الكلي يتجاوز 3.5 أضعاف أقل عرض للعصب وفق الفحص المرجعي.", "codeClear": "أكبر فراغ صافٍ يتجاوز 76.2 سم وفق الفحص المرجعي.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب.", "punch": "يلزم التحقق من القص الثاقب عند كل عمود ومن امتداد المنطقة المصمتة حوله طبقًا لتحليل المشروع."};
-Object.assign(T, {"cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)", "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):", "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.", "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.", "codeClear": "القوالب الأعرض من 76.2 سم تتجاوز حد التباعد الصافي للبلاطات المعصّبة في ACI، فتُعامَل البلاطة كبلاطة وافل معصّبة في اتجاهين دون تسهيلات البلاطات المعصّبة. وهذا طبيعي مع قوالب 90 سم وأكبر.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب."});
+Object.assign(T, {"cm2": "سم²", "reqArea": "المساحة المطلوبة", "minArea": "أقل مساحة للقطاع", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)", "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):", "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.", "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.", "codeClear": "القوالب الأعرض من 76.2 سم تتجاوز حد التباعد الصافي للبلاطات المعصّبة في ACI، فتُعامَل البلاطة كبلاطة وافل معصّبة في اتجاهين دون تسهيلات البلاطات المعصّبة. وهذا طبيعي مع قوالب 90 سم وأكبر.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب."});
 Object.assign(T, {"supports": "الأعمدة المحيطية", "spans": "التباعد بين الأعمدة X × Y", "planHelp": "الأعمدة على المحيط فقط ومرسومة بمقاسها المختار، والخطوط المتقطعة حدود مناطقها المصمتة. اسحب خط القطاع أو استخدم المؤشر أسفل القطاع؛ القطع داخل عصب يظهر خرسانة مصمتة.", "hallArea": "مساحة البلاطة خارج المدى 60–180 م² المعتمد للبلاطة الواحدة في حاسبة الكمرات المتقاطعة."});
 const PRESETS = {60:[60,60,20,10],6030:[60,60,30,12],6040:[60,60,40,15],75:[75,75,25,12],7530:[75,75,30,12],7540:[75,75,40,15],90:[90,90,45,15],10550:[105,105,50,20],10560:[105,105,60,20]};
 const mouldFields = ['baseX','baseY','depth','rib'];
@@ -116,8 +119,8 @@ function layoutAxis(span, opening, rib, edge, bays, pad) {
 }
 
 
-// Column sections: b, h multiples of 5 cm, at least 30 cm in both directions, h/b up to 3, area not more than
-// 30 % above the smallest, plus one 30 cm wide section in every case. Sorted from square to elongated.
+// Column alternatives: widths from 30 cm in 5 cm steps, h rounded up to 5 cm so the area covers the required
+// area and the governing minimum side squared, h/b up to 5. Sorted from square to elongated.
 const COL_MIN=30;
 
 // Perimeter columns as in the paneled beam calculator: four corners plus extra columns on the sides.
@@ -139,25 +142,21 @@ function columnLayout(L,W,count,dist){
 }
 function sectionOptions(req,minB) {
   const m=Math.max(COL_MIN,Math.ceil((minB||COL_MIN)/5-1e-7)*5);
-  const out=[];
-  const bMax=Math.max(m,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=m;b<=bMax;b+=5){
-    const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
-    if(h/b>3+EPS) continue;
-    out.push({b,h,area:b*h,ratio:h/b});
+  const need=Math.max(req,m*m), sq=Math.ceil(Math.sqrt(need)/5-1e-7)*5, out=[];
+  for(let b=COL_MIN;b<=sq;b+=5){
+    const h=Math.max(b,Math.ceil(need/b/5-1e-7)*5);
+    if(h/b>5+EPS) continue;
+    if(!out.some(o=>o.b===b&&o.h===h)) out.push({b,h,area:b*h,ratio:h/b});
   }
-  const minA=Math.min(...out.map(c=>c.area));
-  const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(m<=30&&!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
-  const seen=new Set();
-  return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
+  return out.sort((p,q)=>p.ratio-q.ratio||p.area-q.area);
 }
 function recommendSection(options,ratio){return options.filter(o=>o.b>=COL_MIN&&o.h>=COL_MIN).sort((p,q)=>Math.abs(p.ratio-ratio)-Math.abs(q.ratio-ratio)||p.area-q.area)[0];}
 function renderColumnOptions(v){
   const box=$('colOptions');box.replaceChildren();
+  const noteBox=$('loadSteps');noteBox.replaceChildren();
   for(const g of v.groups){
     const wrap=document.createElement('div');wrap.className='colgroup';
-    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.reqArea+': '+fmt(g.req,0)+' '+T.cm2;
+    const p=document.createElement('p');p.textContent=T[g.key]+' ('+g.number+') — '+T.minArea+': '+fmt(Math.max(g.req,g.minB*g.minB),0)+' '+T.cm2;
     const chips=document.createElement('div');chips.className='chips';chips.setAttribute('role','group');chips.setAttribute('aria-label',T[g.key]);
     for(const o of g.options){
       const b=document.createElement('button');b.type='button';b.className='chip';b.dataset.group=g.key;b.dataset.sec=o.b+'x'+o.h;
@@ -184,7 +183,8 @@ function renderColumnOptions(v){
       const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
       if(note){const n=document.createElement('em');n.textContent=' — '+note;li.append(n);}
       ol.append(li);}
-    wrap.append(p,ol,chips);box.append(wrap);
+    wrap.append(p,chips);box.append(wrap);
+    const sw=document.createElement('div');sw.className='colgroup';const sh=document.createElement('p');sh.textContent=T[g.key]+' ('+g.number+')';sw.append(sh,ol);noteBox.append(sw);
   }
 }
 
@@ -428,8 +428,8 @@ function update() {
   renderRows('geometry',rows.geom);
   renderRows('quantities',rows.qty);
   renderRows('loadTable',rows.load);
-  renderRows('supportHead',[[T.support,T.number,T.trib,T.axial,T.reqArea,T.columnSize]]);
-  renderRows('supportTable',rows.groups);
+  renderRows('supportHead',[[T.support,T.number,T.trib,T.columnSize]]);
+  renderRows('supportTable',rows.groups.map(r=>[r[0],r[1],r[2],r[5]]));
   renderColumnOptions(v);
   draw(v);
 }
