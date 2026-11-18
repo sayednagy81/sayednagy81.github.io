@@ -109,8 +109,35 @@ test('sections follow storeys and the number of columns', () => {
   assert.ok(big(AR.api.solve({ ...base, storeys: 4, colCount: 4 })) > big(AR.api.solve({ ...base, storeys: 4, colCount: 12 })));
   // the step-by-step chain uses the same numbers
   AR.api.solve({ ...base, storeys: 4, colCount: 8 }).groups.forEach(g => {
-    near(g.demand, g.wu * g.trib * g.storeys * g.factor, 1e-9, 'P'); near(g.req, g.demand * 10 / g.stress, 1e-9, 'Ac');
+    near(g.demand, g.storeys * g.factor * (g.wu * g.trib + g.wl * g.Lp + g.colW), 1e-9, 'P'); near(g.req, g.demand * 10 / g.stress, 1e-9, 'Ac');
   });
+});
+
+test('complete column loads: perimeter beam and wall, column weight, use, height and span', () => {
+  const up = x => Math.ceil(x / 5 - 1e-7) * 5;
+  // the reported case: 12 x 10 m waffle hall on four corner columns, one storey, assembly use
+  const hall = AR.api.solve({ ...base, hallUse: 5, colHeight: 4.5 });
+  const g = hall.groups.find(x => x.key === 'corner');
+  near(hall.live, 5, 1e-12, 'live load of the use');
+  near(g.span, 12, 1e-9, 'span between corner columns'); near(g.Lp, 11, 1e-9, 'perimeter length carried');
+  near(g.beamW, 0.30 * (1.20 - 0.53) * 25, 1e-9, 'edge beam span / 10 = 120 cm'); near(g.wallW, 0.25 * (4.5 - 1.20) * 18, 1e-9, 'wall');
+  near(g.wl, 1.4 * (g.beamW + g.wallW), 1e-9, 'factored line load');
+  near(g.colW, 1.4 * 25 * g.rec.area / 1e4 * 4.5, 1e-9, 'column self-weight');
+  assert.ok(g.demand > 2 * 657, `corner load ${g.demand} kN is more than twice the old 657 kN`);
+  assert.strictEqual(g.minB, 60); assert.strictEqual(g.gov, 'span');
+  assert.ok(g.chosen.b >= 60 && g.chosen.h >= 60, `chosen ${g.chosen.b} x ${g.chosen.h}`);
+  // minimum side rule everywhere, and no 25 or 30 cm column for a 12 m span
+  for (const n of [4, 6, 8, 12, 24]) for (const H of [3, 4.5, 6, 9]) {
+    const v = AR.api.solve({ ...base, colCount: n, colHeight: H, hallUse: 3 });
+    v.groups.forEach(x => {
+      assert.strictEqual(x.minB, Math.max(30, up(1.2 * H * 100 / 15), up(x.span * 100 / 20)));
+      assert.ok(x.chosen.b >= x.minB && x.chosen.h >= x.minB && x.chosen.area >= x.req - 1e-9);
+    });
+  }
+  // taller columns, heavier use and more storeys never give smaller sections
+  const big = v => Math.max(...v.groups.map(x => x.chosen.area));
+  assert.ok(big(AR.api.solve({ ...base, colCount: 12, colHeight: 9 })) > big(AR.api.solve({ ...base, colCount: 12, colHeight: 3 })));
+  assert.ok(AR.api.solve({ ...base, hallUse: 5 }).groups[0].demand > AR.api.solve({ ...base, hallUse: 2 }).groups[0].demand);
 });
 
 console.log(`\n${passed} test groups passed`);

@@ -13,7 +13,10 @@ Changes made here, the same way in both languages:
      drawings that scroll instead of shrinking on phones;
   7. loads built in and hidden (architectural tool), column stress from the Egyptian short-column form (11.16 N/mm2);
   8. column sides at least 30 cm, the number of storeys next to the number of columns, and a visible step-by-step
-     calculation per column group (tributary area, factored load, P, required area, proposed b x h).
+     calculation per column group (tributary area, factored load, P, required area, proposed b x h);
+  9. complete column loads: perimeter beam and wall line loads, column self-weight and a live load by use
+     (hall 5 kN/m2 by default), and a minimum column side from the column height (k H / 15, k = 1.2, braced)
+     and from the span between columns (span / 20), so a 12 m hall on four columns no longer gets 25 x 25 cm.
 Run: python tools/make_waffle_pages.py
 """
 import json
@@ -40,7 +43,7 @@ TXT = {
         "oldScope": "Factored gravity load is the greater of 1.4D and 1.2D + 1.6L.",
         "scope": "Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L.",
         "T": {
-            "cm2": "cm²", "reqArea": "Required area", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)",
+            "cm2": "cm²", "reqArea": "Required area", "stepLine": "Perimeter line load (edge beam + 25 cm wall, factored)", "stepColW": "Column self-weight per storey", "stepMin": "Minimum side from column height and span", "govArea": "the axial load governs", "govSlender": "the column height (slenderness) governs", "govSpan": "the span between columns governs", "govMin": "the 30 cm minimum governs", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)",
             "refHead": "Reference notes (ACI 318-19 §9.8; not errors in your inputs):",
             "codeRib": "Bottom rib width is below the 10.16 cm minimum for joist construction.",
             "codeDepth": "Overall depth {H} cm is more than 3.5 × the bottom rib width ({L} cm); a wider rib or a shallower mould keeps within this joist limit.",
@@ -61,7 +64,7 @@ TXT = {
         "oldScope": "الحمل الرأسي المضاعف هو الأكبر من 1.4D و1.2D + 1.6L.",
         "scope": "الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318.",
         "T": {
-            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
+            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
             "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):",
             "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.",
             "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.",
@@ -75,17 +78,18 @@ ENGINE = r"""
 // Column sections: b, h multiples of 5 cm, at least 30 cm in both directions, h/b up to 3, area not more than
 // 30 % above the smallest, plus one 30 cm wide section in every case. Sorted from square to elongated.
 const COL_MIN=30;
-function sectionOptions(req) {
+function sectionOptions(req,minB) {
+  const m=Math.max(COL_MIN,Math.ceil((minB||COL_MIN)/5-1e-7)*5);
   const out=[];
-  const bMax=Math.max(COL_MIN,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=COL_MIN;b<=bMax;b+=5){
+  const bMax=Math.max(m,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
+  for(let b=m;b<=bMax;b+=5){
     const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
     if(h/b>3+EPS) continue;
     out.push({b,h,area:b*h,ratio:h/b});
   }
   const minA=Math.min(...out.map(c=>c.area));
   const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
+  if(m<=30&&!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
   const seen=new Set();
   return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
 }
@@ -106,12 +110,16 @@ function renderColumnOptions(v){
       chips.append(b);
     }
     const f=(x,d)=>fmt(x,d===undefined?2:d);
+    const govText={area:T.govArea,slender:T.govSlender,span:T.govSpan,min:T.govMin}[g.gov];
     const steps=[
-      [T.stepTrib, 'At = '+f(g.trib,1)+' m²'],
-      [T.stepLoad+' ('+T[g.key==='corner'?'factorCorner':'factorEdge']+')', f(g.wu)+' kN/m² × '+g.storeys+' × '+f(g.factor)],
-      [T.stepP, 'P = '+f(g.wu)+' × '+f(g.trib,1)+' × '+g.storeys+' × '+f(g.factor)+' = '+f(g.demand,0)+' kN'],
+      [T.stepTrib, 'At = '+f(g.trib,1)+' m² · Lp = '+f(g.Lp,2)+' m · span = '+f(g.span,2)+' m'],
+      [T.stepLoad+' ('+T[g.key==='corner'?'factorCorner':'factorEdge']+')', 'wu = '+f(g.wu)+' kN/m² · n = '+g.storeys+' · k = '+f(g.factor)],
+      [T.stepLine, 'wL = '+f(g.deadF,1)+' × ('+f(g.beamW)+' + '+f(g.wallW)+') = '+f(g.wl)+' kN/m'],
+      [T.stepColW, 'Wc = '+f(g.deadF,1)+' × 25 × '+f(g.rec.area/1e4,4)+' m² × '+f(g.H)+' m = '+f(g.colW,1)+' kN'],
+      [T.stepP, 'P = n × k × (wu·At + wL·Lp + Wc) = '+g.storeys+' × '+f(g.factor)+' × ('+f(g.wu*g.trib,0)+' + '+f(g.wl*g.Lp,0)+' + '+f(g.colW,0)+') = '+f(g.demand,0)+' kN'],
       [T.stepAc, 'Ac = P / σ = '+f(g.demand,0)+' × 10 / '+f(g.stress)+' = '+f(g.req,0)+' cm²'],
-      [T.stepSec, 'b × h = '+g.chosen.b+' × '+g.chosen.h+' cm = '+f(g.chosen.area,0)+' cm² ≥ '+f(g.req,0)+' cm²', g.req<=COL_MIN*COL_MIN+EPS?T.minGov:'']];
+      [T.stepMin, 'b, h ≥ max(30, 1.2 H / 15 = '+f(g.kH,1)+', span / 20 = '+f(g.sp,1)+') → '+g.minB+' cm'],
+      [T.stepSec, 'b × h = '+g.chosen.b+' × '+g.chosen.h+' cm = '+f(g.chosen.area,0)+' cm² ≥ '+f(Math.max(g.req,g.minB*g.minB),0)+' cm²', govText]];
     const ol=document.createElement('ol');ol.className='calcsteps';
     for(const [lab,val,note] of steps){const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=lab+': ';
       const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
@@ -230,7 +238,7 @@ EXT = {
         "support": "Columns stand on the perimeter only: four corner columns plus any extra columns, never inside the hall. A solid zone is centred on each column; any mould that intersects a zone is omitted in full. Enter zero to disable zones.",
         "cutLabel": "Section line position (you can also drag it on the plan)", "center": "Centre on a mould row",
         "colTitle": "Preliminary column sizes",
-        "builtIn": "This is an architectural sizing aid, so the loads are built in and not shown, as in the paneled beam calculator: slab self-weight, finishes 1.5 kN/m², live load 2 kN/m², factored 1.4D + 1.6L. Column loads are increased by 25 % for edge columns and 50 % for corner columns to allow for bending, and column capacity uses the short tied-column form of the Egyptian code, σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %).",
+        "builtIn": "This is an architectural sizing aid, so the detailed loads are built in: slab self-weight from the concrete quantity, finishes 1.5 kN/m², the live load of the chosen use, a 30 cm wide edge beam about span / 10 deep, a 25 cm brick wall (18 kN/m³) up to the beam, and the column self-weight, repeated for every storey. Edge column loads are increased by 25 % and corner loads by 50 % for bending. Capacity uses the short tied-column form σ = 0.35 fcu + 0.67 fy ρ = 11.16 N/mm² (fcu 25, fy 360, ρ 1 %), and no side is less than 30 cm, 1.2 × column height / 15 (short braced column) or the span between columns / 20.",
         "T": {"supports": "Perimeter columns", "spans": "Column spacing X × Y",
               "planHelp": "Columns stand on the perimeter only, drawn at their chosen size; dashed outlines mark their solid zones. Drag the section line or use the slider under the section; a cut through a rib shows solid concrete.",
               "hallArea": "The slab area is outside the 60–180 m² range used for one slab in the paneled beam calculator."},
@@ -242,7 +250,7 @@ EXT = {
         "support": "الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.",
         "cutLabel": "موضع خط القطاع (ويمكن سحبه على المسقط)", "center": "توسيط على صف القوالب",
         "colTitle": "التقدير الأولي لقطاعات الأعمدة",
-        "builtIn": "هذه أداة للتصميم المعماري، لذلك الأحمال ثابتة داخليًا ولا تظهر، كما في حاسبة الكمرات المتقاطعة: الوزن الذاتي للبلاطة، وتشطيبات 1.5 كيلونيوتن/م²، وحمل حي 2 كيلونيوتن/م²، والحمل المضاعف 1.4D + 1.6L. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لتمثيل أثر العزوم، وقدرة العمود بصيغة الأعمدة القصيرة ذات الكانات في الكود المصري: σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%).",
+        "builtIn": "هذه أداة للتصميم المعماري، لذلك الأحمال التفصيلية ثابتة داخليًا: الوزن الذاتي للبلاطة من كمية الخرسانة، وتشطيبات 1.5 كيلونيوتن/م²، والحمل الحي حسب الاستخدام المختار، وكمرة طرفية عرضها 30 سم وعمقها نحو البحر ÷ 10، وحائط طوب 25 سم (18 كيلونيوتن/م³) حتى الكمرة، ووزن العمود نفسه، وتتكرر لكل طابق. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لأثر العزوم. والقدرة بصيغة الأعمدة القصيرة ذات الكانات σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%)، ولا يقل أي ضلع عن 30 سم ولا عن 1.2 × ارتفاع العمود ÷ 15 (عمود قصير مقيد) ولا عن البحر بين الأعمدة ÷ 20.",
         "T": {"supports": "الأعمدة المحيطية", "spans": "التباعد بين الأعمدة X × Y",
               "planHelp": "الأعمدة على المحيط فقط ومرسومة بمقاسها المختار، والخطوط المتقطعة حدود مناطقها المصمتة. اسحب خط القطاع أو استخدم المؤشر أسفل القطاع؛ القطع داخل عصب يظهر خرسانة مصمتة.",
               "hallArea": "مساحة البلاطة خارج المدى 60–180 م² المعتمد للبلاطة الواحدة في حاسبة الكمرات المتقاطعة."},
@@ -264,7 +272,8 @@ function columnLayout(L,W,count,dist){
   pts=pts.map(p=>({...p,u:u(p)})).sort((a,b)=>a.u-b.u);
   return pts.map((p,i)=>{const prev=pts[(i+pts.length-1)%pts.length].u,next=pts[(i+1)%pts.length].u;
     const zone=(((p.u-prev+per)%per)+((next-p.u+per)%per))/2,corner=(p.x===0||p.x===L)&&(p.y===0||p.y===W);
-    return {id:i+1,x:p.x,y:p.y,corner,side:corner?'corner':(p.y===0||p.y===W)?'X':'Y',At:L*W*zone/per};});
+    const gp=(p.u-prev+per)%per||per, gn=(next-p.u+per)%per||per;
+    return {id:i+1,x:p.x,y:p.y,corner,side:corner?'corner':(p.y===0||p.y===W)?'X':'Y',At:L*W*zone/per,Lp:zone,span:Math.max(gp,gn)};});
 }
 """
 
@@ -290,7 +299,7 @@ def extend(s, lang):
     s = R(s, "\nconst PRESETS", "\nObject.assign(T, " + json.dumps(e["T"], ensure_ascii=False) + ");\nconst PRESETS")
     s = R(s, "'baysX','baysY','pad','storeys','stress','combo','colRatio'];", "'colCount','dist','pad','storeys','stress','combo','colRatio'];")
     # engine: perimeter columns and per-mould exclusion around each column
-    s = R(s, "function sectionOptions(req) {", COLUMNS_JS + "function sectionOptions(req) {")
+    s = R(s, "function sectionOptions(req,minB) {", COLUMNS_JS + "function sectionOptions(req,minB) {")
     s = R(s, "const x=layoutAxis(L,a,r,edge,raw.baysX,pad), y=layoutAxis(W,b,r,edge,raw.baysY,pad);",
           "const x=layoutAxis(L,a,r,edge,1,0), y=layoutAxis(W,b,r,edge,1,0);\n  x.openings.forEach((o,i)=>{o.i=i;});y.openings.forEach((o,i)=>{o.i=i;});")
     s = R(s, """  const xReserved=x.openings.filter(o=>o.nearSupport).length;
@@ -400,6 +409,50 @@ def extend(s, lang):
     loads_aria = "الأحمال والتقدير الأولي للأعمدة" if ar else "Loads and preliminary column sizes"
     s = R(s, f'<div class="tablewrap"><table aria-label="{loads_aria}"><tbody id="loadTable">', f'<div class="tablewrap" hidden><table aria-label="{loads_aria}"><tbody id="loadTable">')
     s = R(s, f'<section class="card" id="loadDetails"><h2>{loads_aria}</h2>', f'<section class="card" id="loadDetails"><h2>{e["colTitle"]}</h2>')
+    # 9. complete column loads and a minimum side from height and span
+    use_lbl = "استخدام القاعة" if ar else "Use of the hall"
+    uses = ([("5", "قاعة اجتماعات أو مسرح (5 كيلونيوتن/م²)"), ("3", "فصول دراسية أو مكاتب (3)"), ("2", "سكني (2)")] if ar else
+            [("5", "Assembly hall or theatre (5 kN/m²)"), ("3", "Classrooms or offices (3)"), ("2", "Residential (2)")])
+    h_lbl = "ارتفاع العمود (م)" if ar else "Column height (m)"
+    s = R(s, f'<label>{st_new}{st_in}</label>',
+          f'<label>{st_new}{st_in}</label><label>{use_lbl}<select id="hallUse">' + "".join(f'<option value="{v}">{t}</option>' for v, t in uses) + '</select></label>'
+          f'<label>{h_lbl}<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label>')
+    s = R(s, "'colCount','dist','pad','storeys','stress','combo','colRatio'];", "'colCount','dist','pad','storeys','hallUse','colHeight','stress','combo','colRatio'];")
+    s = R(s, "self=eq*raw.density, D=self+raw.dead, service=D+raw.live;", "self=eq*raw.density, D=self+raw.dead, live=raw.hallUse>0?raw.hallUse:raw.live, service=D+live;")
+    s = R(s, "const ultimate=raw.combo===2?Math.max(1.4*D,1.2*D+1.6*raw.live):1.4*D+1.6*raw.live;", "const ultimate=raw.combo===2?Math.max(1.4*D,1.2*D+1.6*live):1.4*D+1.6*live;")
+    s = R(s, "[T.live,units(v.raw.live,load)]", "[T.live,units(v.live,load)]")
+    a = s.index("  const groups=[];\n  for(const key of ['corner','edgeColumn']) {"); b = s.index("  for(const c of cols) c.sec=")
+    s = s[:a] + """  // column loads per storey: slab (wu x tributary area), perimeter line load (edge beam + 25 cm wall) and column self-weight
+  const H=raw.colHeight>0?raw.colHeight:4.5, slabDepth=h+t;
+  const deadF=raw.combo===2?(1.4*D>=1.2*D+1.6*live?1.4:1.2):1.4;
+  const maxSpan=Math.max(...cols.map(c=>c.span));
+  const beamD=Math.max(slabDepth,Math.ceil(maxSpan/10*20-1e-7)/20);
+  const beamW=0.30*(beamD-slabDepth)*raw.density, wallW=0.25*Math.max(0,H-beamD)*18;
+  const wl=deadF*(beamW+wallW);
+  const groups=[];
+  for(const key of ['corner','edgeColumn']) {
+    const members=cols.filter(c=>(key==='corner')===c.corner);
+    const number=members.length;
+    if(!number) continue;
+    const trib=Math.max(...members.map(c=>c.At)), Lp=Math.max(...members.map(c=>c.Lp)), span=Math.max(...members.map(c=>c.span));
+    const factor=key==='corner'?1.5:1.25;
+    const kH=1.2*H*100/15, sp=span*100/20, up=x=>Math.ceil(x/5-1e-7)*5;
+    const minB=Math.max(COL_MIN,up(kH),up(sp));
+    let area=minB*minB, colW=0, demand=0, req=0, options=null, rec=null;
+    for(let it=0;it<4;it++){
+      colW=deadF*raw.density*area/1e4*H;
+      demand=raw.storeys*factor*(ultimate*trib+wl*Lp+colW);
+      req=demand*10/raw.stress; // cm2: kN / MPa
+      options=sectionOptions(req,minB); rec=recommendSection(options,raw.colRatio);
+      if(Math.abs(rec.area-area)<EPS) break;
+      area=rec.area;
+    }
+    const gov=req>minB*minB+EPS?'area':minB===COL_MIN&&up(kH)<=COL_MIN&&up(sp)<=COL_MIN?'min':up(sp)>=up(kH)?'span':'slender';
+    const chosen=options.find(o=>o.b+'x'+o.h===(choice||{})[key])||rec;
+    groups.push({key,number,trib,Lp,span,demand,req,options,rec,chosen,side:chosen.b,factor,wu:ultimate,wl,beamW,wallW,deadF,colW,H,kH,sp,minB,gov,storeys:raw.storeys,stress:raw.stress});
+  }
+""" + s[b:]
+    s = R(s, "return {cols,skip,spacing,raw,", "return {cols,skip,spacing,live,raw,")
     return s
 
 

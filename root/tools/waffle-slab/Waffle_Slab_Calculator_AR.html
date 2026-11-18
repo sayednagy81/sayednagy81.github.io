@@ -59,9 +59,9 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
     <p class="hint space">قيم الإشغال للاسترشاد ويمكن تعديل الحمل الحي. استخدم قيم المشروع والكود المعتمد لديه.</p>
   </fieldset>
   <fieldset><legend>الأعمدة المحيطية</legend>
-    <div class="row"><label>عدد الطوابق التي تحملها الأعمدة<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>عدد الأعمدة المحيطية (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>توزيع الأعمدة الإضافية<select id="dist"><option value="0">متوازن على محيط القاعة</option><option value="1">على الضلعين الطويلين أولًا</option><option value="2">على الضلعين القصيرين أولًا</option></select></label></div>
+    <div class="row"><label>عدد الطوابق التي تحملها الأعمدة<input id="storeys" type="number" min="1" max="100" step="1" value="1"></label><label>استخدام القاعة<select id="hallUse"><option value="5">قاعة اجتماعات أو مسرح (5 كيلونيوتن/م²)</option><option value="3">فصول دراسية أو مكاتب (3)</option><option value="2">سكني (2)</option></select></label><label>ارتفاع العمود (م)<input id="colHeight" type="number" min="2.5" max="15" step="0.5" value="4.5"></label><label>عدد الأعمدة المحيطية (4–24)<input id="colCount" type="number" min="4" max="24" step="1" value="4"></label><label>توزيع الأعمدة الإضافية<select id="dist"><option value="0">متوازن على محيط القاعة</option><option value="1">على الضلعين الطويلين أولًا</option><option value="2">على الضلعين القصيرين أولًا</option></select></label></div>
     <div class="row space"><label>ضلع المنطقة المصمتة (سم)<input id="pad" type="number" min="0" step="any" value="150"></label></div>
-    <label class="space" hidden>إجهاد محوري افتراضي (ميغاباسكال)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label><p class="hint space">هذه أداة للتصميم المعماري، لذلك الأحمال ثابتة داخليًا ولا تظهر، كما في حاسبة الكمرات المتقاطعة: الوزن الذاتي للبلاطة، وتشطيبات 1.5 كيلونيوتن/م²، وحمل حي 2 كيلونيوتن/م²، والحمل المضاعف 1.4D + 1.6L. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لتمثيل أثر العزوم، وقدرة العمود بصيغة الأعمدة القصيرة ذات الكانات في الكود المصري: σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%).</p>
+    <label class="space" hidden>إجهاد محوري افتراضي (ميغاباسكال)<input id="stress" type="number" min="0.1" step="any" value="11.162"></label><p class="hint space">هذه أداة للتصميم المعماري، لذلك الأحمال التفصيلية ثابتة داخليًا: الوزن الذاتي للبلاطة من كمية الخرسانة، وتشطيبات 1.5 كيلونيوتن/م²، والحمل الحي حسب الاستخدام المختار، وكمرة طرفية عرضها 30 سم وعمقها نحو البحر ÷ 10، وحائط طوب 25 سم (18 كيلونيوتن/م³) حتى الكمرة، ووزن العمود نفسه، وتتكرر لكل طابق. وتُزاد أحمال الأعمدة الطرفية 25% والركنية 50% لأثر العزوم. والقدرة بصيغة الأعمدة القصيرة ذات الكانات σ = 0.35 fcu + 0.67 fy ρ = 11.16 نيوتن/مم² (fcu 25، fy 360، ρ 1%)، ولا يقل أي ضلع عن 30 سم ولا عن 1.2 × ارتفاع العمود ÷ 15 (عمود قصير مقيد) ولا عن البحر بين الأعمدة ÷ 20.</p>
     <label class="space">نسبة ضلعي العمود (العرض : الطول)<select id="colRatio"><option value="1">1 : 1</option><option value="1.25">1 : 1.25</option><option value="1.5">1 : 1.5</option><option value="2">1 : 2</option><option value="2.5">1 : 2.5</option><option value="3">1 : 3</option></select></label><p class="hint space">الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.</p>
   </fieldset>
   <div class="buttons hide-print"><button type="submit" class="primary">احسب</button><button type="button" id="reset">استعادة المثال</button></div>
@@ -87,11 +87,11 @@ button[aria-pressed=true]{background:var(--deep);border-color:var(--deep);color:
 <script>
  'use strict';
 const T = {"title": "حاسبة البلاطة الوافل", "subtitle": "توزيع القوالب، حصر الخرسانة، وتقدير الأحمال الرأسية.", "language": "English", "inputs": "مدخلات الحاسبة", "panel": "أبعاد البلاطة", "length": "طول X (م)", "width": "عرض Y (م)", "edge": "أقل شريط حافة (سم)", "topping": "سمك الطبقة العلوية (سم)", "edgeHelp": "المقاسات بين الحدود الخارجية لنطاق الحساب. يوزّع المتبقي بالتساوي على طرفي كل اتجاه.", "mould": "مقاس القالب والعصب", "preset": "القالب (قاعدة سفلية × عمق)", "cm": "سم", "m": "م", "m2": "م²", "m3": "م³", "kn": "كيلونيوتن", "kpa": "كيلونيوتن/م²", "custom": "مخصص", "baseX": "قاعدة القالب X (سم)", "baseY": "قاعدة القالب Y (سم)", "depth": "عمق القالب (سم)", "rib": "عرض العصب أسفل (سم)", "angle": "زاوية الميل عن الرأسي", "angleHelp": "يميل كل وجه للقالب إلى الداخل صعودًا، فيصغر الفراغ أعلى القالب ويزداد عرض العصب.", "quantity": "كميات الخرسانة", "density": "وزن وحدة الخرسانة (كيلونيوتن/م³)", "waste": "هالك الخرسانة (%)", "loads": "الأحمال الرأسية", "use": "نوع الاستخدام التوضيحي", "residential": "سكني", "office": "مكاتب", "classroom": "فصول دراسية", "retail": "تجاري", "dead": "حمل دائم إضافي (كيلونيوتن/م²)", "live": "حمل حي (كيلونيوتن/م²)", "loadHelp": "قيم الإشغال للاسترشاد ويمكن تعديل الحمل الحي. استخدم قيم المشروع والكود المعتمد لديه.", "supports": "شبكة الأعمدة", "baysX": "عدد البحور X", "baysY": "عدد البحور Y", "pad": "ضلع المنطقة المصمتة (سم)", "storeys": "عدد الطوابق التي تحملها الأعمدة", "stress": "إجهاد محوري افتراضي (ميغاباسكال)", "supportHelp": "الأعمدة على المحيط فقط: أربعة أعمدة ركنية ومعها ما يُضاف من أعمدة، ولا أعمدة داخل القاعة. حول كل عمود منطقة مصمتة، ويُستبعد القالب بالكامل عند تداخله معها. القيمة صفر تلغي هذه المناطق.", "calculate": "احسب", "reset": "استعادة المثال", "results": "ملخص النتائج", "csv": "تصدير CSV", "svg": "تصدير SVG", "print": "طباعة / PDF", "plan": "مسقط توزيع القوالب", "section": "قطاع البلاطة", "sectionHelp": "الرموز H للعمق الكلي، وh لعمق القالب، وt للطبقة العلوية، وb₀ وb₁ لعرض العصب أسفل وأعلى.", "concrete": "خرسانة", "void": "فراغ القالب", "support": "الأعمدة", "details": "الهندسة وحصر الكميات", "geometry": "الهندسة", "loadResults": "الأحمال والتقدير الأولي للأعمدة", "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.", "method": "طريقة الحساب والمراجع", "methodLayout": "خطوة التكرار = قاعدة القالب + عرض العصب أسفل. الأبعاد تمثل فراغًا بأوجه مستوية وقاعدة مستطيلة؛ المقاسات الجاهزة هي مدخلات النموذج.", "formula": "الإزاحة لكل جانب Δ = h × tan θ. البُعد العلوي = البُعد السفلي − 2Δ. عرض العصب العلوي = عرض العصب السفلي + 2Δ.", "methodVolume": "حجم الفراغ يُحسب من مساحات القاعدة والمنتصف والأعلى بقاعدة سمبسون الدقيقة لهذه الأوجه. صافي الخرسانة = حجم الغلاف الكامل − مجموع أحجام الفراغات. الوزن الذاتي = وزن الوحدة × السمك المكافئ.", "methodScope": "الحاسبة لحصر الكميات والتقدير الأولي لبلاطة مستطيلة. الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318. فحص ACI 318-19 §8.8 يقتصر على مؤشرات هندسية مرجعية للأعصاب والطبقة العلوية عند استخدام قوالب قابلة للإزالة.", "sourceLabel": "مراجع خلفية نظام القوالب", "planHelp": "المربعات الصفراء نقاط الأعمدة، والخطوط الصفراء المتقطعة حدود المناطق المصمتة الاسمية. خط القطاع يمر بمنتصف صف أو عمود قوالب قريب من مركز المسقط.", "verticalScale": "تكبير المقياس الرأسي", "grossArea": "مساحة البلاطة", "baseSize": "الفتحة عند أسفل البلاطة", "topSize": "الفتحة أسفل الطبقة العلوية", "inset": "الإزاحة الأفقية لكل وجه", "baseRib": "عرض العصب أسفل", "topRib": "عرض العصب أعلى", "pitch": "خطوة التكرار X × Y", "margins": "شريط الحافة الفعلي X × Y", "spans": "أطوال البحور X × Y", "totalDepth": "العمق الكلي", "refTopping": "سمك الطبقة العلوية، حد ACI المرجعي", "potential": "شبكة القوالب قبل الاستبعاد", "removed": "القوالب المستبعدة حول الأعمدة", "count": "عدد القوالب", "oneVoid": "فراغ القالب الواحد", "voids": "إجمالي الفراغات", "full": "حجم بلاطة مصمتة بالعمق نفسه", "topVolume": "حجم الطبقة العلوية", "below": "الخرسانة أسفل الطبقة العلوية", "net": "صافي الخرسانة", "order": "كمية الطلب مع الهالك", "reduction": "خفض الخرسانة مقارنة ببلاطة مصمتة بالعمق نفسه", "equivalent": "السمك الخرساني المكافئ", "self": "الوزن الذاتي للبلاطة", "totalDead": "إجمالي الحمل الدائم D", "service": "الحمل الخدمي D + L", "ultimate": "الحمل الرأسي المضاعف", "corner": "ركنية", "edgeColumn": "طرفية", "interior": "داخلية", "number": "العدد", "trib": "مساحة التأثير", "axial": "حمل محوري تقديري", "columnSize": "قطاع تقديري", "badInput": "أدخل قيمة رقمية صحيحة ضمن مجال الحقل", "badTaper": "الميل والعمق يُغلقان فتحة القالب العلوية. زِد القاعدة أو قلِّل العمق.", "large": "تتجاوز الأبعاد أو كثافة شبكة القوالب حدود عرض الحاسبة. اقسم المسقط إلى نطاقات أصغر.", "noMould": "لا توجد قوالب ضمن هذا التوزيع، وحُسبت البلاطة مصمتة.", "codeRib": "عرض العصب السفلي أقل من 10.16 سم وفق الفحص المرجعي.", "codeDepth": "العمق الكلي يتجاوز 3.5 أضعاف أقل عرض للعصب وفق الفحص المرجعي.", "codeClear": "أكبر فراغ صافٍ يتجاوز 76.2 سم وفق الفحص المرجعي.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب.", "punch": "يلزم التحقق من القص الثاقب عند كل عمود ومن امتداد المنطقة المصمتة حوله طبقًا لتحليل المشروع."};
-Object.assign(T, {"cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)", "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):", "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.", "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.", "codeClear": "القوالب الأعرض من 76.2 سم تتجاوز حد التباعد الصافي للبلاطات المعصّبة في ACI، فتُعامَل البلاطة كبلاطة وافل معصّبة في اتجاهين دون تسهيلات البلاطات المعصّبة. وهذا طبيعي مع قوالب 90 سم وأكبر.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب."});
+Object.assign(T, {"cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepLine": "الحمل الخطي المحيطي (كمرة طرفية + حائط 25 سم، مضاعف)", "stepColW": "وزن العمود لكل طابق", "stepMin": "أقل ضلع حسب ارتفاع العمود والبحر", "govArea": "يحكم الحمل المحوري", "govSlender": "يحكم ارتفاع العمود (النحافة)", "govSpan": "يحكم البحر بين الأعمدة", "govMin": "يحكم الحد الأدنى 30 سم", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)", "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):", "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.", "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.", "codeClear": "القوالب الأعرض من 76.2 سم تتجاوز حد التباعد الصافي للبلاطات المعصّبة في ACI، فتُعامَل البلاطة كبلاطة وافل معصّبة في اتجاهين دون تسهيلات البلاطات المعصّبة. وهذا طبيعي مع قوالب 90 سم وأكبر.", "codeTop": "الطبقة العلوية أقل من السمك المرجعي المحسوب."});
 Object.assign(T, {"supports": "الأعمدة المحيطية", "spans": "التباعد بين الأعمدة X × Y", "planHelp": "الأعمدة على المحيط فقط ومرسومة بمقاسها المختار، والخطوط المتقطعة حدود مناطقها المصمتة. اسحب خط القطاع أو استخدم المؤشر أسفل القطاع؛ القطع داخل عصب يظهر خرسانة مصمتة.", "hallArea": "مساحة البلاطة خارج المدى 60–180 م² المعتمد للبلاطة الواحدة في حاسبة الكمرات المتقاطعة."});
 const PRESETS = {60:[60,60,20,10],6030:[60,60,30,12],6040:[60,60,40,15],75:[75,75,25,12],7530:[75,75,30,12],7540:[75,75,40,15],90:[90,90,45,15],10550:[105,105,50,20],10560:[105,105,60,20]};
 const mouldFields = ['baseX','baseY','depth','rib'];
-const fields = ['length','width','edge','topping',...mouldFields,'angle','density','waste','dead','live','colCount','dist','pad','storeys','stress','combo','colRatio'];
+const fields = ['length','width','edge','topping',...mouldFields,'angle','density','waste','dead','live','colCount','dist','pad','storeys','hallUse','colHeight','stress','combo','colRatio'];
 const $ = id => document.getElementById(id);
 const fmt = (n, digits=2) => new Intl.NumberFormat('en-US',{maximumFractionDigits:digits,useGrouping:false}).format(n);
 const pairs = (a,b,digits=2) => fmt(a,digits)+' × '+fmt(b,digits);
@@ -134,19 +134,21 @@ function columnLayout(L,W,count,dist){
   pts=pts.map(p=>({...p,u:u(p)})).sort((a,b)=>a.u-b.u);
   return pts.map((p,i)=>{const prev=pts[(i+pts.length-1)%pts.length].u,next=pts[(i+1)%pts.length].u;
     const zone=(((p.u-prev+per)%per)+((next-p.u+per)%per))/2,corner=(p.x===0||p.x===L)&&(p.y===0||p.y===W);
-    return {id:i+1,x:p.x,y:p.y,corner,side:corner?'corner':(p.y===0||p.y===W)?'X':'Y',At:L*W*zone/per};});
+    const gp=(p.u-prev+per)%per||per, gn=(next-p.u+per)%per||per;
+    return {id:i+1,x:p.x,y:p.y,corner,side:corner?'corner':(p.y===0||p.y===W)?'X':'Y',At:L*W*zone/per,Lp:zone,span:Math.max(gp,gn)};});
 }
-function sectionOptions(req) {
+function sectionOptions(req,minB) {
+  const m=Math.max(COL_MIN,Math.ceil((minB||COL_MIN)/5-1e-7)*5);
   const out=[];
-  const bMax=Math.max(COL_MIN,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=COL_MIN;b<=bMax;b+=5){
+  const bMax=Math.max(m,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
+  for(let b=m;b<=bMax;b+=5){
     const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
     if(h/b>3+EPS) continue;
     out.push({b,h,area:b*h,ratio:h/b});
   }
   const minA=Math.min(...out.map(c=>c.area));
   const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
+  if(m<=30&&!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
   const seen=new Set();
   return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
 }
@@ -167,12 +169,16 @@ function renderColumnOptions(v){
       chips.append(b);
     }
     const f=(x,d)=>fmt(x,d===undefined?2:d);
+    const govText={area:T.govArea,slender:T.govSlender,span:T.govSpan,min:T.govMin}[g.gov];
     const steps=[
-      [T.stepTrib, 'At = '+f(g.trib,1)+' m²'],
-      [T.stepLoad+' ('+T[g.key==='corner'?'factorCorner':'factorEdge']+')', f(g.wu)+' kN/m² × '+g.storeys+' × '+f(g.factor)],
-      [T.stepP, 'P = '+f(g.wu)+' × '+f(g.trib,1)+' × '+g.storeys+' × '+f(g.factor)+' = '+f(g.demand,0)+' kN'],
+      [T.stepTrib, 'At = '+f(g.trib,1)+' m² · Lp = '+f(g.Lp,2)+' m · span = '+f(g.span,2)+' m'],
+      [T.stepLoad+' ('+T[g.key==='corner'?'factorCorner':'factorEdge']+')', 'wu = '+f(g.wu)+' kN/m² · n = '+g.storeys+' · k = '+f(g.factor)],
+      [T.stepLine, 'wL = '+f(g.deadF,1)+' × ('+f(g.beamW)+' + '+f(g.wallW)+') = '+f(g.wl)+' kN/m'],
+      [T.stepColW, 'Wc = '+f(g.deadF,1)+' × 25 × '+f(g.rec.area/1e4,4)+' m² × '+f(g.H)+' m = '+f(g.colW,1)+' kN'],
+      [T.stepP, 'P = n × k × (wu·At + wL·Lp + Wc) = '+g.storeys+' × '+f(g.factor)+' × ('+f(g.wu*g.trib,0)+' + '+f(g.wl*g.Lp,0)+' + '+f(g.colW,0)+') = '+f(g.demand,0)+' kN'],
       [T.stepAc, 'Ac = P / σ = '+f(g.demand,0)+' × 10 / '+f(g.stress)+' = '+f(g.req,0)+' cm²'],
-      [T.stepSec, 'b × h = '+g.chosen.b+' × '+g.chosen.h+' cm = '+f(g.chosen.area,0)+' cm² ≥ '+f(g.req,0)+' cm²', g.req<=COL_MIN*COL_MIN+EPS?T.minGov:'']];
+      [T.stepMin, 'b, h ≥ max(30, 1.2 H / 15 = '+f(g.kH,1)+', span / 20 = '+f(g.sp,1)+') → '+g.minB+' cm'],
+      [T.stepSec, 'b × h = '+g.chosen.b+' × '+g.chosen.h+' cm = '+f(g.chosen.area,0)+' cm² ≥ '+f(Math.max(g.req,g.minB*g.minB),0)+' cm²', govText]];
     const ol=document.createElement('ol');ol.className='calcsteps';
     for(const [lab,val,note] of steps){const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=lab+': ';
       const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
@@ -207,25 +213,41 @@ function solve(raw, choice) {
   const area=L*W;
   const full=area*(h+t), voids=count*voidOne;
   const net=full-voids, toppingVolume=area*t, below=net-toppingVolume;
-  const eq=net/area, self=eq*raw.density, D=self+raw.dead, service=D+raw.live;
-  const ultimate=raw.combo===2?Math.max(1.4*D,1.2*D+1.6*raw.live):1.4*D+1.6*raw.live;
+  const eq=net/area, self=eq*raw.density, D=self+raw.dead, live=raw.hallUse>0?raw.hallUse:raw.live, service=D+live;
+  const ultimate=raw.combo===2?Math.max(1.4*D,1.2*D+1.6*live):1.4*D+1.6*live;
+  // column loads per storey: slab (wu x tributary area), perimeter line load (edge beam + 25 cm wall) and column self-weight
+  const H=raw.colHeight>0?raw.colHeight:4.5, slabDepth=h+t;
+  const deadF=raw.combo===2?(1.4*D>=1.2*D+1.6*live?1.4:1.2):1.4;
+  const maxSpan=Math.max(...cols.map(c=>c.span));
+  const beamD=Math.max(slabDepth,Math.ceil(maxSpan/10*20-1e-7)/20);
+  const beamW=0.30*(beamD-slabDepth)*raw.density, wallW=0.25*Math.max(0,H-beamD)*18;
+  const wl=deadF*(beamW+wallW);
   const groups=[];
   for(const key of ['corner','edgeColumn']) {
     const members=cols.filter(c=>(key==='corner')===c.corner);
     const number=members.length;
     if(!number) continue;
-    const trib=Math.max(...members.map(c=>c.At));
+    const trib=Math.max(...members.map(c=>c.At)), Lp=Math.max(...members.map(c=>c.Lp)), span=Math.max(...members.map(c=>c.span));
     const factor=key==='corner'?1.5:1.25;
-    const demand=ultimate*trib*raw.storeys*factor;
-    const req=demand*10/raw.stress; // cm2: kN / MPa
-    const options=sectionOptions(req), rec=recommendSection(options,raw.colRatio);
+    const kH=1.2*H*100/15, sp=span*100/20, up=x=>Math.ceil(x/5-1e-7)*5;
+    const minB=Math.max(COL_MIN,up(kH),up(sp));
+    let area=minB*minB, colW=0, demand=0, req=0, options=null, rec=null;
+    for(let it=0;it<4;it++){
+      colW=deadF*raw.density*area/1e4*H;
+      demand=raw.storeys*factor*(ultimate*trib+wl*Lp+colW);
+      req=demand*10/raw.stress; // cm2: kN / MPa
+      options=sectionOptions(req,minB); rec=recommendSection(options,raw.colRatio);
+      if(Math.abs(rec.area-area)<EPS) break;
+      area=rec.area;
+    }
+    const gov=req>minB*minB+EPS?'area':minB===COL_MIN&&up(kH)<=COL_MIN&&up(sp)<=COL_MIN?'min':up(sp)>=up(kH)?'span':'slender';
     const chosen=options.find(o=>o.b+'x'+o.h===(choice||{})[key])||rec;
-    groups.push({key,number,trib,demand,req,options,rec,chosen,side:chosen.b,factor,wu:ultimate,storeys:raw.storeys,stress:raw.stress});
+    groups.push({key,number,trib,Lp,span,demand,req,options,rec,chosen,side:chosen.b,factor,wu:ultimate,wl,beamW,wallW,deadF,colW,H,kH,sp,minB,gov,storeys:raw.storeys,stress:raw.stress});
   }
   for(const c of cols) c.sec=groups.find(g=>g.key===(c.corner?'corner':'edgeColumn')).chosen;
   const gaps=arr=>{const v=[...arr].sort((p,q)=>p-q),d=[];for(let i=0;i+1<v.length;i++)d.push(v[i+1]-v[i]);return d;};
   const spacing={x:gaps(cols.filter(c=>Math.abs(c.y)<EPS).map(c=>c.x)),y:gaps(cols.filter(c=>Math.abs(c.x)<EPS).map(c=>c.y))};
-  return {cols,skip,spacing,raw,L,W,a,b,h,t,r,pad,topX,topY,inset,x,y,removed,count,voidOne,voids,area,full,net,toppingVolume,below,eq,self,D,service,ultimate,groups,
+  return {cols,skip,spacing,live,raw,L,W,a,b,h,t,r,pad,topX,topY,inset,x,y,removed,count,voidOne,voids,area,full,net,toppingVolume,below,eq,self,D,service,ultimate,groups,
     heel:r+2*inset, order:net*(1+raw.waste/100), reduction:100*voids/full, toppingMin:Math.max(5.08,Math.max(raw.baseX,raw.baseY)/12)};
 }
 function units(val,unit,d=2) { return fmt(val,d)+' '+unit; }
@@ -242,7 +264,7 @@ function numbersFor(v) {
       [T.oneVoid,units(v.voidOne,volume,4)],[T.voids,units(v.voids,volume,3)],[T.full,units(v.full,volume,3)],
       [T.topVolume,units(v.toppingVolume,volume,3)],[T.below,units(v.below,volume,3)],[T.net,units(v.net,volume,3)],
       [T.order,units(v.order,volume,3)],[T.reduction,units(v.reduction,'%')],[T.equivalent,units(v.eq*100,lengthCm)]],
-    load:[[T.self,units(v.self,load)],[T.totalDead,units(v.D,load)],[T.live,units(v.raw.live,load)],
+    load:[[T.self,units(v.self,load)],[T.totalDead,units(v.D,load)],[T.live,units(v.live,load)],
       [T.service,units(v.service,load)],[T.ultimate,units(v.ultimate,load)]],
     groups:v.groups.map(g=>[T[g.key],String(g.number),units(g.trib,area),units(g.demand,T.kn),units(g.req,T.cm2,0),pairs(g.chosen.b,g.chosen.h,0)+' '+lengthCm])
   };
