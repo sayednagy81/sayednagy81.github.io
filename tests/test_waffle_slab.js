@@ -53,17 +53,18 @@ test('load combinations', () => {
   near(a.ultimate, Math.max(1.4 * a.D, 1.2 * a.D + 1.6 * 2), 1e-12, 'ACI');
 });
 
-test('column sections: minimum 25 cm, multiples of 5, area covered', () => {
+test('column sections: minimum 30 cm, multiples of 5, area covered', () => {
   for (let req = 1; req <= 20000; req += 41) AR.api.sectionOptions(req).forEach(o => {
-    assert.ok(o.b >= 25 && o.h >= o.b && o.b % 5 === 0 && o.h % 5 === 0 && o.area >= req - 1e-9 && (o.wall || o.h / o.b <= 3 + 1e-9));
+    assert.ok(o.b >= 30 && o.h >= 30 && o.h >= o.b && o.b % 5 === 0 && o.h % 5 === 0 && o.area >= req - 1e-9 && (o.wall || o.h / o.b <= 3 + 1e-9));
   });
   for (const req of [50, 900, 1200, 4000]) assert.ok(AR.api.sectionOptions(req).some(o => o.b === 30 && o.area >= req));
-  assert.deepStrictEqual(AR.api.sectionOptions(1200).map(o => [o.b, o.h]), [[35, 35], [30, 40], [25, 50]]);
+  assert.deepStrictEqual(AR.api.sectionOptions(1200).map(o => [o.b, o.h]), [[35, 35], [30, 40]]);
+  assert.ok(!AR.api.sectionOptions(1200).some(o => o.b === 25 || o.h === 25), 'no 25 cm option');
   const v = AR.api.solve(base);
-  v.groups.forEach(g => { assert.ok(g.chosen.b >= 25 && g.chosen.area >= g.req - 1e-9); near(g.req, g.demand * 10 / base.stress, 1e-9, 'required area'); });
-  // columns are at least 25 x 25 cm
+  v.groups.forEach(g => { assert.ok(g.chosen.b >= 30 && g.chosen.h >= 30 && g.chosen.area >= g.req - 1e-9); near(g.req, g.demand * 10 / base.stress, 1e-9, 'required area'); });
+  // columns are at least 30 x 30 cm
   const corner = v.groups.find(g => g.key === 'corner');
-  assert.ok(corner.chosen.b >= 25);
+  assert.ok(corner.chosen.b >= 30 && corner.chosen.h >= 30);
   // a clicked option is used; an invalid one falls back
   const b8 = { ...base, colCount: 8 }, edge = AR.api.solve(b8).groups.find(g => g.key === 'edgeColumn');
   const pick = edge.options[edge.options.length - 1];
@@ -92,6 +93,24 @@ test('perimeter columns only, as in the paneled beam calculator', () => {
   const r4 = AR.api.solve({ ...base, storeys: 4 }), r12 = AR.api.solve({ ...base, storeys: 4, colCount: 12 });
   assert.ok(Math.max(...r12.groups.map(g => g.req)) < Math.max(...r4.groups.map(g => g.req)));
   assert.ok(r12.count < r4.count);
+});
+
+test('sections follow storeys and the number of columns', () => {
+  const big = v => Math.max(...v.groups.map(g => g.chosen.area));
+  for (const n of [4, 8, 12]) {
+    let prev = 0;
+    for (const st of [1, 2, 4, 6, 8]) { const a = big(AR.api.solve({ ...base, colCount: n, storeys: st })); assert.ok(a >= prev, `storeys ${st}, ${n} columns`); prev = a; }
+    assert.ok(big(AR.api.solve({ ...base, colCount: n, storeys: 6 })) > big(AR.api.solve({ ...base, colCount: n, storeys: 1 })), `more storeys, larger section (${n} columns)`);
+  }
+  for (const st of [1, 4, 6]) {
+    let prev = Infinity;
+    for (const n of [4, 6, 8, 12, 16, 24]) { const a = big(AR.api.solve({ ...base, colCount: n, storeys: st })); assert.ok(a <= prev, `${n} columns, ${st} storeys`); prev = a; }
+  }
+  assert.ok(big(AR.api.solve({ ...base, storeys: 4, colCount: 4 })) > big(AR.api.solve({ ...base, storeys: 4, colCount: 12 })));
+  // the step-by-step chain uses the same numbers
+  AR.api.solve({ ...base, storeys: 4, colCount: 8 }).groups.forEach(g => {
+    near(g.demand, g.wu * g.trib * g.storeys * g.factor, 1e-9, 'P'); near(g.req, g.demand * 10 / g.stress, 1e-9, 'Ac');
+  });
 });
 
 console.log(`\n${passed} test groups passed`);

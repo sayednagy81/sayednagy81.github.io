@@ -11,7 +11,9 @@ Changes made here, the same way in both languages:
   5. site integration: description, keywords, canonical, hreflang, icon and a link back to the site;
   6. perimeter columns only, with the paneled beam calculator's column rules, a movable section line and
      drawings that scroll instead of shrinking on phones;
-  7. loads built in and hidden (architectural tool), column stress from the Egyptian short-column form (11.16 N/mm2).
+  7. loads built in and hidden (architectural tool), column stress from the Egyptian short-column form (11.16 N/mm2);
+  8. column sides at least 30 cm, the number of storeys next to the number of columns, and a visible step-by-step
+     calculation per column group (tributary area, factored load, P, required area, proposed b x h).
 Run: python tools/make_waffle_pages.py
 """
 import json
@@ -32,13 +34,13 @@ TXT = {
         "home": "Home", "tools": "Tools", "name": "Dr. Sayed Marey Nagy", "locale": "en_US",
         "combo": "Load combination", "comboEcp": "1.4D + 1.6L (common in Egyptian practice)", "comboAci": "ACI 318: greater of 1.4D and 1.2D + 1.6L",
         "colRatio": "Column side ratio (width : length)", "colOptions": "Column section options",
-        "optNote": "Every option has at least the required area, with sides in multiples of 5 cm and at least 25 cm. ★ marks the option closest to the chosen ratio; a 30 cm wide option is always offered. Click an option to use it.",
+        "optNote": "Every option has at least the required area, with sides in multiples of 5 cm and at least 30 cm. ★ marks the option closest to the chosen ratio; a 30 cm wide option is always offered. Click an option to use it.",
         "oldColumnScope": "Square-column estimates use tributary area under a uniform average load and round up to 5 cm. Structural analysis is required for actual loading, moments, slenderness, code dimensions and reinforcement.",
-        "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 25 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.",
+        "columnScope": "Column sections use tributary area under a uniform average load: required area = factored axial load ÷ σ (0.35 fcu + 0.67 fy ρ). Both sides are multiples of 5 cm and at least 30 cm. Structural analysis is required for actual loading, moments, slenderness, punching shear, code dimensions and reinforcement.",
         "oldScope": "Factored gravity load is the greater of 1.4D and 1.2D + 1.6L.",
         "scope": "Factored gravity load uses the selected combination: 1.4D + 1.6L (common in Egyptian practice) or the ACI 318 greater of 1.4D and 1.2D + 1.6L.",
         "T": {
-            "cm2": "cm²", "reqArea": "Required area", "wallOpt": "width 30 cm (fits a 30 cm wall)",
+            "cm2": "cm²", "reqArea": "Required area", "stepTrib": "Tributary area", "stepLoad": "Factored load per m² × storeys × bending factor", "stepP": "Column load", "stepAc": "Required concrete area", "stepSec": "Proposed section", "factorCorner": "corner 1.5", "factorEdge": "edge 1.25", "minGov": "the 30 × 30 cm minimum governs", "wallOpt": "width 30 cm (fits a 30 cm wall)",
             "refHead": "Reference notes (ACI 318-19 §9.8; not errors in your inputs):",
             "codeRib": "Bottom rib width is below the 10.16 cm minimum for joist construction.",
             "codeDepth": "Overall depth {H} cm is more than 3.5 × the bottom rib width ({L} cm); a wider rib or a shallower mould keeps within this joist limit.",
@@ -53,13 +55,13 @@ TXT = {
         "home": "الرئيسية", "tools": "الأدوات", "name": "د. سيد مرعي", "locale": "ar_AR",
         "combo": "توليفة الأحمال", "comboEcp": "1.4D + 1.6L (الشائعة في التصميم بمصر)", "comboAci": "ACI 318: الأكبر من 1.4D و1.2D + 1.6L",
         "colRatio": "نسبة ضلعي العمود (العرض : الطول)", "colOptions": "اختيارات قطاع العمود",
-        "optNote": "كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 25 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة، ويظهر دائمًا اختيار بعرض 30 سم. اضغط أي اختيار لاستخدامه.",
+        "optNote": "كل اختيار مساحته لا تقل عن المطلوبة، وضلعاه من مضاعفات 5 سم ولا يقلان عن 30 سم. العلامة ★ على الاختيار الأقرب للنسبة المختارة، ويظهر دائمًا اختيار بعرض 30 سم. اضغط أي اختيار لاستخدامه.",
         "oldColumnScope": "التقدير للأعمدة المربعة بطريقة مساحة التأثير تحت حمل موزّع متوسط، مع التقريب للأعلى إلى 5 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة ومتطلبات الكود والتسليح.",
-        "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 25 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.",
+        "columnScope": "تُقدَّر قطاعات الأعمدة بطريقة مساحة التأثير تحت حمل موزّع متوسط: المساحة المطلوبة = الحمل المحوري المضاعف ÷ σ (0.35 fcu + 0.67 fy ρ). ضلعا العمود من مضاعفات 5 سم ولا يقلان عن 30 سم. يلزم تحليل إنشائي للتحقق من الأحمال الفعلية والعزوم والنحافة والقص الثاقب ومتطلبات الكود والتسليح.",
         "oldScope": "الحمل الرأسي المضاعف هو الأكبر من 1.4D و1.2D + 1.6L.",
         "scope": "الحمل الرأسي المضاعف حسب التوليفة المختارة: 1.4D + 1.6L (الشائعة في التصميم بمصر) أو الأكبر من 1.4D و1.2D + 1.6L وفق ACI 318.",
         "T": {
-            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
+            "cm2": "سم²", "reqArea": "المساحة المطلوبة", "stepTrib": "مساحة التحميل", "stepLoad": "الحمل المضاعف للمتر المربع × عدد الطوابق × معامل العزوم", "stepP": "حمل العمود", "stepAc": "مساحة الخرسانة المطلوبة", "stepSec": "القطاع المقترح", "factorCorner": "ركني 1.5", "factorEdge": "طرفي 1.25", "minGov": "يحكم الحد الأدنى 30 × 30 سم", "wallOpt": "بعرض 30 سم (يناسب حائط 30 سم)",
             "refHead": "ملاحظات مرجعية (ACI 318-19 §9.8، وليست أخطاء في المدخلات):",
             "codeRib": "عرض العصب السفلي أقل من الحد الأدنى 10.16 سم للبلاطات المعصّبة.",
             "codeDepth": "العمق الكلي {H} سم أكبر من 3.5 × عرض العصب السفلي ({L} سم)؛ عصب أعرض أو قالب أقل عمقًا يحقق هذا الحد.",
@@ -70,23 +72,24 @@ TXT = {
 }
 
 ENGINE = r"""
-// Column sections: b, h multiples of 5 cm, at least 25 cm, h/b up to 3, area not more than 30 % above the smallest,
-// plus one 30 cm wide section in every case. Sorted from square to elongated.
+// Column sections: b, h multiples of 5 cm, at least 30 cm in both directions, h/b up to 3, area not more than
+// 30 % above the smallest, plus one 30 cm wide section in every case. Sorted from square to elongated.
+const COL_MIN=30;
 function sectionOptions(req) {
   const out=[];
-  const bMax=Math.max(25,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
-  for(let b=25;b<=bMax;b+=5){
+  const bMax=Math.max(COL_MIN,Math.ceil(Math.sqrt(Math.max(req,0))/5-1e-7)*5)+10;
+  for(let b=COL_MIN;b<=bMax;b+=5){
     const h=Math.max(b,Math.ceil(req/b/5-1e-7)*5);
     if(h/b>3+EPS) continue;
     out.push({b,h,area:b*h,ratio:h/b});
   }
   const minA=Math.min(...out.map(c=>c.area));
   const opts=out.filter(c=>c.area<=minA*1.3+EPS);
-  if(!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
+  if(!opts.some(c=>c.b===30||c.h===30)){const h=Math.max(30,COL_MIN,Math.ceil(req/30/5-1e-7)*5);opts.push({b:30,h,area:30*h,ratio:h/30,wall:true});}
   const seen=new Set();
   return opts.sort((p,q)=>p.ratio-q.ratio||p.area-q.area).filter(c=>{const k=c.ratio.toFixed(3);if(seen.has(k)&&!c.wall)return false;seen.add(k);return true;});
 }
-function recommendSection(options,ratio){return options.slice().sort((p,q)=>Math.abs(p.ratio-ratio)-Math.abs(q.ratio-ratio)||p.area-q.area)[0];}
+function recommendSection(options,ratio){return options.filter(o=>o.b>=COL_MIN&&o.h>=COL_MIN).sort((p,q)=>Math.abs(p.ratio-ratio)-Math.abs(q.ratio-ratio)||p.area-q.area)[0];}
 function renderColumnOptions(v){
   const box=$('colOptions');box.replaceChildren();
   for(const g of v.groups){
@@ -102,14 +105,26 @@ function renderColumnOptions(v){
       if(o.wall){const w=document.createElement('small');w.textContent=T.wallOpt;b.append(w);}
       chips.append(b);
     }
-    wrap.append(p,chips);box.append(wrap);
+    const f=(x,d)=>fmt(x,d===undefined?2:d);
+    const steps=[
+      [T.stepTrib, 'At = '+f(g.trib,1)+' m²'],
+      [T.stepLoad+' ('+T[g.key==='corner'?'factorCorner':'factorEdge']+')', f(g.wu)+' kN/m² × '+g.storeys+' × '+f(g.factor)],
+      [T.stepP, 'P = '+f(g.wu)+' × '+f(g.trib,1)+' × '+g.storeys+' × '+f(g.factor)+' = '+f(g.demand,0)+' kN'],
+      [T.stepAc, 'Ac = P / σ = '+f(g.demand,0)+' × 10 / '+f(g.stress)+' = '+f(g.req,0)+' cm²'],
+      [T.stepSec, 'b × h = '+g.chosen.b+' × '+g.chosen.h+' cm = '+f(g.chosen.area,0)+' cm² ≥ '+f(g.req,0)+' cm²', g.req<=COL_MIN*COL_MIN+EPS?T.minGov:'']];
+    const ol=document.createElement('ol');ol.className='calcsteps';
+    for(const [lab,val,note] of steps){const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=lab+': ';
+      const b=document.createElement('bdi');b.dir='ltr';b.textContent=val;li.append(sp,b);
+      if(note){const n=document.createElement('em');n.textContent=' — '+note;li.append(n);}
+      ol.append(li);}
+    wrap.append(p,ol,chips);box.append(wrap);
   }
 }
 """
 
 CSS = """
 .site-strip{background:#0b2536;color:#cfe3ec;font-size:.85rem}.site-strip .wrap{display:flex;gap:1rem;justify-content:space-between;padding-top:.45rem;padding-bottom:.45rem}.site-strip a{color:#fff}
-.chips{display:flex;flex-wrap:wrap;gap:.45rem}.chip{display:flex;flex-direction:column;align-items:center;min-width:92px;padding:.35rem .6rem}.chip small{font-size:.74rem;opacity:.85}.colgroup{margin-top:.7rem}.colgroup p{margin:0 0 .35rem}#refs{background:#eef5f7;padding:.55rem .8rem;border-radius:.5rem}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem}.chip{display:flex;flex-direction:column;align-items:center;min-width:92px;padding:.35rem .6rem}.chip small{font-size:.74rem;opacity:.85}.colgroup{margin-top:.7rem}.colgroup p{margin:0 0 .35rem;font-weight:bold}.calcsteps{margin:.2rem 0 .55rem;padding-inline-start:1.4rem;font-size:.9rem;line-height:1.6}.calcsteps li{margin-bottom:.25rem}.calcsteps bdi{display:block;font-family:ui-monospace,Consolas,monospace;font-size:.86rem;overflow-wrap:anywhere}html[dir=rtl] .calcsteps bdi{text-align:right}#refs{background:#eef5f7;padding:.55rem .8rem;border-radius:.5rem}
 """
 
 
@@ -367,7 +382,16 @@ def extend(s, lang):
     # bug in the original: the button id "reset" hides form.reset(), so "Reset example" threw an error
     s = R(s, "$('form').reset();", "HTMLFormElement.prototype.reset.call($('form'));")
     # medium sections: perimeter columns carry bending, so their loads are increased (edge +25 %, corner +50 %)
-    s = R(s, "    const demand=ultimate*trib*raw.storeys;", "    const demand=ultimate*trib*raw.storeys*(key==='corner'?1.5:1.25);")
+    s = R(s, "    const demand=ultimate*trib*raw.storeys;", "    const factor=key==='corner'?1.5:1.25;\n    const demand=ultimate*trib*raw.storeys*factor;")
+    s = R(s, "groups.push({key,number,trib,demand,req,options,rec,chosen,side:chosen.b});",
+          "groups.push({key,number,trib,demand,req,options,rec,chosen,side:chosen.b,factor,wu:ultimate,storeys:raw.storeys,stress:raw.stress});")
+    # storeys: a clear input next to the number of columns
+    st_old = "عدد الطوابق المتماثلة" if ar else "Identical supported floors"
+    st_new = "عدد الطوابق التي تحملها الأعمدة" if ar else "Storeys carried by the columns"
+    st_in = '<input id="storeys" type="number" min="1" max="100" step="1" value="1">'
+    s = R(s, f'<label>{st_old}{st_in}</label>', '')
+    s = R(s, f'<label>{e["colCount"]}<input id="colCount"', f'<label>{st_new}{st_in}</label><label>{e["colCount"]}<input id="colCount"')
+    s = R(s, f'"storeys": "{st_old}"', f'"storeys": "{st_new}"')
     s = R(s, f"<fieldset><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>", f"<fieldset hidden><legend>{'الأحمال الرأسية' if ar else 'Gravity loads'}</legend>")
     stress_label = "إجهاد محوري افتراضي (ميغاباسكال)" if ar else "Assumed axial stress (MPa)"
     s = R(s, f'<label class="space">{stress_label}<input id="stress" type="number" min="0.1" step="any" value="5"></label>',
