@@ -11,11 +11,12 @@
 
   function lang() { return root.dataset.lang === "ar" ? "ar" : "en"; }
 
-  function applyLang(l) {
+  function applyLang(l, save) {
     root.dataset.lang = l;
     root.lang = l;
     root.dir = l === "ar" ? "rtl" : "ltr";
-    try { localStorage.setItem("lang", l); } catch (e) {}
+    // the choice is remembered only when the visitor presses the language button, not on every page load
+    if (save) { try { localStorage.setItem("site-lang", l); } catch (e) {} }
     Array.prototype.forEach.call(document.querySelectorAll("[data-ph-en]"), function (el) {
       el.placeholder = el.getAttribute("data-ph-" + l);
     });
@@ -27,7 +28,17 @@
   }
 
   var btn = document.getElementById("lang-btn");
-  if (btn) btn.addEventListener("click", function () { applyLang(lang() === "ar" ? "en" : "ar"); });
+  if (btn) btn.addEventListener("click", function () {
+    var next = lang() === "ar" ? "en" : "ar";
+    // pages with an Arabic/English twin switch URL, so each language has its own address for Google
+    var alt = document.querySelector('link[rel=alternate][hreflang="' + next + '"]');
+    if (alt && alt.href !== location.href.split("#")[0]) {
+      try { localStorage.setItem("site-lang", next); } catch (e) {}
+      location.href = alt.href + location.hash;
+      return;
+    }
+    applyLang(next, true);
+  });
 
   // ---- publication filtering ----
   var list = document.getElementById("papers");
@@ -130,7 +141,11 @@
     if (index) return Promise.resolve(index);
     return fetch(base + "search.json").then(function (r) { return r.json(); }).then(function (d) { index = d; return d; });
   }
-  function itemUrl(it) { return /^https?:/.test(it.u) ? it.u : base + it.u; }
+  function itemUrl(it) {
+    if (/^https?:/.test(it.u)) return it.u;
+    // on Arabic pages (/ar/...) open the Arabic copy when there is one
+    return base + (it.a && /^\/ar\//.test(location.pathname) ? "ar/" + it.u : it.u);
+  }
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
   }

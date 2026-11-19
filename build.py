@@ -567,6 +567,20 @@ NAV = list(PAGES)  # main() drops Videos/Articles when they are not configured
 
 def layout(profile, title, desc, body, base, canonical="", head_extra="", image="", active="", keywords=()):
     default_lang = profile.get("default_lang", "en")
+    # "English | Arabic" titles and descriptions: the English page keeps the English part, the Arabic part
+    # is kept in a comment for the /ar/ copy (see arabic_meta)
+    ar_note = ""
+    for kind, text in (("title", title), ("desc", desc)):
+        parts = text.split(" | ")
+        ar = [p for p in parts if AR_CHARS.search(p)]
+        en = [p for p in parts if not AR_CHARS.search(p)]
+        if ar and en:
+            ar_note += f"<!--ar-{kind}:{esc(' | '.join(ar))}-->"
+            if kind == "title":
+                title = " | ".join(en)
+            else:
+                desc = " | ".join(en)
+    desc = short_desc(desc)
     name_en = pick(profile["name"], "en")
     nav = "".join(f'<a href="{base}{path}"{" class=on aria-current=page" if key == active else ""}>{ui(key)}</a>'
                   for key, path in NAV)
@@ -596,7 +610,7 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 <meta name="author" content="{esc(name_en)}">
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="website">{ar_note}
 {img}
 {can}
 <link rel="icon" href="{base}static/favicon.svg" type="image/svg+xml">
@@ -605,7 +619,7 @@ def layout(profile, title, desc, body, base, canonical="", head_extra="", image=
 <link rel="stylesheet" href="{base}static/style.css">
 {head_extra}
 <script>document.documentElement.classList.add("js");setTimeout(function(){{if(!window.__motionReady)document.documentElement.classList.remove("js")}},3000);</script>
-<script>try{{var l=localStorage.getItem("lang");if(l==="ar"||l==="en"){{var d=document.documentElement;d.dataset.lang=l;d.lang=l;d.dir=l==="ar"?"rtl":"ltr";}}}}catch(e){{}}</script>
+<script>try{{var l=localStorage.getItem("site-lang"),d=document.documentElement;if(l==="ar"||l==="en"){{var a=document.querySelector('link[rel=alternate][hreflang="'+l+'"]');if(a&&d.lang!==l&&a.href!==location.href.split("#")[0]){{location.replace(a.href+location.hash)}}else{{d.dataset.lang=l;d.lang=l;d.dir=l==="ar"?"rtl":"ltr";}}}}}}catch(e){{}}</script>
 </head>
 <body data-base="{base}">
 <header class="site-header"><div class="wrap bar">
@@ -701,6 +715,150 @@ def write_page(rel, html_text):
     d = OUT / rel
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(html_text, encoding="utf-8")
+    # pages whose canonical is on this site (not blog copies, not noindex) also get an Arabic copy under /ar/
+    if SITE and f'rel="canonical" href="{SITE}/' in html_text and 'content="noindex' not in html_text:
+        AR_PAGES.append(rel)
+
+
+# ---------- Arabic copies (/ar/...) so Google can index the Arabic text ----------
+SITE = ""          # set in main()
+AR_PAGES = []      # rel paths that get an /ar/ copy
+AR_META = {}       # rel -> (Arabic title, Arabic description) set by the page builders
+AR_CHARS = re.compile(r"[؀-ۿ]")
+URL_ATTR = re.compile(r'\s(href|src|data-base)="([^"]*)"')
+
+
+def short_desc(text, limit=160):
+    """Cuts a description at a word boundary so Google does not show half a word."""
+    text = re.sub(r"\s+", " ", html.unescape(text)).strip()
+    if len(text) <= limit:
+        return text
+    cut = text[:limit - 1].rsplit(" ", 1)[0].rstrip(" ,.;:–-،")
+    return cut + "…"
+
+
+def _strip_tags(s):
+    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", s))).strip()
+
+
+def _ar_spans(fragment):
+    return [_strip_tags(m) for m in re.findall(r'<span class="l-ar" lang="ar">(.*?)</span>', fragment, re.S)]
+
+
+def arabic_meta(rel, page, name_ar):
+    """Arabic title and description: from AR_META, else from the page's own Arabic text."""
+    if rel in AR_META:
+        t, d = AR_META[rel]
+        return t, short_desc(d)
+    note_t = re.search(r"<!--ar-title:(.*?)-->", page, re.S)
+    note_d = re.search(r"<!--ar-desc:(.*?)-->", page, re.S)
+    title = html.unescape(re.search(r"<title>(.*?)</title>", page, re.S).group(1))
+    parts = [p for p in title.split(" | ") if AR_CHARS.search(p)]
+    if note_t:
+        t = html.unescape(note_t.group(1))
+    elif parts:
+        t = " | ".join(parts)
+    else:
+        h1 = re.search(r"<h1[^>]*>(.*?)</h1>", page, re.S)
+        spans = _ar_spans(h1.group(1)) if h1 else []
+        head = spans[0] if spans else (_strip_tags(h1.group(1)) if h1 else title.split(" | ")[0])
+        t = f"{head} | {name_ar}"
+    main = re.search(r"<main>(.*)</main>", page, re.S)
+    texts = [s for s in _ar_spans(main.group(1) if main else page) if len(s) >= 50]
+    if note_d:
+        d = html.unescape(note_d.group(1))
+    elif texts:
+        d = " ".join(texts)
+    else:
+        d = html.unescape(re.search(r'<meta name="description" content="(.*?)">', page, re.S).group(1))
+    return t, short_desc(d)
+
+
+def _abs_path(value, page_path):
+    """Relative link on the English page -> root-absolute path ("/about/")."""
+    from urllib.parse import urljoin
+    return urljoin(SITE + page_path, value)[len(SITE):]
+
+
+def _ar_link(path, ar_paths):
+    bare = path.split("#")[0].split("?")[0]
+    return "/ar" + path if bare in ar_paths else path
+
+
+def hreflang_tags(en_url, ar_url):
+    return (f'<link rel="alternate" hreflang="en" href="{en_url}">'
+            f'<link rel="alternate" hreflang="ar" href="{ar_url}">'
+            f'<link rel="alternate" hreflang="x-default" href="{en_url}">')
+
+
+def write_arabic_pages(profile):
+    """Adds hreflang to each English page and writes its Arabic copy under /ar/. Returns (en_url, ar_url) pairs."""
+    name_ar = pick(profile["name"], "ar")
+    ar_paths = {"/" + (r + "/" if r else "") for r in AR_PAGES}
+    pairs = []
+    for rel in AR_PAGES:
+        page_path = "/" + (rel + "/" if rel else "")
+        en_url, ar_url = SITE + page_path, SITE + "/ar" + page_path
+        f = OUT / rel / "index.html"
+        page = f.read_text(encoding="utf-8")
+        alt = hreflang_tags(en_url, ar_url)
+        page = page.replace(f'<link rel="canonical" href="{en_url}">', f'<link rel="canonical" href="{en_url}">{alt}', 1)
+        f.write_text(page, encoding="utf-8")
+
+        def fix(m):
+            attr, val = m.group(1), m.group(2)
+            if attr == "data-base":
+                return ' data-base="/"'
+            if val.startswith(SITE + "/") and attr == "href":
+                return f' href="{SITE}{_ar_link(val[len(SITE):], ar_paths)}"'
+            if not val or re.match(r"^([a-z][a-z0-9+.-]*:|//|/|#)", val, re.I):
+                return m.group(0)
+            path = _abs_path(val, page_path)
+            return f' {attr}="{_ar_link(path, ar_paths) if attr == "href" else path}"'
+
+        title, desc = arabic_meta(rel, page, name_ar)
+        head, body = page.split("</head>", 1)
+        head = re.sub(r"<link rel=\"alternate\" hreflang=[^>]*>|<!--ar-(?:title|desc):.*?-->", "", head, flags=re.S)
+        head = head.replace(f'<link rel="canonical" href="{en_url}">', "<!--canonical-->")
+        head = URL_ATTR.sub(fix, head).replace("<!--canonical-->", f'<link rel="canonical" href="{ar_url}">{alt}')
+        head = head.replace(f'<meta property="og:url" content="{en_url}">', f'<meta property="og:url" content="{ar_url}">')
+        head = head.replace(f'<meta property="og:site_name" content="{esc(pick(profile["name"], "en"))}">',
+                            f'<meta property="og:site_name" content="{esc(name_ar)}">')
+        head = head.replace('<meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="ar_EG">',
+                            '<meta property="og:locale" content="ar_EG"><meta property="og:locale:alternate" content="en_US">')
+        head = re.sub(r"<title>.*?</title>", lambda _: f"<title>{esc(title)}</title>", head, count=1, flags=re.S)
+        for key in ('name="description"', 'property="og:description"'):
+            head = re.sub(rf'<meta {key} content=".*?">', lambda _: f'<meta {key} content="{esc(desc)}">', head, count=1, flags=re.S)
+        head = re.sub(r'<meta property="og:title" content=".*?">', lambda _: f'<meta property="og:title" content="{esc(title)}">',
+                      head, count=1, flags=re.S)
+        head = re.sub(r'<html lang="\w+" dir="\w+" data-lang="\w+">', '<html lang="ar" dir="rtl" data-lang="ar">', head, count=1)
+        page = head + "</head>" + URL_ATTR.sub(fix, body)
+        d = OUT / "ar" / rel
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "index.html").write_text(page, encoding="utf-8")
+        pairs.append((en_url, ar_url))
+    return pairs
+
+
+def stamp_lastmod(urls):
+    """lastmod = the day a page's HTML last changed (kept in lastmod.json on the live site), not the build day."""
+    import hashlib
+    import urllib.request
+    old = {}
+    try:
+        with urllib.request.urlopen(SITE + "/lastmod.json", timeout=20) as r:
+            old = json.loads(r.read().decode("utf-8"))
+    except Exception as e:  # first run or offline: every page counts as changed today
+        print(f"note: no previous lastmod.json ({e.__class__.__name__}); using today's date")
+    today, new = date.today().isoformat(), {}
+    for u in urls:
+        rel = u[len(SITE):].strip("/")
+        f = OUT / rel / "index.html" if not rel.endswith(".html") else OUT / rel
+        h = hashlib.sha1(f.read_bytes()).hexdigest()[:16] if f.exists() else ""
+        prev = old.get(u)
+        new[u] = [h, prev[1] if prev and prev[0] == h else today]
+    (OUT / "lastmod.json").write_text(json.dumps(new, ensure_ascii=False, indent=0), encoding="utf-8")
+    return {u: v[1] for u, v in new.items()}
 
 
 COURSE_TITLE = {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"}
@@ -739,6 +897,14 @@ def build_pages(profile, papers, cards):
     desc = (f'{name_en}, {title_en}, {pick(profile.get("affiliation", ""), "en")}. '
             f'{pick(profile.get("bio", ""), "en")}')[:300]
     interests = "".join(f'<li>{bi(i)}</li>' for i in profile.get("interests", []))
+    name_ar, title_ar = pick(profile["name"], "ar"), pick(profile.get("title", ""), "ar")
+    desc_ar = f'{name_ar}، {title_ar}، {pick(profile.get("affiliation", ""), "ar")}. {pick(profile.get("bio", ""), "ar")}'
+    AR_META[""] = (f"{name_ar} | {title_ar}", desc_ar)
+    AR_META["about"] = (f'{UI["about"][1]} | {name_ar}', desc_ar)
+    AR_META["publications"] = (f'{UI["publications"][1]} | {name_ar}',
+                               f'أبحاث ومنشورات {name_ar} ({len(papers)} منشورًا) في '
+                               + "، ".join(pick(i, "ar") for i in profile.get("interests", [])[:6]) + ".")
+    AR_META["contact"] = (f'{UI["contact"][1]} | {name_ar}', f'{UI["contact_lead"][1]} {desc_ar}')
 
     # Home
     selected = [p for p in papers if p.get("featured")][:4] or papers[:4]
@@ -1820,8 +1986,14 @@ def build_paper(profile, p, has_card):
     page = layout(profile, f'{title_en} | {pick(profile["name"], "en")}',
                   (pick(p.get("summary", ""), "en") or abstract_en)[:300], body, base, url, head, image, "publications")
     d = OUT / "papers" / p["id"]
-    d.mkdir(parents=True, exist_ok=True)
-    (d / "index.html").write_text(page, encoding="utf-8")
+    write_page(f'papers/{p["id"]}', page)
+    title_ar = p["title"].get("ar") if isinstance(p["title"], dict) else ""
+    if title_ar:  # an Arabic copy only when the paper has an Arabic title
+        abstract_ar = pick(p.get("summary", ""), "ar") if isinstance(p.get("summary"), dict) else ""
+        AR_META[f'papers/{p["id"]}'] = (f'{title_ar} | {pick(profile["name"], "ar")}',
+                                        abstract_ar or f'{title_ar}. {(pick(p.get("summary", ""), "en") or abstract_en)}')
+    elif AR_PAGES and AR_PAGES[-1] == f'papers/{p["id"]}':
+        AR_PAGES.pop()
     (d / "cite.ris").write_text(ris(p), encoding="utf-8", newline="")
     (d / "cite.bib").write_text(bibtex(p) + "\n", encoding="utf-8")
     return url
@@ -1870,6 +2042,9 @@ def main():
               and not (k == "articles" and not profile.get("blog_feed"))]
     print(f"feeds: {len(VIDEOS)} videos, {len(ARTICLES)} articles")
 
+    global SITE
+    SITE = profile.get("site_url", "").rstrip("/")
+    AR_PAGES.clear()
     urls = build_pages(profile, papers, cards)
     urls += build_media_pages(profile)
     urls += [build_paper(profile, p, p["id"] in cards) for p in papers]
@@ -1879,12 +2054,52 @@ def main():
     write_search_index(profile, papers)
 
     site = profile.get("site_url", "").rstrip("/")
-    today = date.today().isoformat()
-    sm = "".join(f"<url><loc>{esc(u)}</loc><lastmod>{today}</lastmod></url>" for u in urls)
+    name_ar = pick(profile["name"], "ar")
+    AR_META.setdefault("tools", (f"أدوات مجانية لطلاب العمارة: حاسبات السلالم والعزل ومسار الشمس | {name_ar}",
+                                 "أدوات مجانية لطلاب العمارة: حاسبة معامل U والعزل الحراري، وحاسبة تصميم السلالم، "
+                                 "وحاسبة مسار الشمس والظلال، وحاسبتا البلاطات ذات الكمرات والبلاطات المفرغة (الوافل)."))
+    AR_META.setdefault("videos", (f"دروس فيديو في العمارة والبناء مع اختبارات | {name_ar}",
+                                  "محاضرات وتمارين إنشاء وشروحات قصيرة في العمارة والبناء المستدام، "
+                                  "مع اختبارات قصيرة بعد كل درس."))
+    AR_META.setdefault("articles", (f"مقالات علمية في العمارة المستدامة والطاقة | {name_ar}",
+                                    "مقالات علمية مبسطة في العمارة المستدامة ومواد البناء وكفاءة الطاقة في المباني "
+                                    "بالسياق المصري: التظليل والعزل والتهوية الطبيعية والكربون المتجسد وغيرها."))
+    pairs = write_arabic_pages(profile)
+    # mark search entries that have an Arabic copy, so search on /ar/ pages opens the Arabic page
+    sj = json.loads((OUT / "search.json").read_text(encoding="utf-8"))
+    ar_rel = {r + "/" if r else "" for r in AR_PAGES}
+    for it in sj["items"]:
+        if it.get("u") in ar_rel:
+            it["a"] = 1
+    (OUT / "search.json").write_text(json.dumps(sj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    twin = {}
+    for en, ar in pairs:
+        twin[en] = twin[ar] = (en, ar)
+    all_urls = []
+    for u in urls:
+        all_urls.append(u)
+        if u in twin:
+            all_urls.append(twin[u][1])
+    lastmod = stamp_lastmod(all_urls)
+
+    def entry(u):
+        alt = ""
+        if u in twin:
+            en, ar = twin[u]
+            alt = (f'<xhtml:link rel="alternate" hreflang="en" href="{esc(en)}"/>'
+                   f'<xhtml:link rel="alternate" hreflang="ar" href="{esc(ar)}"/>'
+                   f'<xhtml:link rel="alternate" hreflang="x-default" href="{esc(en)}"/>')
+        return f"<url><loc>{esc(u)}</loc><lastmod>{lastmod[u]}</lastmod>{alt}</url>\n"
+
     (OUT / "sitemap.xml").write_text(
-        f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sm}</urlset>',
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+        'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "".join(entry(u) for u in all_urls) + "</urlset>\n",
         encoding="utf-8")
-    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {site}/sitemap.xml\n", encoding="utf-8")
+    # plain-text sitemap: a second, simpler format for Search Console
+    (OUT / "sitemap.txt").write_text("\n".join(all_urls) + "\n", encoding="utf-8")
+    print(f"sitemap: {len(all_urls)} URLs ({len(pairs)} Arabic copies)")
+    (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {site}/sitemap.xml\nSitemap: {site}/sitemap.txt\n",
+                                    encoding="utf-8")
     print(f"OK: built {len(papers)} paper page(s) into {OUT}")
 
 
