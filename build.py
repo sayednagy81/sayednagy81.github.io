@@ -17,6 +17,8 @@ from pathlib import Path
 import feeds
 
 ROOT = Path(__file__).parent
+# AridEnvelope dashboard: published only when its files are in root/tools/arid-envelope/ (tools/publish-arid-envelope.ps1 puts them there on the scheduled date)
+AE_READY = (ROOT / "root" / "tools" / "arid-envelope" / "index.html").exists()
 OUT = ROOT / "dist"
 
 FONTS = ("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600"
@@ -376,8 +378,8 @@ def link_buttons(p, base):
         out.append(f'<a class="btn btn-sm" href="{esc(ext_url(p["pdf"], base))}" target="_blank" rel="noopener">{ui("pdf")}</a>')
     if p.get("url"):
         out.append(f'<a class="btn btn-sm" href="{esc(p["url"])}" target="_blank" rel="noopener">{ui("read")}</a>')
-    if p.get("app"):
-        out.append(f'<a class="btn btn-sm" href="{esc(p["app"])}" target="_blank" rel="noopener">{ui("app")}</a>')
+    if p.get("app") and (AE_READY or re.match(r"^(https?:)?//", p["app"])):
+        out.append(f'<a class="btn btn-sm" href="{esc(ext_url(p["app"], base))}" target="_blank" rel="noopener">{ui("app")}</a>')
     return "".join(out)
 
 
@@ -1796,9 +1798,9 @@ def build_tools(profile):
     envelope = ('<span class="tool-art tool-wall" aria-hidden="true"><i style="background:#cfc8bb;flex:2"></i><i style="background:#e0b36a;flex:5"></i>'
                 '<i style="background:#b5583a;flex:10"></i><i style="background:#9cc7e8;flex:3"></i></span>')
     tools = [
-        ("arid-envelope/", envelope, {"en": "AridEnvelope: wall economic performance dashboard", "ar": "لوحة الأداء الاقتصادي لحوائط المباني في المناخ الحار الجاف"},
+        *([("arid-envelope/", envelope, {"en": "AridEnvelope: wall economic performance dashboard", "ar": "لوحة الأداء الاقتصادي لحوائط المباني في المناخ الحار الجاف"},
          {"en": "Interactive thermal-economic comparison of 14 exterior wall configurations in Cairo: NPV, payback, Pareto front and sensitivity.",
-          "ar": "مقارنة حرارية واقتصادية تفاعلية لـ 14 تركيبًا للحوائط الخارجية في القاهرة: القيمة الحالية الصافية وفترة الاسترداد وحدود باريتو والحساسية."}),
+          "ar": "مقارنة حرارية واقتصادية تفاعلية لـ 14 تركيبًا للحوائط الخارجية في القاهرة: القيمة الحالية الصافية وفترة الاسترداد وحدود باريتو والحساسية."})] if AE_READY else []),
         ("sun-path/", sun, {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
          {"en": "Solar altitude, azimuth, shadow length and direction for any place and time, with a plan diagram.",
           "ar": "ارتفاع الشمس وسمتها وطول الظل واتجاهه لأي مكان ووقت، مع مخطط في المسقط."}),
@@ -1831,7 +1833,7 @@ def build_tools(profile):
     author = {"@type": "Person", "name": name_en, "url": site + "/"}
     ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Free tools for architecture students",
           "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": u, "name": n} for i, (u, n) in enumerate(
-              [(ae_url, "AridEnvelope wall economic performance dashboard"), (p_url, "Sun path and shadow calculator"), (pb_url, "Paneled beam calculator"), (wf_url, "Waffle slab calculator"), (s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
+              ([(ae_url, "AridEnvelope wall economic performance dashboard")] if AE_READY else []) + [(p_url, "Sun path and shadow calculator"), (pb_url, "Paneled beam calculator"), (wf_url, "Waffle slab calculator"), (s_url, "Stair design calculator"), (u_url, "Wall U-value calculator"),
                (u_url + "#materials", "Thermal properties of building materials")])], "author": author}
     head = redirect + f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
     desc = ("Free sun path, paneled beam, waffle slab, stair design and wall U-value calculators for architecture students, with a table of the thermal "
@@ -1842,7 +1844,7 @@ def build_tools(profile):
            "خصائص مواد البناء", "مواد البناء في مصر", "طلاب العمارة"]
     write_page("tools", layout(profile, f'Free Tools for Architecture Students: Sun Path, Paneled Beam, Waffle Slab, Stair & U-value Calculators | {name_en}', desc,
                                body, "../", site + "/tools/", head, "", "tools", kws))
-    return [site + "/tools/", ae_url, p_url, pb_url, pb_url.replace("_EN.html", "_AR.html"), wf_url, wf_url.replace("_EN.html", "_AR.html"), s_url, u_url]
+    return [site + "/tools/", *([ae_url] if AE_READY else []), p_url, pb_url, pb_url.replace("_EN.html", "_AR.html"), wf_url, wf_url.replace("_EN.html", "_AR.html"), s_url, u_url]
 
 
 def build_courses(profile):
@@ -1910,7 +1912,7 @@ def write_search_index(profile, papers):
         add("tool", "tools/paneled-beam/Paneled_Beam_Calculator_EN.html", {"en": "Paneled beam (crossed beam) calculator", "ar": "حاسبة الكمرات المتقاطعة Paneled Beam"},
             ["paneled beam", "crossed beam", "grid slab", "beam grid", "slab thickness", "beam depth", "column sizing", "perimeter columns",
              "كمرات متقاطعة", "بلاطة", "شبكة الكمرات", "سمك البلاطة", "عمق الكمرة", "قطاع العمود", "أعمدة", "قاعة"])
-        add("tool", "tools/arid-envelope/", {"en": "AridEnvelope: wall economic performance dashboard", "ar": "لوحة الأداء الاقتصادي لحوائط المباني في المناخ الحار"},
+        if AE_READY: add("tool", "tools/arid-envelope/", {"en": "AridEnvelope: wall economic performance dashboard", "ar": "لوحة الأداء الاقتصادي لحوائط المباني في المناخ الحار"},
             ["wall insulation", "exterior wall", "life cycle cost", "NPV", "payback", "Pareto", "hot arid climate", "Cairo", "building envelope economics",
              "الحوائط الخارجية", "العزل الحراري", "تكلفة دورة الحياة", "فترة الاسترداد", "المناخ الحار الجاف", "القاهرة", "غلاف المبنى"])
         add("tool", "tools/waffle-slab/Waffle_Slab_Calculator_EN.html", {"en": "Waffle Slab Calculator", "ar": "حاسبة البلاطة الوافل"},
