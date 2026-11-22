@@ -2,3 +2,5 @@ dist/
 .claude/
 __pycache__/
 tools/sync-config.json
+tools/arid-envelope-src/node_modules/
+tools/arid-envelope-src/dist/
