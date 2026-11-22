@@ -56,6 +56,7 @@ UI = {
     "copied": ("Copied", "تم النسخ"),
     "read": ("Read paper", "اقرأ البحث"),
     "pdf": ("PDF", "PDF"),
+    "app": ("Interactive tool", "الأداة التفاعلية"),
     "card": ("Download visual abstract", "تحميل الملخص المصور"),
     "back": ("← All publications", "→ كل الأبحاث"),
     "home": ("Home", "الرئيسية"),
@@ -375,6 +376,8 @@ def link_buttons(p, base):
         out.append(f'<a class="btn btn-sm" href="{esc(ext_url(p["pdf"], base))}" target="_blank" rel="noopener">{ui("pdf")}</a>')
     if p.get("url"):
         out.append(f'<a class="btn btn-sm" href="{esc(p["url"])}" target="_blank" rel="noopener">{ui("read")}</a>')
+    if p.get("app"):
+        out.append(f'<a class="btn btn-sm" href="{esc(p["app"])}" target="_blank" rel="noopener">{ui("app")}</a>')
     return "".join(out)
 
 

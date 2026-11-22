@@ -22,6 +22,7 @@ Changes made here, the same way in both languages:
 Run: python tools/make_waffle_pages.py
 """
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -219,8 +220,13 @@ def build(lang):
     s = R(s, "    if(e.target.id==='live') $('use').value='custom';", "    if(e.target.id==='live') $('use').value='custom';\n    if(e.target.id==='colRatio') colChoice={};")
     s = R(s, "$('reset').addEventListener('click',()=>{$('form').reset();", "$('reset').addEventListener('click',()=>{colChoice={};$('form').reset();")
     s = R(s, "  $('csv').addEventListener('click',csvExport);",
-          "  $('colOptions').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;colChoice={...colChoice,[b.dataset.group]:b.dataset.sec};update();});\n  $('csv').addEventListener('click',csvExport);")
+          "  $('colOptions').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;colChoice={...colChoice,[b.dataset.group]:b.dataset.sec};update();});")
     s = extend(s, lang)
+    # no CSV / raw-data export on the site: remove the button, the function and its references
+    s = re.sub(r'<button type="button" id="csv">[^<]*</button>', '', s)
+    s = re.sub(r'function csvExport\(\) \{.*?\n\}\n', '', s, flags=re.S)
+    s = s.replace("for(const id of ['csv','svg','print'])", "for(const id of ['svg','print'])")
+    s = re.sub(r'"csv": "[^"]*", ', '', s)
     (OUT / FILE[lang]).write_text(s, encoding="utf-8", newline="\n")
 
 
