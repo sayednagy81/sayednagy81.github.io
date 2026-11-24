@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --bg:#f8f6f1; --surface:#ffffff; --text:#1b2433; --muted:#5b6575; --line:#e4dfd3;
+  --primary:#13294b; --brass:#a8822f; --brass-soft:#f3ecdb; --grid:rgba(19,41,75,.05);
+}
+body{font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;background-color:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.7}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,Cambria,"Noto Naskh Arabic",serif;line-height:1.3}
+.blueprint-bg{background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px),linear-gradient(to bottom,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+.blueprint-dark{background-color:#13294b;background-image:linear-gradient(to right,rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px}
+.ltr-num{direction:ltr;unicode-bidi:embed;display:inline-block}
+.tab-active{background-color:#13294b;color:#fff}
+.lec-pill-active{background-color:#a8822f;color:#fff;border-color:#a8822f}
+.card-elevated{background:#fff;border:1px solid #e4dfd3;box-shadow:0 1px 2px rgba(19,41,75,.06),0 6px 18px rgba(19,41,75,.06);transition:box-shadow .2s ease}
+.card-elevated:hover{box-shadow:0 2px 4px rgba(19,41,75,.08),0 10px 26px rgba(19,41,75,.1)}
+.svg-interactive text{font-family:"IBM Plex Sans Arabic","Segoe UI",system-ui,sans-serif}
+input[type="range"]{accent-color:#a8822f}
+.fade-in{animation:fadeIn .25s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* site chrome, same look as the personal site header and footer */
+.site-top{background:color-mix(in srgb,#fff 92%,transparent);border-bottom:1px solid #e4dfd3}
+.site-top a{text-decoration:none}
+.site-brand{font-family:"Source Serif 4",Georgia,"Noto Naskh Arabic",serif;font-weight:700;font-size:1.05rem;color:#1b2433}
+.site-nav{display:flex;gap:18px;flex-wrap:wrap;font-size:.93rem}
+.site-nav a{color:#5b6575}.site-nav a:hover{color:#13294b}
+.site-crumb{background:#13294b;color:#dfe5ef;font-size:.85rem}
+.site-crumb a{color:#f3ecdb;text-decoration:none}.site-crumb a:hover{color:#d2b06a}
+.site-footer{border-top:1px solid #e4dfd3;color:#5b6575;font-size:.9rem;background:#fff}

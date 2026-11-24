@@ -867,6 +867,9 @@ def stamp_lastmod(urls):
 
 
 COURSE_TITLE = {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"}
+COURSE2_TITLE = {"en": "Building Construction II: concrete structural systems", "ar": "مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية"}
+COURSE2_DESC = {"en": "Seven interactive lectures on concrete structural systems, a comparison lab, 170 images and a quiz bank.",
+                "ar": "سبع محاضرات تفاعلية عن الأنظمة الإنشائية الخرسانية، مع مختبر للمقارنة و170 صورة وبنك اختبارات."}
 
 
 def home_tools():
@@ -886,6 +889,8 @@ def home_tools():
                     f'<span><b>{bi(t)}</b><small>{bi(d)}</small></span></a>' for h, s, c, t, d in cards)
     course = ('<a class="card pcard" href="courses/thermal-comfort/"><span class="pbadge" style="background:#047857">10</span>'
               f'<span><b>{bi(COURSE_TITLE)}</b><small>{bi({"en": "Ten interactive lectures with building photos and charts", "ar": "عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية"})}</small></span></a>')
+    course += ('<a class="card pcard" href="courses/building-construction-ii/"><span class="pbadge" style="background:#13294b">7</span>'
+               f'<span><b>{bi(COURSE2_TITLE)}</b><small>{bi({"en": "Seven interactive lectures, a comparison lab and a quiz bank", "ar": "سبع محاضرات تفاعلية ومختبر للمقارنة وبنك اختبارات"})}</small></span></a>')
     return (f'<section class="wrap"><h2>{ui("courses")}</h2><div class="pgrid">{course}</div></section>'
             f'<section class="wrap"><h2>{bi({"en": "Free tools for students", "ar": "أدوات مجانية للطلاب"})}</h2><div class="pgrid">{items}</div></section>')
 
@@ -1863,10 +1868,14 @@ def build_courses(profile):
 {page_hero("courses")}
 <section class="wrap"><p class="lead">{bi(lead)}</p>
 <div class="tool-grid"><a class="card tool-card" href="thermal-comfort/">{course}<span><b>{bi(COURSE_TITLE)}</b><small>{bi(desc_c)}</small>
+<span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a>
+<a class="card tool-card" href="building-construction-ii/">{course}<span><b>{bi(COURSE2_TITLE)}</b><small>{bi(COURSE2_DESC)}</small>
 <span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a></div></section>"""
     url = site + "/courses/thermal-comfort/"
+    url2 = site + "/courses/building-construction-ii/"
     ld = {"@context": "https://schema.org", "@type": "ItemList", "name": "Courses for architecture students",
-          "itemListElement": [{"@type": "ListItem", "position": 1, "url": url, "name": COURSE_TITLE["en"]}]}
+          "itemListElement": [{"@type": "ListItem", "position": 1, "url": url, "name": COURSE_TITLE["en"]},
+                              {"@type": "ListItem", "position": 2, "url": url2, "name": COURSE2_TITLE["en"]}]}
     head = f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'
     desc = ("Interactive courses for architecture students: thermal comfort and energy efficiency in classrooms. | "
             "مقررات تفاعلية لطلاب العمارة: الراحة الحرارية وكفاءة الطاقة في القاعات التعليمية.")
@@ -1874,7 +1883,7 @@ def build_courses(profile):
            "مقررات العمارة", "محاضرات عمارة", "الراحة الحرارية", "كفاءة الطاقة", "طلاب العمارة"]
     write_page("courses", layout(profile, f"Courses for Architecture Students | {name_en}", desc, body, "../",
                                  site + "/courses/", head, "", "courses", kws))
-    return [site + "/courses/", url]
+    return [site + "/courses/", url, url2]
 
 
 def write_search_index(profile, papers):
@@ -1906,6 +1915,10 @@ def write_search_index(profile, papers):
         add("course", "courses/thermal-comfort/", COURSE_TITLE,
             ["thermal comfort", "energy efficiency", "classrooms", "lectures", "PMV", "IEQ", "PCM", "BIM", "nZEB", "الراحة الحرارية",
              "كفاءة الطاقة", "محاضرات", "القاعات التعليمية", "التهوية", "العزل", "الأفنية"])
+        add("course", "courses/building-construction-ii/", COURSE2_TITLE,
+            ["building construction", "structural systems", "flat slab", "waffle slab", "hollow block", "paneled beam", "concrete frames", "simple beam",
+             "loads", "punching shear", "lectures", "إنشاء مباني", "الأنظمة الإنشائية", "فلات سلاب", "وافل", "هوردي", "الكمرات المتقاطعة",
+             "الإطارات الخرسانية", "الأحمال", "القص الثاقب", "محاضرات"])
         add("tool", "tools/sun-path/", {"en": "Sun path and shadow calculator", "ar": "حاسبة مسار الشمس والظلال"},
             ["sun", "solar altitude", "azimuth", "shadow length", "orientation", "shading", "شمس", "ظل", "ظلال", "ارتفاع الشمس",
              "سمت", "توجيه المباني", "التظليل"])

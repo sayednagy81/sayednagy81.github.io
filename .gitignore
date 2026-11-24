@@ -5,3 +5,4 @@ tools/sync-config.json
 tools/arid-envelope-src/node_modules/
 tools/arid-envelope-src/dist/
 _scheduled/
+tools/bc2-build/node_modules/

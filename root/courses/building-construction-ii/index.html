@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية | د. سيد مرعي</title>
+  <meta name="description" content="سبع محاضرات تفاعلية في الأنظمة الإنشائية الخرسانية (الكمرات البسيطة، اللاكمرية، الهوردي، الوافل، الكمرات المتقاطعة، الإطارات) مع مختبر للمقارنة و170 صورة وبنك اختبارات. Interactive Building Construction II course: concrete structural systems.">
+  <meta name="keywords" content="إنشاء مباني, الأنظمة الإنشائية, البلاطات اللاكمرية, الوافل, السقف الهوردي, الكمرات المتقاطعة, الإطارات الخرسانية, محاضرات عمارة, Building Construction, flat slab, waffle slab, paneled beam, concrete frames">
+  <link rel="canonical" href="https://sayednagy81.github.io/courses/building-construction-ii/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website"><meta property="og:locale" content="ar_AR">
+  <meta property="og:title" content="مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية"><meta property="og:url" content="https://sayednagy81.github.io/courses/building-construction-ii/">
+  <meta property="og:description" content="سبع محاضرات تفاعلية في الأنظمة الإنشائية الخرسانية (الكمرات البسيطة، اللاكمرية، الهوردي، الوافل، الكمرات المتقاطعة، الإطارات) مع مختبر للمقارنة و170 صورة وبنك اختبارات. Interactive Building Construction II course: concrete structural systems.">
+  <meta property="og:image" content="https://sayednagy81.github.io/courses/building-construction-ii/img/isometric.jpg">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية","alternateName":"Building Construction II","description":"سبع محاضرات تفاعلية في الأنظمة الإنشائية الخرسانية لطلاب العمارة.","inLanguage":"ar","isAccessibleForFree":true,"url":"https://sayednagy81.github.io/courses/building-construction-ii/","provider":{"@type":"Person","name":"Sayed Marey Nagy","url":"https://sayednagy81.github.io/"}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/chart.umd.js"></script>
+  <script src="vendor/lucide.min.js"></script>
+</head>
+<body class="blueprint-bg min-h-screen flex flex-col">
+<div class="site-top">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-5 flex-wrap" style="min-height:58px">
+    <a href="/" class="site-brand">د. سيد مرعي · Sayed Marey Nagy</a>
+    <nav class="site-nav ms-auto" aria-label="موقع">
+      <a href="/">الرئيسية</a><a href="/about/">نبذة</a><a href="/publications/">المنشورات</a><a href="/videos/">الفيديو</a><a href="/articles/">المقالات</a><a href="/tools/">الأدوات</a><a href="/courses/">المقررات</a><a href="/contact/">تواصل</a>
+    </nav>
+  </div>
+  <div class="site-crumb"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5"><a href="/">د. سيد مرعي</a> &nbsp;/&nbsp; <a href="/courses/">المقررات</a> &nbsp;/&nbsp; مقرر إنشاء مباني 2</div></div>
+</div>
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-stone-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-3">
+        <!-- Brand -->
+        <button id="brandHomeBtn" type="button" class="flex items-center gap-3 text-right focus:outline-none">
+          <div class="w-10 h-10 rounded-xl bg-[#13294b] text-white flex items-center justify-center shrink-0 shadow-sm">
+            <i data-lucide="building-2" class="w-5 h-5"></i>
+          </div>
+          <div class="leading-tight">
+            <div class="font-bold text-base sm:text-lg text-[#13294b]">إنشاء مباني 2</div>
+            <div class="text-xs text-slate-500 hidden sm:block">Building Construction II · هندسة حلوان</div>
+          </div>
+        </button>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden md:flex items-center gap-1.5" aria-label="التنقل الرئيسي">
+          <button type="button" data-nav="home" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">الرئيسية</button>
+          <button type="button" data-nav="lectures" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">المحاضرات (7)</button>
+          <button type="button" data-nav="lab" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">مختبر التصميم والمقارنة</button>
+          <button type="button" data-nav="gallery" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">معرض الصور (170)</button>
+          <button type="button" data-nav="quiz" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">بنك الاختبارات</button>
+          <button type="button" data-nav="references" class="nav-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition">المراجع</button>
+        </nav>
+
+        <!-- Progress & Mobile Toggle -->
+        <div class="flex items-center gap-2">
+          <div id="headerProgressBadge" class="flex items-center gap-2 bg-stone-100 border border-stone-200 rounded-full px-3 py-1.5 text-xs font-bold text-[#13294b]">
+            <i data-lucide="award" class="w-4 h-4 text-[#a8822f]"></i>
+            <span id="progressText">0 / 7 مكتملة</span>
+          </div>
+          <button id="mobileMenuBtn" type="button" class="md:hidden p-2 rounded-lg border border-stone-200 text-[#13294b] hover:bg-stone-100" aria-label="القائمة">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <div id="mobileNav" class="hidden md:hidden pb-3 pt-1 border-t border-stone-100">
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" data-nav="home" class="nav-btn-mobile px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">الرئيسية</button>
+          <button type="button" data-nav="lectures" class="nav-btn-mobile px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">المحاضرات (7)</button>
+          <button type="button" data-nav="lab" class="nav-btn-mobile px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">مختبر التصميم</button>
+          <button type="button" data-nav="gallery" class="nav-btn-mobile px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">معرض الصور (170)</button>
+          <button type="button" data-nav="quiz" class="nav-btn-mobile px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">بنك الاختبارات</button>
+          <button type="button" data-nav="references" class="nav-btn-mobile col-span-2 px-3 py-2 rounded-lg text-sm font-semibold text-right bg-stone-100">المراجع الأكاديمية</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed bottom-5 left-5 z-50 hidden bg-[#13294b] text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toastMsg"></span>
+  </div>
+
+  <!-- Interactive Image Lightbox Modal -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6" role="dialog" aria-modal="true" aria-label="معاينة الصورة">
+    <div class="relative w-full max-w-5xl bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+      <div class="flex items-center justify-between gap-3 px-4 sm:px-5 py-3 bg-[#13294b] text-white">
+        <div class="min-w-0">
+          <div id="lbMeta" class="text-[11px] font-bold text-amber-300"></div>
+          <div id="lbCaption" class="text-xs sm:text-sm font-bold truncate"></div>
+        </div>
+        <button id="lbCloseBtn" type="button" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition shrink-0" aria-label="إغلاق">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="relative flex-1 bg-stone-100 flex items-center justify-center p-3 sm:p-5 overflow-auto min-h-[260px]">
+        <img id="lbImg" src="" alt="" class="max-w-full max-h-[68vh] w-auto h-auto object-contain rounded-lg shadow-sm bg-white" />
+      </div>
+      <div class="flex items-center justify-between px-4 sm:px-5 py-3 bg-white border-t border-stone-200">
+        <button id="lbPrevBtn" type="button" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-[#13294b] text-xs font-bold flex items-center gap-1.5 transition">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          السابقة
+        </button>
+        <span id="lbCounter" class="text-xs font-extrabold text-slate-500 ltr-num"></span>
+        <button id="lbNextBtn" type="button" class="px-3.5 py-2 rounded-xl bg-[#13294b] hover:bg-[#a8822f] text-white text-xs font-bold flex items-center gap-1.5 transition">
+          التالية
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  
+  <main id="appRoot" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <!-- Dynamic Views Rendered Here -->
+  </main>
+<footer class="site-footer mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div><b class="text-[#13294b]">مقرر إنشاء مباني 2 (Building Construction II)</b> — د. سيد مرعي منصور (Dr. Sayed M. Nagy) · قسم العمارة، كلية الهندسة، جامعة حلوان</div>
+    <div>العام الأكاديمي 2024/2025 – 2025/2026 · <a href="/" class="text-[#13294b]">sayednagy81.github.io</a></div>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
