@@ -36,10 +36,7 @@ SITE_TOP = '''<div class="site-top">
   <div class="site-crumb"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5"><a href="/">د. سيد مرعي</a> &nbsp;/&nbsp; <a href="/courses/">المقررات</a> &nbsp;/&nbsp; مقرر إنشاء مباني 2</div></div>
 </div>'''
 FOOT = '''<footer class="site-footer mt-12">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-    <div><b class="text-[#13294b]">مقرر إنشاء مباني 2 (Building Construction II)</b> — د. سيد مرعي منصور (Dr. Sayed M. Nagy) · قسم العمارة، كلية الهندسة، جامعة حلوان</div>
-    <div>العام الأكاديمي 2024/2025 – 2025/2026 · <a href="/" class="text-[#13294b]">sayednagy81.github.io</a></div>
-  </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">© 2026 د. سيد مرعي · Sayed Marey Nagy</div>
 </footer>'''
 LD = ('{"@context":"https://schema.org","@type":"Course","name":"مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية","alternateName":"Building Construction II",'
       '"description":"سبع محاضرات تفاعلية في الأنظمة الإنشائية الخرسانية لطلاب العمارة.","inLanguage":"ar","isAccessibleForFree":true,'
