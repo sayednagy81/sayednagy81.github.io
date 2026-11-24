@@ -868,6 +868,10 @@ def stamp_lastmod(urls):
 
 COURSE_TITLE = {"en": "Thermal comfort and energy efficiency course", "ar": "مقرر الراحة الحرارية وكفاءة الطاقة"}
 COURSE2_TITLE = {"en": "Building Construction II: concrete structural systems", "ar": "مقرر إنشاء مباني 2: الأنظمة الإنشائية الخرسانية"}
+COURSE3_TITLE = {"en": "Architecture: Form, Space & Order, an interactive platform", "ar": "العمارة: الشكل والفضاء والنظام، منصة تفاعلية"}
+COURSE3_URL = "https://sayednagy81.github.io/architecture-form-space/"
+COURSE3_DESC = {"en": "25 interactive units after Francis Ching, a 3D lab, a glossary and a quiz.",
+                "ar": "25 وحدة تفاعلية عن كتاب فرانسيس شينغ، مع مختبر ثلاثي الأبعاد ومعجم مصطلحات واختبار."}
 COURSE2_DESC = {"en": "Seven interactive lectures on concrete structural systems, a comparison lab, 170 images and a quiz bank.",
                 "ar": "سبع محاضرات تفاعلية عن الأنظمة الإنشائية الخرسانية، مع مختبر للمقارنة و170 صورة وبنك اختبارات."}
 
@@ -891,6 +895,8 @@ def home_tools():
               f'<span><b>{bi(COURSE_TITLE)}</b><small>{bi({"en": "Ten interactive lectures with building photos and charts", "ar": "عشر محاضرات تفاعلية مع صور المباني ورسوم بيانية"})}</small></span></a>')
     course += ('<a class="card pcard" href="courses/building-construction-ii/"><span class="pbadge" style="background:#13294b">7</span>'
                f'<span><b>{bi(COURSE2_TITLE)}</b><small>{bi({"en": "Seven interactive lectures, a comparison lab and a quiz bank", "ar": "سبع محاضرات تفاعلية ومختبر للمقارنة وبنك اختبارات"})}</small></span></a>')
+    course += (f'<a class="card pcard" href="{COURSE3_URL}" target="_blank" rel="noopener"><span class="pbadge" style="background:#2c6a96">25</span>'
+               f'<span><b>{bi(COURSE3_TITLE)}</b><small>{bi({"en": "Interactive units after Ching, a 3D lab and a quiz", "ar": "وحدات تفاعلية عن شينغ ومختبر ثلاثي الأبعاد واختبار"})}</small></span></a>')
     return (f'<section class="wrap"><h2>{ui("courses")}</h2><div class="pgrid">{course}</div></section>'
             f'<section class="wrap"><h2>{bi({"en": "Free tools for students", "ar": "أدوات مجانية للطلاب"})}</h2><div class="pgrid">{items}</div></section>')
 
@@ -1870,6 +1876,8 @@ def build_courses(profile):
 <div class="tool-grid"><a class="card tool-card" href="thermal-comfort/">{course}<span><b>{bi(COURSE_TITLE)}</b><small>{bi(desc_c)}</small>
 <span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a>
 <a class="card tool-card" href="building-construction-ii/">{course}<span><b>{bi(COURSE2_TITLE)}</b><small>{bi(COURSE2_DESC)}</small>
+<span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a>
+<a class="card tool-card" href="{COURSE3_URL}" target="_blank" rel="noopener">{course}<span><b>{bi(COURSE3_TITLE)}</b><small>{bi(COURSE3_DESC)}</small>
 <span class="btn btn-sm btn-primary">{bi({"en": "Open →", "ar": "افتح ←"})}</span></span></a></div></section>"""
     url = site + "/courses/thermal-comfort/"
     url2 = site + "/courses/building-construction-ii/"
