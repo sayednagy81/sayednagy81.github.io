@@ -4,10 +4,10 @@
 
   "name":        { "en": "Dr. Sayed Marey Nagy", "ar": "د. سيد مرعي" },
   "title":       { "en": "PhD, Lecturer of Architectural Engineering", "ar": "دكتوراه، مدرس الهندسة المعمارية" },
-  "affiliation": { "en": "Faculty of Engineering – Mataria, Helwan University, Cairo, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة حلوان، القاهرة، مصر" },
+  "affiliation": { "en": "Faculty of Engineering – Mataria, Capital University, Cairo, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة العاصمة، القاهرة، مصر" },
   "bio": {
-    "en": "PhD in Architectural Engineering and lecturer at the Faculty of Engineering – Mataria, Helwan University. My research focuses on building materials, nanomaterials, building technology, energy consumption reduction, building performance, and post-occupancy studies. I am driven by a commitment to advancing sustainable design practices and enhancing the environmental and functional performance of the built environment.",
-    "ar": "دكتوراه في الهندسة المعمارية ومحاضر بكلية الهندسة بالمطرية، جامعة حلوان. تركز أبحاثي على مواد البناء والمواد النانوية وتكنولوجيا البناء وخفض استهلاك الطاقة وأداء المباني ودراسات ما بعد التشغيل. يحركني الالتزام بتطوير ممارسات التصميم المستدام وتحسين الأداء البيئي والوظيفي للبيئة المبنية."
+    "en": "PhD in Architectural Engineering and lecturer at the Faculty of Engineering – Mataria, Capital University. My research focuses on building materials, nanomaterials, building technology, energy consumption reduction, building performance, and post-occupancy studies. I am driven by a commitment to advancing sustainable design practices and enhancing the environmental and functional performance of the built environment.",
+    "ar": "دكتوراه في الهندسة المعمارية ومحاضر بكلية الهندسة بالمطرية، جامعة العاصمة. تركز أبحاثي على مواد البناء والمواد النانوية وتكنولوجيا البناء وخفض استهلاك الطاقة وأداء المباني ودراسات ما بعد التشغيل. يحركني الالتزام بتطوير ممارسات التصميم المستدام وتحسين الأداء البيئي والوظيفي للبيئة المبنية."
   },
 
   "youtube_channel_id": "UCDGZNYZFF43b7Tjlg8f0IzA",
@@ -28,14 +28,14 @@
 
   "positions": [
     { "years": { "en": "2017 – present", "ar": "2017 – حتى الآن" }, "title": { "en": "Lecturer of Architectural Engineering", "ar": "مدرس الهندسة المعمارية" },
-      "place": { "en": "Faculty of Engineering – Mataria, Helwan University, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة حلوان، مصر" } },
+      "place": { "en": "Faculty of Engineering – Mataria, Capital University, Egypt", "ar": "كلية الهندسة بالمطرية، جامعة العاصمة، مصر" } },
     { "years": "2012 – 2019", "title": { "en": "Lecturer", "ar": "محاضر" },
       "place": { "en": "Department of Architecture Engineering, Jazan University, Saudi Arabia", "ar": "قسم الهندسة المعمارية، جامعة جازان، المملكة العربية السعودية" } }
   ],
 
   "education": [
     { "years": "2016", "title": { "en": "PhD in Architectural Engineering", "ar": "دكتوراه في الهندسة المعمارية" },
-      "place": { "en": "Capital University (Helwan University), Egypt", "ar": "جامعة العاصمة (جامعة حلوان)، مصر" } }
+      "place": { "en": "Capital University, Egypt", "ar": "جامعة العاصمة، مصر" } }
   ],
 
   "metrics": [
